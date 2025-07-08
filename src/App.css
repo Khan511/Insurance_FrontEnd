@@ -1,0 +1,25 @@
+.hero-container {
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .hero-container {
+    height: 60vh !important;
+    min-height: 400px !important;
+  }
+
+  .hero-container h1 {
+    max-width: 90% !important;
+    font-size: 1.8rem !important;
+  }
+}
+
+.card-link {
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-link:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
