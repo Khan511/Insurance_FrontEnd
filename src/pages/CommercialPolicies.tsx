@@ -19,11 +19,13 @@ const CommercialPolicies = () => {
           Commercial Policies
         </p>
         <div>
-          <InsuranceCardComponent
+          {/* <InsuranceCardComponent
             policies={policies?.filter(
               (policy) => policy?.category?.name === "Commercial"
             )}
-          />
+          /> */}
+
+          <InsuranceCardComponent policies={policies} />
         </div>
       </div>
     </div>

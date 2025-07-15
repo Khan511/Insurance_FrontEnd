@@ -24,10 +24,12 @@ const PolicyDetailsPage = () => {
     );
   }
 
+  console.log("Policy Id: ", policyDetails);
+
   return (
     <div className="container bg-gray-200 min-h-screen ">
       <div className="max-w-xl py-5 px-5 ">
-        <p className="text-3xl font-semibold">{policyDetails?.title} </p>
+        <p className="text-3xl font-semibold">{policyDetails?.displayName} </p>
         <p className="my-5">{policyDetails?.description}</p>
         <div className="flex gap-3 ">
           Target Audience:
@@ -37,7 +39,7 @@ const PolicyDetailsPage = () => {
         </div>
         <div className="flex gap-3 ">
           Regions:
-          {policyDetails?.region.map((reg, index) => {
+          {policyDetails?.regions.map((reg, index) => {
             return <p key={index}>{reg}</p>;
           })}
         </div>

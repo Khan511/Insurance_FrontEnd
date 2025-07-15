@@ -1,20 +1,62 @@
 import { Card } from "react-bootstrap";
 import { Link } from "react-router";
 
-export interface InsuracePolicy {
-  id: number;
-  title: string;
+export type MonetaryAmount = {
+  amount: number;
+  currency: string;
+};
+
+export type CoverageDetails = {
+  coverageType: string;
   description: string;
+  coverageLimit: MonetaryAmount;
+  deductible: MonetaryAmount;
+};
+
+export type Category = {
+  id: number;
+  name: string;
+  description: string;
+};
+
+export type PolicyPeriod = {
+  effectiveDate: string;
+  expirationDate: string;
+};
+
+export type ProductTranslation = {
+  displayName: string;
+  description: string;
+};
+
+export type ProductType =
+  | "AUTO"
+  | "HEALTH"
+  | "LIFE"
+  | "PROPERTY"
+  | "TRAVEL"
+  | "LIABILITY"
+  | "PET";
+
+export type InsuraceProduct = {
+  id: number;
+  productCode: string;
+  displayName: string;
+  description: string;
+  productType: ProductType;
+  basePremium: MonetaryAmount;
+  coverageDetails: CoverageDetails[];
+  eligibilityRules: { [key: string]: string };
   targetAudience: string[];
-  region: string[];
-  category: {
-    id: number;
-    name: string;
-  };
-}
+  regions: string[];
+  category: Category;
+  validityPeriod: PolicyPeriod;
+  allowedClaimTypes: string[];
+  translation: { [locale: string]: ProductTranslation };
+};
 
 interface Props {
-  policies?: InsuracePolicy[];
+  policies?: InsuraceProduct[];
 }
 
 const InsuranceCardComponent = ({ policies = [] }: Props) => {
@@ -32,10 +74,12 @@ const InsuranceCardComponent = ({ policies = [] }: Props) => {
               <Card
                 bg="primary"
                 text={"secondary".toLowerCase() === "light" ? "dark" : "white"}
-                style={{ width: "18rem" }}
+                style={{ maxWidth: "20rem" }}
                 className="mb-2 h-100 d-flex flex-column  "
               >
-                <Card.Header className="fw-bold">{card.title}</Card.Header>
+                <Card.Header className="text-lg">
+                  {card.displayName}
+                </Card.Header>
                 <Card.Body>
                   <Card.Text>{card.description}</Card.Text>
                 </Card.Body>

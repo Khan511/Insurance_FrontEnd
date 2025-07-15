@@ -18,6 +18,8 @@ const AllInsurances = () => {
     );
   }
 
+  console.log("All Policies", policies);
+
   return (
     <div className="container mb-5 ">
       <CardGroup className="gap-4 rounded  " style={{ marginTop: "60px" }}>

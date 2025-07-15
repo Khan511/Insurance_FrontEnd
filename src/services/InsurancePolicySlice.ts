@@ -2,68 +2,108 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseUrl = "http://localhost:8080/api";
 
-type InsuracePolicy = {
-  id: number;
-  title: string;
-  description: string;
-  targetAudience: string[];
-  region: string[];
-  category: {
-    id: number;
-    name: string;
-  };
+export type MonetaryAmount = {
+  amount: number;
+  currency: string;
 };
 
-type BuyInsurance = {
+export type CoverageDetails = {
+  coverageType: string;
+  description: string;
+  coverageLimit: MonetaryAmount;
+  deductible: MonetaryAmount;
+};
+
+export type Category = {
+  id: number;
+  name: string;
+  description: string;
+};
+
+export type PolicyPeriod = {
+  effectiveDate: string;
+  expirationDate: string;
+};
+
+export type ProductTranslation = {
+  displayName: string;
+  description: string;
+};
+
+export type ProductType =
+  | "AUTO"
+  | "HEALTH"
+  | "LIFE"
+  | "PROPERTY"
+  | "TRAVEL"
+  | "LIABILITY"
+  | "PET";
+
+export type InsuraceProduct = {
+  id: number;
+  productCode: string;
+  displayName: string;
+  description: string;
+  productType: ProductType;
+  basePremium: MonetaryAmount;
+  coverageDetails: CoverageDetails[];
+  eligibilityRules: { [key: string]: string };
+  targetAudience: string[];
+  regions: string[];
+  category: Category;
+  validityPeriod: PolicyPeriod;
+  allowedClaimTypes: string[];
+  translation: { [locale: string]: ProductTranslation };
+};
+
+type BuyPolicyFormValues = {
   customer: {
     firstName: string;
     lastName: string;
     email: string;
-    dateOfBirth: undefined;
+    dateOfBirth?: Date;
     governmentId: {
-      idType: undefined;
-      idNumber: number;
+      idType?: number;
+      idNumber: string;
       issuingCountry: string;
-      expirationDate: undefined;
+      expirationDate?: Date;
     };
     contactInfo: {
-      phone: number;
-      alternatePhone: number;
+      phone: string;
+      alternatePhone: string;
       primaryAddress: {
         street: string;
         city: string;
         state: string;
-        postalCode: number;
+        postalCode: string;
         country: string;
       };
       billingAddress: {
-        street: number;
+        street: string;
         city: string;
         state: string;
-        postalCode: number;
+        postalCode: string;
         country: string;
       };
     };
   };
   product: string;
   coveragePeriod: {
-    effectiveDate: undefined;
-    expirationDate: undefined;
+    effectiveDate?: Date;
+    expirationDate?: Date;
   };
   premium: {
     amount: string;
     currency: string;
   };
-  status: string;
-  beneficiaries: [
-    {
-      name: string;
-      relationship: string;
-      dateOfBirth: undefined;
-      taxCountry: string;
-      taxIdentifier: string;
-    }
-  ];
+  // status?: "DRAFT" | "ACTIVE" | "EXPIRED"; // optional if needed later
+  beneficiaries: {
+    name: string;
+    relationship: string;
+    dateOfBirth?: Date;
+    taxCountry: string;
+    taxIdentifier: string;
+  }[];
 };
 
 export const InsuracePolicyApi = createApi({
@@ -80,14 +120,14 @@ export const InsuracePolicyApi = createApi({
 
   tagTypes: ["policy"],
   endpoints: (builder) => ({
-    getAllPolicies: builder.query<InsuracePolicy[], void>({
+    getAllPolicies: builder.query<InsuraceProduct[], void>({
       query: () => ({
         url: "/policy/all-policies",
         method: "GET",
       }),
     }),
 
-    getPolicyDetails: builder.query<InsuracePolicy, number>({
+    getPolicyDetails: builder.query<InsuraceProduct, number>({
       query: (policyId) => ({
         url: `/policy/policy-details/${policyId}`,
         method: "GET",

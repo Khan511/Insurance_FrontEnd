@@ -28,9 +28,9 @@ function App() {
           <Route path="/policies/:policyId" element={<PolicyDetailsPage />} />
           <Route path="/login" element={<LoginPage />} />
 
+          <Route path="/create-user" element={<CreateUser />} />
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/create-user" element={<CreateUser />} />
             <Route
               path="/customer-policy-form"
               element={<CustomerPolicyForm />}

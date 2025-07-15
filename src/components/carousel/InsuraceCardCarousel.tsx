@@ -67,24 +67,65 @@ import { CardTitle } from "react-bootstrap";
 import { Link } from "react-router-dom"; // Correct package
 import Autoplay from "embla-carousel-autoplay";
 
-export interface InsurancePolicy {
-  id: number;
-  title: string;
+export type MonetaryAmount = {
+  amount: number;
+  currency: string;
+};
+
+export type CoverageDetails = {
+  coverageType: string;
   description: string;
+  coverageLimit: MonetaryAmount;
+  deductible: MonetaryAmount;
+};
+
+export type Category = {
+  id: number;
+  name: string;
+  description: string;
+};
+
+export type PolicyPeriod = {
+  effectiveDate: string;
+  expirationDate: string;
+};
+
+export type ProductTranslation = {
+  displayName: string;
+  description: string;
+};
+
+export type ProductType =
+  | "AUTO"
+  | "HEALTH"
+  | "LIFE"
+  | "PROPERTY"
+  | "TRAVEL"
+  | "LIABILITY"
+  | "PET";
+
+export type InsuraceProduct = {
+  id: number;
+  productCode: string;
+  displayName: string;
+  description: string;
+  productType: ProductType;
+  basePremium: MonetaryAmount;
+  coverageDetails: CoverageDetails[];
+  eligibilityRules: { [key: string]: string };
   targetAudience: string[];
-  region: string[];
-  category: {
-    id: number;
-    name: string;
-  };
-}
+  regions: string[];
+  category: Category;
+  validityPeriod: PolicyPeriod;
+  allowedClaimTypes: string[];
+  translation: { [locale: string]: ProductTranslation };
+};
 
 interface Props {
-  policies: InsurancePolicy[];
+  policies: InsuraceProduct[];
 }
 
 export function InsuranceCardCarousel({ policies }: Props) {
-  console.log(policies);
   return (
     <Carousel
       opts={{
@@ -92,23 +133,23 @@ export function InsuranceCardCarousel({ policies }: Props) {
         loop: true,
       }}
       plugins={[Autoplay({ delay: 3000, stopOnInteraction: false })]}
-      className="w-full max-w-7xl mx-auto"
+      className="w-full max-w-7xl mx-auto "
     >
       <CarouselContent>
         {policies.map((policy) => (
           <CarouselItem
             key={policy.id}
-            className="pl-3 basis-1/1 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+            className="pl-3 basis-1/1 sm:basis-1/2 md:basis-1/3"
           >
             <Link to={`/policies/${policy.id}`}>
               <div className="m-1 transition-shadow hover:shadow-xl rounded-2xl hover:shadow-gray-800">
-                <Card className="flex justify-around p-2 h-80 text-white   bg-blue-600  ">
-                  <CardTitle className="text-md px-3 pt-3">
-                    {policy.title}
+                <Card className="flex justify-around p-2 h-80 text-white bg-blue-600">
+                  <CardTitle className="text-md px-2 pt-3">
+                    {policy.displayName}
                   </CardTitle>
-                  <CardContent className="flex flex-col    items-center justify-between gap-5 p-6">
+                  <CardContent className="flex flex-col items-center justify-between gap-5 p-6">
                     <span>{policy.description}</span>
-                    <div className="flex  align-bottom align-center justify-around gap-1.5 h-10  ">
+                    <div className="flex  align-bottom align-center justify-around w-full  gap-1.5 h-10  ">
                       {policy?.targetAudience &&
                         policy?.targetAudience.map((audience, index) => {
                           return <div key={index}>{audience}</div>;

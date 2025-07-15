@@ -14,10 +14,11 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { User } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useCreateUserMutation } from "@/services/UserApiSlice";
 
 export default function UserCreatingForme() {
+  const navigate = useNavigate();
   const [createUser, { isLoading }] = useCreateUserMutation();
 
   const form = useForm<UserFormValues>({
@@ -40,6 +41,7 @@ export default function UserCreatingForme() {
     });
 
     console.log("CreateUser Result", result);
+    navigate("/login");
   };
   return (
     <Form {...form}>

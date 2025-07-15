@@ -17,11 +17,12 @@ export const PrivatePolicies = () => {
       <div>
         <p className="text-center text-4xl underline mb-5">Private Policies</p>
         <div>
-          <InsuranceCardComponent
+          {/* <InsuranceCardComponent
             policies={policies?.filter(
               (policy) => policy?.category?.name === "Private"
             )}
-          />
+          /> */}
+          <InsuranceCardComponent policies={policies} />
         </div>
       </div>
     </div>
