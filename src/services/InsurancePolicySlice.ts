@@ -56,54 +56,50 @@ export type InsuraceProduct = {
   translation: { [locale: string]: ProductTranslation };
 };
 
+export type GovernmentId = {
+  idType?: number;
+  idNumber: string;
+  issuingCountry: string;
+  expirationDate?: Date;
+};
+
+export type Address = {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+};
+export type ContactInfo = {
+  phone: string;
+  alternatePhone: string;
+  primaryAddress: Address;
+  billingAddress: Address;
+};
+
+export type Beneficiaries = {
+  name: string;
+  relationship: string;
+  dateOfBirth?: Date;
+  taxCountry: string;
+  taxIdentifier: string;
+};
+
+export type Customer = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  dateOfBirth?: Date;
+  governmentId: GovernmentId;
+  contactInfo: ContactInfo;
+};
 type BuyPolicyFormValues = {
-  customer: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    dateOfBirth?: Date;
-    governmentId: {
-      idType?: number;
-      idNumber: string;
-      issuingCountry: string;
-      expirationDate?: Date;
-    };
-    contactInfo: {
-      phone: string;
-      alternatePhone: string;
-      primaryAddress: {
-        street: string;
-        city: string;
-        state: string;
-        postalCode: string;
-        country: string;
-      };
-      billingAddress: {
-        street: string;
-        city: string;
-        state: string;
-        postalCode: string;
-        country: string;
-      };
-    };
-  };
+  customer: Customer;
   product: string;
   coveragePeriod: {
-    effectiveDate?: Date;
-    expirationDate?: Date;
+    effectiveDate: Date | null | undefined;
   };
-  premium: {
-    amount: string;
-    currency: string;
-  };
-  // status?: "DRAFT" | "ACTIVE" | "EXPIRED"; // optional if needed later
-  beneficiaries: {
-    name: string;
-    relationship: string;
-    dateOfBirth?: Date;
-    taxCountry: string;
-    taxIdentifier: string;
-  }[];
+  beneficiaries: Beneficiaries[];
 };
 
 export const InsuracePolicyApi = createApi({

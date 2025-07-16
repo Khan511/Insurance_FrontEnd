@@ -584,7 +584,7 @@ export function CustomerPolicyForm() {
             </p>
 
             {/* Product */}
-            <div className="mb-4">
+            <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <FormField
                 control={form.control}
                 name="product"
@@ -602,10 +602,9 @@ export function CustomerPolicyForm() {
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Coverage Period */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              {/* Coverage Period */}
+              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> */}
               <FormField
                 control={form.control}
                 name="coveragePeriod.effectiveDate"
@@ -639,7 +638,8 @@ export function CustomerPolicyForm() {
                   </FormItem>
                 )}
               />
-              <FormField
+            </div>
+            {/* <FormField
                 control={form.control}
                 name="coveragePeriod.expirationDate"
                 render={({ field }) => (
@@ -671,11 +671,11 @@ export function CustomerPolicyForm() {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-            </div>
+              /> */}
+            {/* </div> */}
 
             {/* Premium & Status */}
-            <div className="grid grid-cols-1 md:grid-cols-2  gap-4 mb-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2  gap-4 mb-4">
               <FormField
                 control={form.control}
                 name="premium.amount"
@@ -719,7 +719,7 @@ export function CustomerPolicyForm() {
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
             {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
           </div>
           {/* Beneficiaries */}
@@ -735,7 +735,6 @@ export function CustomerPolicyForm() {
                 No beneficiaries added yet
               </div>
             )}
-
             {form.watch("beneficiaries").map((beneficiary, index) => (
               <Collapsible key={index} className="mb-4 border rounded-lg p-4">
                 <div className="flex justify-between items-center">
