@@ -38,6 +38,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 // import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useBuyInsuranceMutation } from "@/services/InsurancePolicySlice";
 
 const addressKeys = [
   "street",
@@ -125,6 +126,7 @@ const formSchema = z.object({
 
 export function CustomerPolicyForm() {
   const [sameAsPrimary, setSameAsPrimary] = useState(true);
+  const [buyInsurance, { isLoading }] = useBuyInsuranceMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -166,7 +168,7 @@ export function CustomerPolicyForm() {
       },
       premium: {
         amount: "0.00",
-        currency: "USD",
+        currency: "DKK",
       },
       // status: "DRAFT",
       beneficiaries: [
@@ -183,9 +185,60 @@ export function CustomerPolicyForm() {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log("Form submitted:", data);
-    // Add your form submission logic here
+
     try {
-      // const result = await
+      // Calculate expiration date: 1 year from effective date
+      const effectiveDate = data.coveragePeriod.effectiveDate;
+      const expirationDate = new Date(effectiveDate);
+      expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
+      // Prepare payload
+      const payload = {
+        ...data,
+        coveragePeriod: {
+          effectiveDate: data.coveragePeriod.effectiveDate,
+          expirationDate, // Calculated expiration date
+        },
+        status: "DRAFT",
+        // premium: {
+        //   amount: "0.00", // Will be calculated by backend
+        //   currency: "DKK", // Default currency
+        // },
+
+        Beneficiaries: data.beneficiaries.map((beneficiary) => ({
+          ...beneficiary,
+
+          // Convert dates to ISO strings for backend
+          dateOfBirth: beneficiary.dateOfBirth,
+          // dateOfBirth: beneficiary.dateOfBirth.toISOString(),
+        })),
+      };
+
+      // Convert dates to ISO strings
+      const customerData = {
+        ...data.customer,
+        dateOfBirth: data.customer.dateOfBirth,
+        // dateOfBirth: data.customer.dateOfBirth.toISOString(),
+        governmentId: {
+          ...data.customer.governmentId,
+          expirationDate: data.customer.governmentId.expirationDate,
+          // data.customer.governmentId.expirationDate.toISOString(),
+        },
+      };
+
+      // Submit to backend
+      const result = await buyInsurance({
+        ...payload,
+        customer: customerData,
+      }).unwrap();
+
+      console.log(result);
+
+      // Handle success
+      console.log("Policy created successfully:", result);
+
+      // Reset form after successful submission
+      form.reset();
     } catch (error) {
       console.log("Buying policy error: ", error);
     }

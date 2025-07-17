@@ -57,9 +57,11 @@ export type InsuraceProduct = {
 };
 
 export type GovernmentId = {
-  idType?: number;
+  // idType?: number;
+  idType?: string;
   idNumber: string;
   issuingCountry: string;
+  // expirationDate?: string;
   expirationDate?: Date;
 };
 
@@ -70,9 +72,10 @@ export type Address = {
   postalCode: string;
   country: string;
 };
+
 export type ContactInfo = {
   phone: string;
-  alternatePhone: string;
+  alternatePhone?: string | undefined;
   primaryAddress: Address;
   billingAddress: Address;
 };
@@ -85,20 +88,22 @@ export type Beneficiaries = {
   taxIdentifier: string;
 };
 
+export type CoveragePeriod = {
+  effectiveDate: Date | null | undefined;
+};
 export type Customer = {
   firstName: string;
   lastName: string;
   email: string;
   dateOfBirth?: Date;
+  // dateOfBirth?: string;
   governmentId: GovernmentId;
   contactInfo: ContactInfo;
 };
 type BuyPolicyFormValues = {
   customer: Customer;
   product: string;
-  coveragePeriod: {
-    effectiveDate: Date | null | undefined;
-  };
+  coveragePeriod: CoveragePeriod;
   beneficiaries: Beneficiaries[];
 };
 
@@ -130,13 +135,18 @@ export const InsuracePolicyApi = createApi({
       }),
     }),
 
-    // buyInsurance: builder.mutation<string, BuyInsurance>({
-    //   query: (data) => ({
-
-    //   })
-    // })
+    buyInsurance: builder.mutation<string, BuyPolicyFormValues>({
+      query: (data) => ({
+        url: "/api/policy/buy-policy",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useGetAllPoliciesQuery, useGetPolicyDetailsQuery } =
-  InsuracePolicyApi;
+export const {
+  useGetAllPoliciesQuery,
+  useGetPolicyDetailsQuery,
+  useBuyInsuranceMutation,
+} = InsuracePolicyApi;
