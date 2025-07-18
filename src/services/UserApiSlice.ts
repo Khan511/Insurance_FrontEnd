@@ -24,6 +24,7 @@ type UserResponse = {
 type CreateUserRequest = {
   firstName: string;
   lastName: string;
+  dateOfBirth: Date;
 } & LoginRequest;
 
 type CreateUserResponse = {

@@ -32,7 +32,7 @@ function App() {
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route
-              path="/customer-policy-form"
+              path="/customer-policy-form/:policyId"
               element={<CustomerPolicyForm />}
             />
           </Route>

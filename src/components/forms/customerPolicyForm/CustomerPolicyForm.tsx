@@ -39,6 +39,8 @@ import { Calendar } from "@/components/ui/calendar";
 // import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useBuyInsuranceMutation } from "@/services/InsurancePolicySlice";
+import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
+import { useParams } from "react-router";
 
 const addressKeys = [
   "street",
@@ -62,10 +64,12 @@ const idTypeOptions = [
 
 const formSchema = z.object({
   customer: z.object({
-    firstName: z.string().min(1, "First name is required"),
-    lastName: z.string().min(1, "Last name is required"),
-    email: z.string().email("Invalid email address"),
-    dateOfBirth: z.date({ required_error: "Date of birth is required" }),
+    // firstName: z.string().min(1, "First name is required"),
+    // lastName: z.string().min(1, "Last name is required"),
+    // email: z.string().email("Invalid email address"),
+    // dateOfBirth: z.date({ required_error: "Date of birth is required" }),
+
+    userId: z.string(),
     governmentId: z.object({
       idType: z.enum(idTypeOptions, {
         required_error: "ID type is required",
@@ -103,16 +107,23 @@ const formSchema = z.object({
       }),
     }),
   }),
+  // policyId: z.string(),
   product: z.string().min(1, "Product is required"),
   coveragePeriod: z.object({
     effectiveDate: z.date({ required_error: "Effective date is required" }),
-    expirationDate: z.date({ required_error: "Expiration date is required" }),
+    expirationDate: z.date().optional(),
+    // expirationDate: z.date({ required_error: "Expiration date is required" }),
   }),
-  premium: z.object({
-    amount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),
-    currency: z.string().length(3, "Must be 3-letter code"),
-  }),
-  status: z.string(),
+  premium: z
+    .object({
+      amount: z.string().optional(),
+      currency: z.string().optional(),
+      // amount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),
+      // currency: z.string().length(3, "Must be 3-letter code"),
+    })
+    .optional(),
+
+  status: z.string().optional(),
   beneficiaries: z.array(
     z.object({
       name: z.string().min(1, "Name required"),
@@ -125,17 +136,22 @@ const formSchema = z.object({
 });
 
 export function CustomerPolicyForm() {
+  const { policyId } = useParams();
+  const { data: currentUser } = useGetCurrenttUserQuery();
   const [sameAsPrimary, setSameAsPrimary] = useState(true);
   const [buyInsurance, { isLoading }] = useBuyInsuranceMutation();
+
+  console.log("Current User in PolicyForm", policyId);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       customer: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        dateOfBirth: undefined,
+        // firstName: "",
+        // lastName: "",
+        // email: "",
+        // dateOfBirth: undefined,
+        userId: "",
         governmentId: {
           idType: undefined,
           idNumber: "",
@@ -161,6 +177,7 @@ export function CustomerPolicyForm() {
           },
         },
       },
+      // policyId: "",
       product: "",
       coveragePeriod: {
         effectiveDate: undefined,
@@ -195,6 +212,7 @@ export function CustomerPolicyForm() {
       // Prepare payload
       const payload = {
         ...data,
+        // userId: currentUser?.data?.user.userId,
         coveragePeriod: {
           effectiveDate: data.coveragePeriod.effectiveDate,
           expirationDate, // Calculated expiration date
@@ -205,7 +223,7 @@ export function CustomerPolicyForm() {
         //   currency: "DKK", // Default currency
         // },
 
-        Beneficiaries: data.beneficiaries.map((beneficiary) => ({
+        beneficiaries: data.beneficiaries.map((beneficiary) => ({
           ...beneficiary,
 
           // Convert dates to ISO strings for backend
@@ -217,7 +235,8 @@ export function CustomerPolicyForm() {
       // Convert dates to ISO strings
       const customerData = {
         ...data.customer,
-        dateOfBirth: data.customer.dateOfBirth,
+        userId: currentUser?.data?.user.userId,
+        // dateOfBirth: data.customer.dateOfBirth,
         // dateOfBirth: data.customer.dateOfBirth.toISOString(),
         governmentId: {
           ...data.customer.governmentId,
@@ -230,6 +249,7 @@ export function CustomerPolicyForm() {
       const result = await buyInsurance({
         ...payload,
         customer: customerData,
+        policyId,
       }).unwrap();
 
       console.log(result);
@@ -274,7 +294,7 @@ export function CustomerPolicyForm() {
             </p>
 
             {/* Name and Email */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <FormField
                 control={form.control}
                 name="customer.firstName"
@@ -326,7 +346,7 @@ export function CustomerPolicyForm() {
                   </FormItem>
                 )}
               />
-              {/* Date of Birth */}
+
               <FormField
                 control={form.control}
                 name="customer.dateOfBirth"
@@ -362,7 +382,7 @@ export function CustomerPolicyForm() {
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
 
             {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
             {/* Government ID */}

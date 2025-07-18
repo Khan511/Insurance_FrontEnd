@@ -92,15 +92,13 @@ export type CoveragePeriod = {
   effectiveDate: Date | null | undefined;
 };
 export type Customer = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  dateOfBirth?: Date;
-  // dateOfBirth?: string;
+  userId?: string;
   governmentId: GovernmentId;
   contactInfo: ContactInfo;
 };
 type BuyPolicyFormValues = {
+  policyId?: string;
+  status: string;
   customer: Customer;
   product: string;
   coveragePeriod: CoveragePeriod;
@@ -137,7 +135,7 @@ export const InsuracePolicyApi = createApi({
 
     buyInsurance: builder.mutation<string, BuyPolicyFormValues>({
       query: (data) => ({
-        url: "/api/policy/buy-policy",
+        url: "/policy/buy-policy",
         method: "POST",
         body: data,
       }),

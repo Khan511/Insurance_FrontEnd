@@ -12,10 +12,15 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { User } from "lucide-react";
+import { CalendarIcon, User } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Link, useNavigate } from "react-router";
 import { useCreateUserMutation } from "@/services/UserApiSlice";
+import { PopoverTrigger } from "@radix-ui/react-popover";
+
+import { format } from "date-fns";
+import { Popover, PopoverContent } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
 
 export default function UserCreatingForme() {
   const navigate = useNavigate();
@@ -27,6 +32,7 @@ export default function UserCreatingForme() {
       firstName: "",
       lastName: "",
       email: "",
+      dateOfBirth: undefined,
       agreeToTerm: false,
     },
   });
@@ -38,6 +44,7 @@ export default function UserCreatingForme() {
       lastName: data.lastName,
       email: data.email,
       password: data.password,
+      dateOfBirth: data.dateOfBirth,
     });
 
     console.log("CreateUser Result", result);
@@ -114,11 +121,47 @@ export default function UserCreatingForme() {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="dateOfBirth"
+          render={({ field }) => (
+            <FormItem className="flex flex-col my-4">
+              <FormLabel>Date of Birth</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl className="bg-white">
+                    <Button variant="outline">
+                      {field.value ? (
+                        format(field.value, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="agreeToTerm"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 my-4">
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 ">
               <FormControl>
                 <Checkbox
                   checked={field.value}

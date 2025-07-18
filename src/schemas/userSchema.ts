@@ -11,10 +11,10 @@ export const userFormSchema = z.object({
   //   required_error: "Please select an insurance type",
   // }),
   agreeToTerm: z.boolean().refine((val) => val, "You must agree to terms"),
-  // dob: z.date({
-  //   required_error: "Date of bith is required",
-  //   invalid_type_error: "Invalid date format",
-  // }),
+  dateOfBirth: z.date({
+    required_error: "Date of bith is required",
+    invalid_type_error: "Invalid date format",
+  }),
 });
 
 export type UserFormValues = z.infer<typeof userFormSchema>;

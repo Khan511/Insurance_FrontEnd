@@ -48,7 +48,10 @@ const PolicyDetailsPage = () => {
             You have to be logged in in order buy policy.
           </p>
         )}
-        <Link to="/customer-policy-form" className="btn btn-primary w-sm mt-0">
+        <Link
+          to={`/customer-policy-form/${policyId}`}
+          className="btn btn-primary w-sm mt-0"
+        >
           Buy Policy
         </Link>
       </div>
