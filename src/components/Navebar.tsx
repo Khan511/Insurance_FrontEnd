@@ -13,8 +13,6 @@ function Navbare() {
   const { data: currentUser, refetch } = useGetCurrenttUserQuery();
   const [logout, { data }] = useLogoutMutation();
 
-  console.log("Logged out user data", data);
-
   const handleLogout = async () => {
     try {
       await logout().unwrap();

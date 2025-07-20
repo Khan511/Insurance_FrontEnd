@@ -12,10 +12,9 @@ import CommercialPolicies from "./pages/CommercialPolicies";
 import PolicyDetailsPage from "./pages/PolicyDetailsPage";
 import { CustomerPolicyForm } from "./components/forms/customerPolicyForm/CustomerPolicyForm";
 
-// Check the curent user in protected route and in login
+// Now i got the insuranceProduct together with PremiumcalculationConfig. now i need to calculate the insurance price after user click on the "Calculate Your Price" button in the PolicyDetailsPage.
 function App() {
   return (
-    // <div className="flex flex-col min-h-screen">
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
       <Navbare />
 

@@ -8,8 +8,6 @@ import InsuranceCardComponent from "../card/InsuranceCardComponent";
 const AllInsurances = () => {
   const { data: policies, isLoading } = useGetAllPoliciesQuery();
 
-  console.log("Policies:", policies);
-
   if (isLoading) {
     return (
       <div>
@@ -17,8 +15,6 @@ const AllInsurances = () => {
       </div>
     );
   }
-
-  console.log("All Policies", policies);
 
   return (
     <div className="container mb-5 ">

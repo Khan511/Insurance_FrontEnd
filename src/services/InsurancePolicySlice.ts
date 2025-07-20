@@ -38,14 +38,28 @@ export type ProductType =
   | "TRAVEL"
   | "LIABILITY"
   | "PET";
+// New types for premium calculation
+export type AgeBracket = {
+  minAge?: number;
+  maxAge?: number;
+  multiplier?: number;
+  factor?: number;
+};
 
+export type PremiumCalculationConfig = {
+  formula?: string;
+  factors?: Record<string, number>;
+  basePremium?: MonetaryAmount;
+  ageBrackets?: AgeBracket[];
+  includeTax?: boolean;
+  commissionRate?: number;
+};
 export type InsuraceProduct = {
   id: number;
   productCode: string;
   displayName: string;
   description: string;
   productType: ProductType;
-  basePremium: MonetaryAmount;
   coverageDetails: CoverageDetails[];
   eligibilityRules: { [key: string]: string };
   targetAudience: string[];
@@ -54,6 +68,7 @@ export type InsuraceProduct = {
   validityPeriod: PolicyPeriod;
   allowedClaimTypes: string[];
   translation: { [locale: string]: ProductTranslation };
+  calculationConfig?: PremiumCalculationConfig;
 };
 
 export type GovernmentId = {

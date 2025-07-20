@@ -223,7 +223,7 @@ export function CustomerPolicyForm() {
         //   currency: "DKK", // Default currency
         // },
 
-        beneficiaries: data.beneficiaries.map((beneficiary) => ({
+        beneficiaries: data?.beneficiaries?.map((beneficiary) => ({
           ...beneficiary,
 
           // Convert dates to ISO strings for backend
@@ -279,7 +279,7 @@ export function CustomerPolicyForm() {
     const beneficiaries = form.getValues("beneficiaries");
     form.setValue(
       "beneficiaries",
-      beneficiaries.filter((_, i) => i !== index)
+      beneficiaries?.filter((_, i) => i !== index)
     );
   };
 
@@ -803,12 +803,12 @@ export function CustomerPolicyForm() {
               </p>
             </div>
 
-            {form.watch("beneficiaries").length === 0 && (
+            {form.watch("beneficiaries")?.length === 0 && (
               <div className="text-gray-500 text-center py-4">
                 No beneficiaries added yet
               </div>
             )}
-            {form.watch("beneficiaries").map((beneficiary, index) => (
+            {form.watch("beneficiaries")?.map((beneficiary, index) => (
               <Collapsible key={index} className="mb-4 border rounded-lg p-4">
                 <div className="flex justify-between items-center">
                   <div className="flex-grow">
