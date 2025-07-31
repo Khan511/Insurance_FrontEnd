@@ -62,7 +62,10 @@ function Navbare() {
                 Log in
               </Nav.Link>
             ) : (
+              <>
               <Nav.Link onClick={() => handleLogout()}>Logout</Nav.Link>
+              <Nav.Link href="/my-page">My Page</Nav.Link>
+              </>
             )}
           </Nav>
         </Navbar.Collapse>

@@ -139,7 +139,7 @@ export function InsuranceCardCarousel({ policies }: Props) {
         {policies.map((policy) => (
           <CarouselItem
             key={policy.id}
-            className="pl-3 basis-1/1 sm:basis-1/2 md:basis-1/3"
+            className="pl-3 basis-1/1 sm:basis-1/2 md:basis-1/3 "
           >
             <Link to={`/policies/${policy.id}`}>
               <div className="m-1 transition-shadow hover:shadow-xl rounded-2xl hover:shadow-gray-800">

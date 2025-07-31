@@ -11,8 +11,10 @@ import { PrivatePolicies } from "./pages/PrivatePolicies";
 import CommercialPolicies from "./pages/CommercialPolicies";
 import PolicyDetailsPage from "./pages/PolicyDetailsPage";
 import { CustomerPolicyForm } from "./components/forms/customerPolicyForm/CustomerPolicyForm";
+import MyPage from "./pages/MyPage";
 
-// Now i got the insuranceProduct together with PremiumcalculationConfig. now i need to calculate the insurance price after user click on the "Calculate Your Price" button in the PolicyDetailsPage.
+// Now i got the insuranceProduct together with PremiumcalculationConfig. now i need to calculate
+//  the insurance price after user click on the "Calculate Your Price" button in the PolicyDetailsPage.
 
 // INSURANCE YOUTUBE WEBSITE
 // https://www.codewithmurad.com/2024/05/insurance-management-system-project.html
@@ -39,6 +41,10 @@ function App() {
             <Route
               path="/customer-policy-form/:policyId"
               element={<CustomerPolicyForm />}
+            />
+            <Route
+              path="/my-page"
+              element={<MyPage />}
             />
           </Route>
         </Routes>
