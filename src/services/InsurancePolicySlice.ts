@@ -117,7 +117,7 @@ type BuyPolicyFormValues = {
   customer: Customer;
   product: string;
   coveragePeriod: CoveragePeriod;
-  beneficiaries: Beneficiaries[];
+  beneficiaries?: Beneficiaries[];
 };
 
 export const InsuracePolicyApi = createApi({

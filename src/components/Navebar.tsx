@@ -56,15 +56,15 @@ function Navbare() {
             </NavDropdown>
           </Nav>
           <Nav>
-            <Nav.Link href="#deets">Report damage</Nav.Link>
+            <Nav.Link href="/my-claim">Report damage</Nav.Link>
             {currentUser?.status !== 200 && !currentUser?.data.user ? (
               <Nav.Link eventKey={2} href="/login">
                 Log in
               </Nav.Link>
             ) : (
               <>
-              <Nav.Link onClick={() => handleLogout()}>Logout</Nav.Link>
-              <Nav.Link href="/my-page">My Page</Nav.Link>
+                <Nav.Link onClick={() => handleLogout()}>Logout</Nav.Link>
+                <Nav.Link href="/my-page">My Page</Nav.Link>
               </>
             )}
           </Nav>

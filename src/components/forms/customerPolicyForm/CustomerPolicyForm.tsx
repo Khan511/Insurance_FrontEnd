@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Trash2 } from "lucide-react";
 import {
@@ -124,21 +124,23 @@ const formSchema = z.object({
     .optional(),
 
   status: z.string().optional(),
-  beneficiaries: z.array(
-    z.object({
-      name: z.string().min(1, "Name required"),
-      relationship: z.string().min(1, "Relationship required"),
-      dateOfBirth: z.date({ required_error: "Date of birth is required" }),
-      taxCountry: z.string().min(1, "Country required"),
-      taxIdentifier: z.string().min(1, "Tax ID required"),
-    })
-  ),
+  beneficiaries: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Name required"),
+        relationship: z.string().min(1, "Relationship required"),
+        dateOfBirth: z.date({ required_error: "Date of birth is required" }),
+        taxCountry: z.string().min(1, "Country required"),
+        taxIdentifier: z.string().min(1, "Tax ID required"),
+      })
+    )
+    .optional(),
 });
 
 export function CustomerPolicyForm() {
   const { policyId } = useParams();
   const { data: currentUser } = useGetCurrenttUserQuery();
-  const [sameAsPrimary, setSameAsPrimary] = useState(true);
+  const [sameAsPrimary, setSameAsPrimary] = useState(false);
   const [buyInsurance, { isLoading }] = useBuyInsuranceMutation();
 
   console.log("Current User in PolicyForm", policyId);
@@ -188,17 +190,29 @@ export function CustomerPolicyForm() {
         currency: "DKK",
       },
       // status: "DRAFT",
-      beneficiaries: [
-        {
-          name: "",
-          relationship: "",
-          dateOfBirth: undefined,
-          taxCountry: "",
-          taxIdentifier: "",
-        },
-      ],
+      beneficiaries: [],
+      // beneficiaries: [
+      //   {
+      //     name: "",
+      //     relationship: "",
+      //     dateOfBirth: undefined,
+      //     taxCountry: "",
+      //     taxIdentifier: "",
+      //   },
+      // ],
     },
   });
+
+  useEffect(() => {
+    if (sameAsPrimary) {
+      const primaryAddress = form.getValues(
+        "customer.contactInfo.primaryAddress"
+      );
+
+      form.setValue("customer.contactInfo.billingAddress", primaryAddress);
+      form.clearErrors("customer.contactInfo.billingAddress");
+    }
+  }, ["customer.contactInfo.primaryAddress", sameAsPrimary]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     console.log("Form submitted:", data);
@@ -223,7 +237,7 @@ export function CustomerPolicyForm() {
         //   currency: "DKK", // Default currency
         // },
 
-        beneficiaries: data?.beneficiaries?.map((beneficiary) => ({
+        beneficiaries: (data?.beneficiaries || [])?.map((beneficiary) => ({
           ...beneficiary,
 
           // Convert dates to ISO strings for backend
@@ -272,11 +286,19 @@ export function CustomerPolicyForm() {
         "customer.contactInfo.primaryAddress"
       );
       form.setValue("customer.contactInfo.billingAddress", primaryAddress);
+
+      // Clear billing address errors
+      form.clearErrors("customer.contactInfo.billingAddress");
+
+      // Trigger validation for billing fields
+      addressKeys.forEach((key) => {
+        form.trigger(`customer.contactInfo.billingAddress.${key}` as any);
+      });
     }
   };
 
   const removeBeneficiary = (index: number) => {
-    const beneficiaries = form.getValues("beneficiaries");
+    const beneficiaries = form.getValues("beneficiaries") || [];
     form.setValue(
       "beneficiaries",
       beneficiaries?.filter((_, i) => i !== index)
@@ -292,97 +314,6 @@ export function CustomerPolicyForm() {
             <p className="text-xl font-semibold underline mb-4 text-center text-blue-500">
               Customer Information
             </p>
-
-            {/* Name and Email */}
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <FormField
-                control={form.control}
-                name="customer.firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="Naji"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="customer.lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="Khan"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="customer.email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="Naji.khan@example.com"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="customer.dateOfBirth"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date of Birth</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl className="bg-white">
-                          <Button variant="outline">
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div> */}
 
             {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
             {/* Government ID */}
@@ -712,87 +643,7 @@ export function CustomerPolicyForm() {
                 )}
               />
             </div>
-            {/* <FormField
-                control={form.control}
-                name="coveragePeriod.expirationDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Expiration Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl className="bg-white">
-                          <Button variant="outline">
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
-            {/* </div> */}
 
-            {/* Premium & Status */}
-            {/* <div className="grid grid-cols-1 md:grid-cols-2  gap-4 mb-4">
-              <FormField
-                control={form.control}
-                name="premium.amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Premium Amount</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="0.00"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="premium.currency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Currency</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select currency" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="USD">USD</SelectItem>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="GBP">GBP</SelectItem>
-                        <SelectItem value="DKK">DKK</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div> */}
             {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
           </div>
           {/* Beneficiaries */}
@@ -803,12 +654,12 @@ export function CustomerPolicyForm() {
               </p>
             </div>
 
-            {form.watch("beneficiaries")?.length === 0 && (
+            {(form.watch("beneficiaries") || [])?.length === 0 && (
               <div className="text-gray-500 text-center py-4">
                 No beneficiaries added yet
               </div>
             )}
-            {form.watch("beneficiaries")?.map((beneficiary, index) => (
+            {(form.watch("beneficiaries") || [])?.map((beneficiary, index) => (
               <Collapsible key={index} className="mb-4 border rounded-lg p-4">
                 <div className="flex justify-between items-center">
                   <div className="flex-grow">
@@ -969,9 +820,12 @@ export function CustomerPolicyForm() {
               type="button"
               variant="secondary"
               className="text-white"
-              onClick={() =>
+              onClick={() => {
+                const currentBeneficiaries =
+                  form.getValues("beneficiaries") || [];
                 form.setValue("beneficiaries", [
-                  ...form.watch("beneficiaries"),
+                  ...currentBeneficiaries,
+                  // ...form.watch("beneficiaries"),
                   {
                     name: "",
                     relationship: "",
@@ -979,8 +833,8 @@ export function CustomerPolicyForm() {
                     taxCountry: "",
                     taxIdentifier: "",
                   },
-                ])
-              }
+                ]);
+              }}
             >
               Add Beneficiary
             </Button>

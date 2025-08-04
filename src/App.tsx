@@ -12,6 +12,7 @@ import CommercialPolicies from "./pages/CommercialPolicies";
 import PolicyDetailsPage from "./pages/PolicyDetailsPage";
 import { CustomerPolicyForm } from "./components/forms/customerPolicyForm/CustomerPolicyForm";
 import MyPage from "./pages/MyPage";
+import ClaimForm from "./pages/claim/ClaimForm";
 
 // Now i got the insuranceProduct together with PremiumcalculationConfig. now i need to calculate
 //  the insurance price after user click on the "Calculate Your Price" button in the PolicyDetailsPage.
@@ -42,10 +43,8 @@ function App() {
               path="/customer-policy-form/:policyId"
               element={<CustomerPolicyForm />}
             />
-            <Route
-              path="/my-page"
-              element={<MyPage />}
-            />
+            <Route path="/my-page" element={<MyPage />} />
+            <Route path="/my-claim" element={<ClaimForm />} />
           </Route>
         </Routes>
       </main>
