@@ -57,6 +57,7 @@ export type PremiumCalculationConfig = {
 export type InsuraceProduct = {
   id: number;
   productCode: string;
+  policyNumber:string;
   displayName: string;
   description: string;
   productType: ProductType;
@@ -83,7 +84,7 @@ export type GovernmentId = {
 export type Address = {
   street: string;
   city: string;
-  state: string;
+  // state: string;
   postalCode: string;
   country: string;
 };

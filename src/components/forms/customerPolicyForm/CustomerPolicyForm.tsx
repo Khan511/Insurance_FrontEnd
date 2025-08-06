@@ -38,14 +38,14 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 // import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useBuyInsuranceMutation } from "@/services/InsurancePolicySlice";
+import { useBuyInsuranceMutation, useGetPolicyDetailsQuery } from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import { useParams } from "react-router";
 
 const addressKeys = [
   "street",
   "city",
-  "state",
+  // "state",
   "postalCode",
   "country",
 ] as const;
@@ -94,14 +94,14 @@ const formSchema = z.object({
       primaryAddress: z.object({
         street: z.string().min(1, "Street is required"),
         city: z.string().min(1, "City is required"),
-        state: z.string().min(1, "State is required"),
+        // state: z.string().min(1, "State is required"),
         postalCode: z.string().min(1, "Postal code is required"),
         country: z.string().min(1, "Country is required"),
       }),
       billingAddress: z.object({
         street: z.string().min(1, "Street is required"),
         city: z.string().min(1, "City is required"),
-        state: z.string().min(1, "State is required"),
+        // state: z.string().min(1, "State is required"),
         postalCode: z.string().min(1, "Postal code is required"),
         country: z.string().min(1, "Country is required"),
       }),
@@ -139,11 +139,12 @@ const formSchema = z.object({
 
 export function CustomerPolicyForm() {
   const { policyId } = useParams();
+  const { data: policy } = useGetPolicyDetailsQuery(Number(policyId));
   const { data: currentUser } = useGetCurrenttUserQuery();
   const [sameAsPrimary, setSameAsPrimary] = useState(false);
   const [buyInsurance, { isLoading }] = useBuyInsuranceMutation();
 
-  console.log("Current User in PolicyForm", policyId);
+  console.log("Policy ", policy);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -166,14 +167,14 @@ export function CustomerPolicyForm() {
           primaryAddress: {
             street: "",
             city: "",
-            state: "",
+            // state: "",
             postalCode: "",
             country: "",
           },
           billingAddress: {
             street: "",
             city: "",
-            state: "",
+            // state: "",
             postalCode: "",
             country: "",
           },
@@ -494,8 +495,8 @@ export function CustomerPolicyForm() {
                                   ? "street"
                                   : key === "city"
                                   ? "city"
-                                  : key === "state"
-                                  ? "state"
+                                  // : key === "state"
+                                  // ? "state"
                                   : key === "postalCode"
                                   ? "12345"
                                   : key === "country"
@@ -556,8 +557,8 @@ export function CustomerPolicyForm() {
                                       ? "street"
                                       : key === "city"
                                       ? "city"
-                                      : key === "state"
-                                      ? "state"
+                                      // : key === "state"
+                                      // ? "state"
                                       : key === "postalCode"
                                       ? "12345"
                                       : key === "country"
@@ -594,12 +595,14 @@ export function CustomerPolicyForm() {
                 name="product"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Insurance Product</FormLabel>
+                    <FormLabel>Policy Number</FormLabel>
                     <FormControl>
                       <Input
                         className="bg-white"
                         placeholder="Product ID or Name"
                         {...field}
+                        readOnly
+                        value={policy?.policyNumber}
                       />
                     </FormControl>
                     <FormMessage />

@@ -20,7 +20,7 @@ const ThirdPartySection = () => {
           type="checkbox"
           id="thirdPartyInvolved"
           {...register("incidentDetails.thirdPartyInvolved")}
-          className="h-4 w-4 text-blue-600 rounded"
+          className="h-4 w-4  text-blue-600 rounded"
         />
         <label
           htmlFor="thirdPartyInvolved"
@@ -38,7 +38,7 @@ const ThirdPartySection = () => {
             </label>
             <input
               {...register("incidentDetails.thirdPartyDetails.name")}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full p-2 border rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
             {errors.incidentDetails?.thirdPartyDetails?.name && (
               <p className="text-red-500 text-sm mt-1">
@@ -53,7 +53,7 @@ const ThirdPartySection = () => {
             </label>
             <input
               {...register("incidentDetails.thirdPartyDetails.contactInfo")}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md p-2 border border-gray-300   focus:border-blue-500 focus:ring-blue-500"
             />
             {errors.incidentDetails?.thirdPartyDetails?.contactInfo && (
               <p className="text-red-500 text-sm mt-1">
@@ -68,7 +68,7 @@ const ThirdPartySection = () => {
             </label>
             <input
               {...register("incidentDetails.thirdPartyDetails.insuranceInfo")}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md p-2 border border-gray-300   focus:border-blue-500 focus:ring-blue-500"
             />
             {errors.incidentDetails?.thirdPartyDetails?.insuranceInfo && (
               <p className="text-red-500 text-sm mt-1">

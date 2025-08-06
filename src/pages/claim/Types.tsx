@@ -1,8 +1,21 @@
 export const CLAIM_DOCUMENT_TYPES = {
   AUTOMOBILE_COLLISION: "AUTOMOBILE_COLLISION",
-  HEALT_HOSPITALIZATION: "HEALT_HOSPITALIZATION",
+  HEALTH_HOSPITALIZATION: "HEALTH_HOSPITALIZATION",
   CYBER_INCIDENT: "CYBER_INCIDENT",
-  OTHER: "OTHER",
+} as const;
+
+export const RequiredDocument = {
+  POLICE_REPORT: "POLICE_REPORT",
+  REPAIR_ESTIMATE: "REPAIR_ESTIMATE",
+  MEDICAL_BILLS: "MEDICAL_BILLS",
+  DOCTOR_REPORT: "DOCTOR_REPORT",
+  DEATH_CERTIFICATE: "DEATH_CERTIFICATE",
+  INCIDENT_REPORT: "INCIDENT_REPORT",
+  FORENSIC_AUDIT: "FORENSIC_AUDIT",
+  PROPERTY_DAMAGE_REPORT: "PROPERTY_DAMAGE_REPORT",
+  ESTIMATE: "ESTIMATE",
+  INVENTORY_LIST: "INVENTORY_LIST",
+  BENEFICIARY_DOCS: "BENEFICIARY_DOCS",
 } as const;
 
 export const INCIDENT_TYPES = {
@@ -13,6 +26,26 @@ export const INCIDENT_TYPES = {
   CYBER_ATTACK: "CYBER_ATTACK",
 } as const;
 
+export type RequiredDocumentType =
+  (typeof RequiredDocument)[keyof typeof RequiredDocument];
+
+export const DOCUMENT_TYPE_MAP: Record<
+  ClaimDocumentType,
+  RequiredDocumentType[]
+> = {
+  [CLAIM_DOCUMENT_TYPES.AUTOMOBILE_COLLISION]: [
+    RequiredDocument.POLICE_REPORT,
+    RequiredDocument.REPAIR_ESTIMATE,
+  ],
+  [CLAIM_DOCUMENT_TYPES.HEALTH_HOSPITALIZATION]: [
+    RequiredDocument.MEDICAL_BILLS,
+    RequiredDocument.DOCTOR_REPORT,
+  ],
+  [CLAIM_DOCUMENT_TYPES.CYBER_INCIDENT]: [
+    RequiredDocument.INCIDENT_REPORT,
+    RequiredDocument.FORENSIC_AUDIT,
+  ],
+};
 // Create type definition
 export type ClaimDocumentType =
   (typeof CLAIM_DOCUMENT_TYPES)[keyof typeof CLAIM_DOCUMENT_TYPES];
@@ -33,6 +66,15 @@ export type ThirdPartyDetails = {
   insuranceInfo: string;
 };
 
+export type DocumentAttachment = {
+  storageId: string;
+  storageBucket: string;
+  originalFileName: string;
+  contentType: string;
+  sha256Checksum: string;
+  documentType: RequiredDocumentType;
+};
+
 export type ClaimFormData = {
   policyNumber: string;
   claimType: ClaimDocumentType;
@@ -45,4 +87,5 @@ export type ClaimFormData = {
     thirdPartyInvolved: boolean;
     thirdPartyDetails?: ThirdPartyDetails;
   };
+  documents: DocumentAttachment[];
 };

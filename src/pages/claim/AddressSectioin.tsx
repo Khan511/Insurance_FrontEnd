@@ -15,7 +15,7 @@ const AddressSection = () => {
         </label>
         <input
           {...register("incidentDetails.location.street")}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block w-full p-2 border rounded-md border-gray-300   focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.incidentDetails?.location?.street && (
           <p className="text-red-500 text-sm mt-1">
@@ -30,7 +30,7 @@ const AddressSection = () => {
         </label>
         <input
           {...register("incidentDetails.location.city")}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block w-full p-2 rounded-md border border-gray-300   focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.incidentDetails?.location?.city && (
           <p className="text-red-500 text-sm mt-1">
@@ -45,7 +45,7 @@ const AddressSection = () => {
         </label>
         <input
           {...register("incidentDetails.location.state")}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block w-full p-2 rounded-md border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.incidentDetails?.location?.state && (
           <p className="text-red-500 text-sm mt-1">
@@ -60,7 +60,7 @@ const AddressSection = () => {
         </label>
         <input
           {...register("incidentDetails.location.postalCode")}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block w-full rounded-md p-2 border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.incidentDetails?.location?.postalCode && (
           <p className="text-red-500 text-sm mt-1">
@@ -75,7 +75,7 @@ const AddressSection = () => {
         </label>
         <input
           {...register("incidentDetails.location.country")}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block w-full rounded-md p-2 border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.incidentDetails?.location?.country && (
           <p className="text-red-500 text-sm mt-1">
