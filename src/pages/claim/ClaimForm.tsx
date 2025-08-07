@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, FormProvider, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -13,14 +13,28 @@ import {
 
 import AddressSection from "./AddressSectioin";
 import ThirdPartySection from "./ThirdPartySection";
-
 import FileUploader from "./FileUploader";
+import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
+import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 
 const ClaimForm = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<
     DocumentAttachment[]
   >([]);
+
+  const {data: currentUser} = useGetCurrenttUserQuery()
+
+  const {data: allPoliciesOfUser} = useGetAllPoliciesOfUserQuery(currentUser?.data?.user?.userId || '', {
+    skip: !currentUser?.data?.user?.userId
+  })
+
+
+  console.log("allPoliciesOfUser", allPoliciesOfUser);
+  
+ 
+
+ 
 
   const methods = useForm<ClaimFormData>({
     resolver: zodResolver(claimFormSchema),
@@ -34,7 +48,7 @@ const ClaimForm = () => {
         location: {
           street: "",
           city: "",
-          state: "",
+          // state: "",
           postalCode: "",
           country: "",
         },

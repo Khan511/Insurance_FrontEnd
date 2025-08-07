@@ -57,7 +57,7 @@ export type PremiumCalculationConfig = {
 export type InsuraceProduct = {
   id: number;
   productCode: string;
-  policyNumber:string;
+  policyNumber: string;
   displayName: string;
   description: string;
   productType: ProductType;
@@ -116,7 +116,7 @@ type BuyPolicyFormValues = {
   policyId?: string;
   status: string;
   customer: Customer;
-  product: string;
+  // product: string;
   coveragePeriod: CoveragePeriod;
   beneficiaries?: Beneficiaries[];
 };
@@ -142,6 +142,13 @@ export const InsuracePolicyApi = createApi({
       }),
     }),
 
+    getAllPoliciesOfUser: builder.query<InsuraceProduct[], string>({
+      query: (userId) => ({
+        url: `/policy/user-all-policies/${userId}`,
+        method: "GET",
+      }),
+    }),
+
     getPolicyDetails: builder.query<InsuraceProduct, number>({
       query: (policyId) => ({
         url: `/policy/policy-details/${policyId}`,
@@ -163,4 +170,5 @@ export const {
   useGetAllPoliciesQuery,
   useGetPolicyDetailsQuery,
   useBuyInsuranceMutation,
+  useGetAllPoliciesOfUserQuery
 } = InsuracePolicyApi;

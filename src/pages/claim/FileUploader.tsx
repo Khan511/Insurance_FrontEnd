@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import {
-  CLAIM_DOCUMENT_TYPES,
+  // CLAIM_DOCUMENT_TYPES,
   DOCUMENT_TYPE_MAP,
-  RequiredDocument,
+  // RequiredDocument,
   type ClaimDocumentType,
   type RequiredDocumentType,
 } from "./Types";

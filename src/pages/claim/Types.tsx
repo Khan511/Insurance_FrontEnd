@@ -55,7 +55,7 @@ export type IncidentType = (typeof INCIDENT_TYPES)[keyof typeof INCIDENT_TYPES];
 export type Address = {
   street: string;
   city: string;
-  state: string;
+  // state: string;
   postalCode: string;
   country: string;
 };

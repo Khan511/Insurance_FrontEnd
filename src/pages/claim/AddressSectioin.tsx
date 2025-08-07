@@ -41,21 +41,6 @@ const AddressSection = () => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          State *
-        </label>
-        <input
-          {...register("incidentDetails.location.state")}
-          className="mt-1 block w-full p-2 rounded-md border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
-        />
-        {errors.incidentDetails?.location?.state && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.incidentDetails.location.state.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
           Postal Code *
         </label>
         <input
@@ -69,7 +54,7 @@ const AddressSection = () => {
         )}
       </div>
 
-      <div className="md:col-span-2">
+      <div className=" ">
         <label className="block text-sm font-medium text-gray-700">
           Country *
         </label>

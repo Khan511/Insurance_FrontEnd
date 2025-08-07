@@ -38,19 +38,16 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 // import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useBuyInsuranceMutation, useGetPolicyDetailsQuery } from "@/services/InsurancePolicySlice";
+import {
+  useBuyInsuranceMutation,
+  useGetPolicyDetailsQuery,
+} from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import { useParams } from "react-router";
 
-const addressKeys = [
-  "street",
-  "city",
-  // "state",
-  "postalCode",
-  "country",
-] as const;
+const addressKeys = ["street", "city", "postalCode", "country"] as const;
 
-type AddressKey = (typeof addressKeys)[number];
+// type AddressKey = (typeof addressKeys)[number];
 
 // Form Schema with Customer entity
 const idTypeOptions = [
@@ -64,11 +61,6 @@ const idTypeOptions = [
 
 const formSchema = z.object({
   customer: z.object({
-    // firstName: z.string().min(1, "First name is required"),
-    // lastName: z.string().min(1, "Last name is required"),
-    // email: z.string().email("Invalid email address"),
-    // dateOfBirth: z.date({ required_error: "Date of birth is required" }),
-
     userId: z.string(),
     governmentId: z.object({
       idType: z.enum(idTypeOptions, {
@@ -108,18 +100,17 @@ const formSchema = z.object({
     }),
   }),
   // policyId: z.string(),
-  product: z.string().min(1, "Product is required"),
+  policyNumber: z.string(),
+  // product: z.string().min(1, "Product is required"),
   coveragePeriod: z.object({
     effectiveDate: z.date({ required_error: "Effective date is required" }),
     expirationDate: z.date().optional(),
-    // expirationDate: z.date({ required_error: "Expiration date is required" }),
   }),
   premium: z
     .object({
       amount: z.string().optional(),
       currency: z.string().optional(),
-      // amount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),
-      // currency: z.string().length(3, "Must be 3-letter code"),
+   
     })
     .optional(),
 
@@ -150,10 +141,6 @@ export function CustomerPolicyForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       customer: {
-        // firstName: "",
-        // lastName: "",
-        // email: "",
-        // dateOfBirth: undefined,
         userId: "",
         governmentId: {
           idType: undefined,
@@ -181,10 +168,11 @@ export function CustomerPolicyForm() {
         },
       },
       // policyId: "",
-      product: "",
+      policyNumber: "",
+      // product: "",
       coveragePeriod: {
         effectiveDate: undefined,
-        expirationDate: undefined,
+        // expirationDate: undefined,
       },
       premium: {
         amount: "0.00",
@@ -192,15 +180,6 @@ export function CustomerPolicyForm() {
       },
       // status: "DRAFT",
       beneficiaries: [],
-      // beneficiaries: [
-      //   {
-      //     name: "",
-      //     relationship: "",
-      //     dateOfBirth: undefined,
-      //     taxCountry: "",
-      //     taxIdentifier: "",
-      //   },
-      // ],
     },
   });
 
@@ -243,7 +222,6 @@ export function CustomerPolicyForm() {
 
           // Convert dates to ISO strings for backend
           dateOfBirth: beneficiary.dateOfBirth,
-          // dateOfBirth: beneficiary.dateOfBirth.toISOString(),
         })),
       };
 
@@ -317,6 +295,71 @@ export function CustomerPolicyForm() {
             </p>
 
             {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
+            {/* Policy Information */}
+            <div className="my-5 ">
+              <p className="text-xl font-semibold underline mb-4 text-center text-blue-500">
+                Policy Information
+              </p>
+
+              {/* Product */}
+              <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <FormField
+                  control={form.control}
+                  name="policyNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Policy Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="bg-white"
+                          placeholder="Product ID or Name"
+                          {...field}
+                          readOnly
+                          value={policy?.policyNumber}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Coverage Period */}
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> */}
+                <FormField
+                  control={form.control}
+                  name="coveragePeriod.effectiveDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col ">
+                      <FormLabel>Effective Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl className="bg-white">
+                            <Button variant="outline">
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => date < new Date()}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
             {/* Government ID */}
             <div className="my-5">
               <p className="text-xl font-semibold underline mb-4 text-center text-blue-500  ">
@@ -421,8 +464,6 @@ export function CustomerPolicyForm() {
                   )}
                 />
               </div>
-
-              {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
             </div>
 
             {/* Contact Information */}
@@ -495,9 +536,9 @@ export function CustomerPolicyForm() {
                                   ? "street"
                                   : key === "city"
                                   ? "city"
-                                  // : key === "state"
+                                  : // : key === "state"
                                   // ? "state"
-                                  : key === "postalCode"
+                                  key === "postalCode"
                                   ? "12345"
                                   : key === "country"
                                   ? "e.g., Denmark"
@@ -557,9 +598,9 @@ export function CustomerPolicyForm() {
                                       ? "street"
                                       : key === "city"
                                       ? "city"
-                                      // : key === "state"
+                                      : // : key === "state"
                                       // ? "state"
-                                      : key === "postalCode"
+                                      key === "postalCode"
                                       ? "12345"
                                       : key === "country"
                                       ? "e.g., Denmark"
@@ -580,75 +621,6 @@ export function CustomerPolicyForm() {
             </div>
           </div>
 
-          {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
-
-          {/* Policy Information */}
-          <div className="my-5 ">
-            <p className="text-xl font-semibold underline mb-4 text-center text-blue-500">
-              Policy Information
-            </p>
-
-            {/* Product */}
-            <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <FormField
-                control={form.control}
-                name="product"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Policy Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="bg-white"
-                        placeholder="Product ID or Name"
-                        {...field}
-                        readOnly
-                        value={policy?.policyNumber}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Coverage Period */}
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> */}
-              <FormField
-                control={form.control}
-                name="coveragePeriod.effectiveDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col ">
-                    <FormLabel>Effective Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl className="bg-white">
-                          <Button variant="outline">
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
-          </div>
           {/* Beneficiaries */}
           <div>
             <div className="flex justify-between items-center">
