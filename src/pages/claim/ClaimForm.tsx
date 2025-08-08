@@ -7,6 +7,7 @@ import { claimFormSchema } from "./validation";
 import {
   CLAIM_DOCUMENT_TYPES,
   INCIDENT_TYPES,
+  INCIDENT_TYPES_MAP,
   type ClaimFormData,
   type DocumentAttachment,
 } from "./Types";
@@ -18,32 +19,36 @@ import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 
 const ClaimForm = () => {
+  const [policyNumber, setPolicyNumber] = useState<string[]>([]);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState<
     DocumentAttachment[]
   >([]);
+  const { data: currentUser } = useGetCurrenttUserQuery();
+  const { data: allPoliciesOfUser } = useGetAllPoliciesOfUserQuery(
+    currentUser?.data?.user?.userId || "",
+    {
+      skip: !currentUser?.data?.user?.userId,
+    }
+  );
 
-  const {data: currentUser} = useGetCurrenttUserQuery()
-
-  const {data: allPoliciesOfUser} = useGetAllPoliciesOfUserQuery(currentUser?.data?.user?.userId || '', {
-    skip: !currentUser?.data?.user?.userId
-  })
-
-
+  useEffect(() => {
+    if (allPoliciesOfUser) {
+      const polNumber = allPoliciesOfUser.map((policy) => policy.policyNumber);
+      setPolicyNumber(["Choose Your Policy", ...polNumber]);
+    }
+  });
   console.log("allPoliciesOfUser", allPoliciesOfUser);
-  
- 
-
- 
 
   const methods = useForm<ClaimFormData>({
     resolver: zodResolver(claimFormSchema),
     defaultValues: {
-      policyNumber: "",
-      claimType: CLAIM_DOCUMENT_TYPES.AUTOMOBILE_COLLISION,
+      policyNumber: policyNumber[0],
+      // policyNumber: "",
+      claimType: CLAIM_DOCUMENT_TYPES.CHOOSE,
       incidentDetails: {
         incidentDateTime: new Date().toISOString().slice(0, 16),
-        type: INCIDENT_TYPES.ACCIDENT,
+        type: INCIDENT_TYPES.CHOOSE,
         thirdPartyInvolved: false,
         location: {
           street: "",
@@ -57,6 +62,7 @@ const ClaimForm = () => {
     },
   });
   const claimType = methods.watch("claimType");
+  const incidentTypesForClaim = INCIDENT_TYPES_MAP[claimType];
 
   const {
     handleSubmit,
@@ -115,11 +121,21 @@ const ClaimForm = () => {
             <label className="block text-sm font-medium text-gray-700">
               Policy Number *
             </label>
-            <input
+            <select
+              {...methods.register("policyNumber")}
+              className="mt-1 block w-full rounded-md p-2 border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
+            >
+              {Object.values(policyNumber).map((type) => (
+                <option key={type} value={type}>
+                  {type.replace(/_/g, " ")}
+                </option>
+              ))}
+            </select>
+            {/* <input
               {...methods.register("policyNumber")}
               className="mt-1 block w-full p-2 rounded-md border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
               placeholder="POL-123456"
-            />
+            /> */}
             {methods.formState.errors.policyNumber && (
               <p className="mt-1 text-sm text-red-600">
                 {methods.formState.errors.policyNumber.message}
@@ -170,11 +186,21 @@ const ClaimForm = () => {
                 {...methods.register("incidentDetails.type")}
                 className="mt-1 block w-full rounded-md p-2 border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
               >
-                {Object.values(INCIDENT_TYPES).map((type) => (
+                <option value={INCIDENT_TYPES.CHOOSE}>
+                  {INCIDENT_TYPES.CHOOSE.replace(/_/g, " ")}
+                </option>
+                {incidentTypesForClaim.map((type) => (
                   <option key={type} value={type}>
                     {type.replace(/_/g, " ")}
                   </option>
                 ))}
+
+                {/* {Object.values(INCIDENT_TYPES).map((type) => ( */}
+                {/* {Object.values(INCIDENT_TYPES_MAP).map((type) => (
+                  <option key={type} value={type}>
+                    {type.replace(/_/g, " ")}
+                  </option>
+                ))} */}
               </select>
             </div>
           </div>
@@ -214,6 +240,7 @@ const ClaimForm = () => {
         {/* Third Party Section */}
         <ThirdPartySection />
         {/* Documents Section */}
+
         <div className="border-t pt-4">
           <FileUploader
             claimType={claimType}

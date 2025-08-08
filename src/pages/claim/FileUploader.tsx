@@ -72,8 +72,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">Required Documents</h3>
+    <div className="space-y-4 mt-4">
+      <p className="text-xl font-medium text-gray-900">Required Documents</p>
       <p className="text-sm text-gray-500">
         {requiredDocs.map((d) => d.replace(/_/g, " ")).join(", ")}
       </p>
