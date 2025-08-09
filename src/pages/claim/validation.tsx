@@ -1,10 +1,10 @@
 import { z } from "zod";
 import {
-  CLAIM_DOCUMENT_TYPES,
-  INCIDENT_TYPES,
-  RequiredDocument,
+  // CLAIM_DOCUMENT_TYPES,
+  // INCIDENT_TYPES,
+  // RequiredDocument,
   type ClaimFormData,
-  DOCUMENT_TYPE_MAP,
+  // DOCUMENT_TYPE_MAP,
 } from "./Types";
 
 const documentAttachmentSchema = z.object({
@@ -13,7 +13,8 @@ const documentAttachmentSchema = z.object({
   originalFileName: z.string(),
   contentType: z.string(),
   sha256Checksum: z.string(),
-  documentType: z.nativeEnum(RequiredDocument),
+  documentType: z.string(),
+  // documentType: z.nativeEnum(RequiredDocument),
 });
 
 const addressSchema = z.object({
@@ -33,14 +34,15 @@ const thirdPartyDetailsSchema = z.object({
 export const claimFormSchema = z
   .object({
     policyNumber: z.string().min(5, "Policy number is required"),
-    claimType: z.nativeEnum(CLAIM_DOCUMENT_TYPES),
+    claimType: z.string().min(1, "Claim type is required"),
+    // claimType: z.nativeEnum(CLAIM_DOCUMENT_TYPES),
 
     incidentDetails: z
       .object({
         incidentDateTime: z
           .string()
           .datetime({ message: "Valid date required" }),
-        type: z.nativeEnum(INCIDENT_TYPES),
+        type: z.string().min(1, "Incident type is required"),
         location: addressSchema,
         description: z
           .string()
@@ -64,16 +66,16 @@ export const claimFormSchema = z
     documents: z
       .array(documentAttachmentSchema)
       .refine((docs) => docs.length > 0, "At least one document is required"),
-  })
-  .refine(
-    (formData) => {
-      const requiredDocs = DOCUMENT_TYPE_MAP[formData.claimType];
-      return requiredDocs.every((rd) =>
-        formData.documents.some((d) => d.documentType === rd)
-      );
-    },
-    {
-      message: "Required documents are missing for this claim type",
-      path: ["documents"],
-    }
-  ) satisfies z.ZodType<ClaimFormData>;
+  })  satisfies z.ZodType<ClaimFormData>;
+  // .refine(
+  //   (formData) => {
+  //     const requiredDocs = DOCUMENT_TYPE_MAP[formData.claimType];
+  //     return requiredDocs.every((rd) =>
+  //       formData.documents.some((d) => d.documentType === rd)
+  //     );
+  //   },
+  //   {
+  //     message: "Required documents are missing for this claim type",
+  //     path: ["documents"],
+  //   }
+  // ) 
