@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
 import { useForm, FormProvider, type SubmitHandler } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { claimFormSchema } from "./validation";
-
-import {
-  // CLAIM_DOCUMENT_TYPES,
-  // INCIDENT_TYPES,
-  // INCIDENT_TYPES_MAP,
-  type ClaimFormData,
-  type DocumentAttachment,
-} from "./Types";
+import { type ClaimFormData, type DocumentAttachment } from "./Types";
 
 import AddressSection from "./AddressSectioin";
 import ThirdPartySection from "./ThirdPartySection";
@@ -26,6 +19,12 @@ import {
 const ClaimForm = () => {
   const { data: claimTypes } = useGetClaimTypesQuery();
   const [selectedClaimType, setSelectedClaimType] = useState("");
+  const [policyNumber, setPolicyNumber] = useState<string[]>([]);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const { data: currentUser } = useGetCurrenttUserQuery();
+  const [uploadedDocuments, setUploadedDocuments] = useState<
+    DocumentAttachment[]
+  >([]);
   const { data: incidentTypes = [] } = useGetIncidentTypesQuery(
     selectedClaimType,
     {
@@ -38,13 +37,6 @@ const ClaimForm = () => {
       skip: !selectedClaimType,
     }
   );
-
-  const [policyNumber, setPolicyNumber] = useState<string[]>([]);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [uploadedDocuments, setUploadedDocuments] = useState<
-    DocumentAttachment[]
-  >([]);
-  const { data: currentUser } = useGetCurrenttUserQuery();
   const { data: allPoliciesOfUser } = useGetAllPoliciesOfUserQuery(
     currentUser?.data?.user?.userId || "",
     {
@@ -67,12 +59,10 @@ const ClaimForm = () => {
       incidentDetails: {
         incidentDateTime: new Date().toISOString().slice(0, 16),
         type: incidentTypes[0] || "",
-        // type: INCIDENT_TYPES.CHOOSE,
         thirdPartyInvolved: false,
         location: {
           street: "",
           city: "",
-          // state: "",
           postalCode: "",
           country: "",
         },
@@ -126,7 +116,6 @@ const ClaimForm = () => {
       </div>
     );
   }
-
   return (
     <FormProvider {...methods}>
       <form
