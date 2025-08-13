@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { type RequiredDocumentType } from "./Types";
+import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
+import { storage } from "@/firebase";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 interface DocumentType {
   name: string;
@@ -9,7 +12,6 @@ interface DocumentType {
 }
 
 interface FileUploaderProps {
-  // claimType: typeof CLAIM_DOCUMENT_TYPES;
   requiredDocuments: DocumentType[];
   onUploadComplete: (metadata: any) => void;
 }
@@ -21,6 +23,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const { setError, clearErrors } = useFormContext();
+  const { data: currentUser } = useGetCurrenttUserQuery();
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -33,31 +36,62 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     setProgress(0);
 
     try {
-      // Simulate file upload progress
-      const interval = setInterval(() => {
-        setProgress((prev) => Math.min(prev + 10, 90));
-      }, 200);
+      const fileExtension = file.name.split(".").pop()?.toLowerCase();
+      const storagePath = `claims-documents/${
+        currentUser?.data?.user.name.firstName
+      }+ " " +${
+        currentUser?.data?.user.name.lastName
+      } + ${uuidv4()}.${fileExtension}`;
 
-      // In real app:
-      // 1. Compute SHA-256 checksum
-      // 2. Upload to cloud storage (AWS S3, Google Cloud, etc.)
-      // 3. Get back storage metadata
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      clearInterval(interval);
-      setProgress(100);
+      const storageRef = ref(storage, storagePath);
 
-      // Simulated metadata from backend
-      const metadata = {
-        storageId: uuidv4(),
-        storageBucket: "claims-documents",
-        originalFileName: file.name,
-        contentType: file.type,
-        sha256Checksum: "simulated-sha256-checksum",
-        documentType: docType,
-      };
+      // Create upload tasks
+      const uploadTask = uploadBytesResumable(storageRef, file);
 
-      onUploadComplete(metadata);
-      clearErrors("documents");
+      // Track Upload Progress
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setProgress(progress);
+        },
+        (error) => {
+          setError("documents", {
+            type: "manual",
+            message: "File upload failed. Please try again." + error.message,
+          });
+          setIsUploading(false);
+        },
+
+        async () => {
+          try {
+            // Get download URL
+            const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+
+            // Construct metadata
+            const metadata = {
+              storageId: uuidv4(),
+              storagePath,
+              downloadUrl,
+              originalFileName: file.name,
+              contentType: file.type,
+              // sha256Checksum: "simulated-sha256-checksum",
+              documentType: docType,
+            };
+            onUploadComplete(metadata);
+            clearErrors("documents");
+          } catch (error) {
+            setError("documents", {
+              type: "manual",
+              message: "File upload failed. Please try again.",
+            });
+          } finally {
+            setIsUploading(false);
+            setProgress(0);
+          }
+        }
+      );
     } catch (error) {
       setError("documents", {
         type: "manual",
@@ -65,10 +99,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       });
     } finally {
       setIsUploading(false);
-      setTimeout(() => setProgress(0), 500);
     }
   };
+
   console.log("requiredDocuments", requiredDocuments);
+  console.log("currentUser", currentUser?.data?.user.name.firstName);
 
   return (
     <div className="space-y-4 mt-4">

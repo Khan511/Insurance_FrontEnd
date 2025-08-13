@@ -10,17 +10,21 @@ type UserResponse = {
   timeStamp: string;
   status: number;
   path: string;
+
   message: string;
   data: {
     user: {
       userId: string;
       email: string;
+      name: {
+        firstName: string;
+        lastName: string;
+      };
       roles: string[];
       permissions: string[];
     };
   };
 };
-
 type CreateUserRequest = {
   firstName: string;
   lastName: string;

@@ -17,10 +17,11 @@ export type ThirdPartyDetails = {
 
 export type DocumentAttachment = {
   storageId: string;
-  storageBucket: string;
+  downloadUrl: string;
+  storagePath: string;
   originalFileName: string;
   contentType: string;
-  sha256Checksum: string;
+  // sha256Checksum: string;
   documentType: RequiredDocumentType;
 };
 
@@ -32,7 +33,6 @@ export type ClaimFormData = {
     type: IncidentType;
     location: Address;
     description: string;
-
     policeReportNumber?: string;
     thirdPartyInvolved: boolean;
     thirdPartyDetails?: ThirdPartyDetails;

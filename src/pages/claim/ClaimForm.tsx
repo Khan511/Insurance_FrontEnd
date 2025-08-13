@@ -14,7 +14,10 @@ import {
   useGetClaimTypesQuery,
   useGetIncidentTypesQuery,
   useGetRequiredDocumentsQuery,
+  useSubmitClaimMutation,
 } from "@/services/ClaimMetaDataApi";
+import { useSubmit } from "react-router";
+import { storage } from "@/firebase";
 
 const ClaimForm = () => {
   const { data: claimTypes } = useGetClaimTypesQuery();
@@ -22,6 +25,7 @@ const ClaimForm = () => {
   const [policyNumber, setPolicyNumber] = useState<string[]>([]);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const { data: currentUser } = useGetCurrenttUserQuery();
+  const [submitClaim] = useSubmitClaimMutation();
   const [uploadedDocuments, setUploadedDocuments] = useState<
     DocumentAttachment[]
   >([]);
@@ -68,6 +72,7 @@ const ClaimForm = () => {
         },
         description: "",
       },
+      documents: [],
     },
   });
   const claimType = methods.watch("claimType");
@@ -86,15 +91,25 @@ const ClaimForm = () => {
     try {
       // API call would go here
       console.log("Submitting claim:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await submitClaim(data).unwrap();
       setSubmitSuccess(true);
+      console.log("Claim submitted successfully:", response);
     } catch (error) {
       console.error("Submission error:", error);
     }
   };
 
   const handleUploadComplete = (metadata: DocumentAttachment) => {
+    const newDoc = {
+      storageId: metadata.storageId,
+      downlaodUrl: metadata.downloadUrl,
+      storagePath: metadata.storagePath,
+      originalFileName: metadata.originalFileName,
+      contentType: metadata.contentType,
+      documentType: metadata.documentType,
+    };
     setUploadedDocuments((prev) => [...prev, metadata]);
+
     setValue("documents", [...uploadedDocuments, metadata]);
   };
 

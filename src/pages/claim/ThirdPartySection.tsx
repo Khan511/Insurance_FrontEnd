@@ -15,7 +15,7 @@ const ThirdPartySection = () => {
         Third Party Involvement
       </h3>
 
-      <div className="mt-4 flex items-center">
+      <div className="mt-4 flex gap-2 items-center">
         <input
           type="checkbox"
           id="thirdPartyInvolved"
@@ -24,7 +24,7 @@ const ThirdPartySection = () => {
         />
         <label
           htmlFor="thirdPartyInvolved"
-          className="ml-2 block text-sm text-gray-900"
+          className="ml-2 block text-sm text-gray-900 "
         >
           Was a third party involved?
         </label>

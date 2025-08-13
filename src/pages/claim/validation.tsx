@@ -2,11 +2,12 @@ import { z } from "zod";
 import { type ClaimFormData } from "./Types";
 
 const documentAttachmentSchema = z.object({
-  storageId: z.string().uuid(),
-  storageBucket: z.string(),
+  storageId: z.string(),
+  downloadUrl: z.string().url(),
+  storagePath: z.string(),
   originalFileName: z.string(),
   contentType: z.string(),
-  sha256Checksum: z.string(),
+  // sha256Checksum: z.string(),
   documentType: z.string(),
 });
 
@@ -17,11 +18,13 @@ const addressSchema = z.object({
   country: z.string().min(2, "Country is required"),
 });
 
-const thirdPartyDetailsSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  contactInfo: z.string().min(5, "Contact info is required"),
-  insuranceInfo: z.string().min(5, "Insurance info is required"),
-});
+const thirdPartyDetailsSchema = z
+  .object({
+    name: z.string().min(2, "Name is required"),
+    contactInfo: z.string().min(5, "Contact info is required"),
+    insuranceInfo: z.string().min(5, "Insurance info is required"),
+  })
+  .optional();
 
 export const claimFormSchema = z.object({
   policyNumber: z.string().min(5, "Policy number is required"),
