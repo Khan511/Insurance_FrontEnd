@@ -35,12 +35,14 @@ const ClaimForm = () => {
       skip: !selectedClaimType,
     }
   );
+  
   const { data: requiredDocuments = [] } = useGetRequiredDocumentsQuery(
     selectedClaimType,
     {
       skip: !selectedClaimType,
     }
   );
+
   const { data: allPoliciesOfUser } = useGetAllPoliciesOfUserQuery(
     currentUser?.data?.user?.userId || "",
     {
@@ -100,24 +102,31 @@ const ClaimForm = () => {
   };
 
   const handleUploadComplete = (metadata: DocumentAttachment) => {
-    const newDoc = {
-      storageId: metadata.storageId,
-      downlaodUrl: metadata.downloadUrl,
-      storagePath: metadata.storagePath,
-      originalFileName: metadata.originalFileName,
-      contentType: metadata.contentType,
-      documentType: metadata.documentType,
-    };
-    setUploadedDocuments((prev) => [...prev, metadata]);
+    // const newDoc = {
+    //   storageId: metadata.storageId,
+    //   downloadUrl: metadata.downloadUrl,
+    //   storagePath: metadata.storagePath,
+    //   originalFileName: metadata.originalFileName,
+    //   contentType: metadata.contentType,
+    //   documentType: metadata.documentType,
+    // };
 
-    setValue("documents", [...uploadedDocuments, metadata]);
+    setUploadedDocuments(prev  => {
+      const newDocuments = [...prev, metadata]
+
+      setValue("documents", newDocuments, {shouldValidate: true});
+      return newDocuments
+    })
   };
 
   const removeDocument = (index: number) => {
-    const updatedDocs = [...uploadedDocuments];
-    updatedDocs.splice(index, 1);
-    setUploadedDocuments(updatedDocs);
-    setValue("documents", updatedDocs);
+    setUploadedDocuments(prev => {
+      const newDocuments = [...prev];
+      newDocuments.splice(index, 1);
+
+      setValue("documents", newDocuments, {shouldValidate: true});
+      return newDocuments
+    });
   };
 
   if (submitSuccess) {

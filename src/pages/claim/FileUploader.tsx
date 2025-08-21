@@ -39,9 +39,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       const fileExtension = file.name.split(".").pop()?.toLowerCase();
       const storagePath = `claims-documents/${
         currentUser?.data?.user.name.firstName
-      }+ " " +${
-        currentUser?.data?.user.name.lastName
-      } + ${uuidv4()}.${fileExtension}`;
+      } ${currentUser?.data?.user.name.lastName}_${uuidv4()}.${fileExtension}`;
 
       const storageRef = ref(storage, storagePath);
 
@@ -102,13 +100,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     }
   };
 
-  console.log("requiredDocuments", requiredDocuments);
-  console.log("currentUser", currentUser?.data?.user.name.firstName);
-
   return (
     <div className="space-y-4 mt-4">
       <p className="text-xl font-medium text-gray-900">Required Documents</p>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-gray-500 b">
         {requiredDocuments.map((d) => d.displayName).join(", ")}
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">

@@ -32,7 +32,9 @@ export const claimFormSchema = z.object({
 
   incidentDetails: z
     .object({
-      incidentDateTime: z.string().datetime({ message: "Valid date required" }),
+      incidentDateTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
+        message: "Valid date and time required",
+      }),
       type: z.string().min(1, "Incident type is required"),
       location: addressSchema,
       description: z
@@ -54,7 +56,6 @@ export const claimFormSchema = z.object({
         path: ["incidentDetails.thirdPartyDetails"],
       }
     ),
-  documents: z
-    .array(documentAttachmentSchema)
-    .refine((docs) => docs.length > 0, "At least one document is required"),
+  documents: z.array(documentAttachmentSchema),
+  // .refine((docs) => docs.length > 0, "At least one document is required"),
 }) satisfies z.ZodType<ClaimFormData>;
