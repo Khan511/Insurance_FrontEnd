@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { useForm, FormProvider, type SubmitHandler } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { claimFormSchema } from "./validation";
 import { type ClaimFormData, type DocumentAttachment } from "./Types";
-
 import AddressSection from "./AddressSectioin";
 import ThirdPartySection from "./ThirdPartySection";
 import FileUploader from "./FileUploader";
@@ -16,8 +14,6 @@ import {
   useGetRequiredDocumentsQuery,
   useSubmitClaimMutation,
 } from "@/services/ClaimMetaDataApi";
-import { useSubmit } from "react-router";
-import { storage } from "@/firebase";
 
 const ClaimForm = () => {
   const { data: claimTypes } = useGetClaimTypesQuery();
@@ -35,7 +31,7 @@ const ClaimForm = () => {
       skip: !selectedClaimType,
     }
   );
-  
+
   const { data: requiredDocuments = [] } = useGetRequiredDocumentsQuery(
     selectedClaimType,
     {
@@ -85,47 +81,43 @@ const ClaimForm = () => {
 
   const {
     handleSubmit,
+    reset,
     formState: { isSubmitting },
     setValue,
   } = methods;
 
   const onSubmit: SubmitHandler<ClaimFormData> = async (data) => {
     try {
-      // API call would go here
-      console.log("Submitting claim:", data);
       const response = await submitClaim(data).unwrap();
       setSubmitSuccess(true);
-      console.log("Claim submitted successfully:", response);
+
+      // Reset form to default values
+      reset();
+
+      // Clear local state
+      setUploadedDocuments([]);
+      setSelectedClaimType("");
     } catch (error) {
       console.error("Submission error:", error);
     }
   };
 
   const handleUploadComplete = (metadata: DocumentAttachment) => {
-    // const newDoc = {
-    //   storageId: metadata.storageId,
-    //   downloadUrl: metadata.downloadUrl,
-    //   storagePath: metadata.storagePath,
-    //   originalFileName: metadata.originalFileName,
-    //   contentType: metadata.contentType,
-    //   documentType: metadata.documentType,
-    // };
+    setUploadedDocuments((prev) => {
+      const newDocuments = [...prev, metadata];
 
-    setUploadedDocuments(prev  => {
-      const newDocuments = [...prev, metadata]
-
-      setValue("documents", newDocuments, {shouldValidate: true});
-      return newDocuments
-    })
+      setValue("documents", newDocuments, { shouldValidate: true });
+      return newDocuments;
+    });
   };
 
   const removeDocument = (index: number) => {
-    setUploadedDocuments(prev => {
+    setUploadedDocuments((prev) => {
       const newDocuments = [...prev];
       newDocuments.splice(index, 1);
 
-      setValue("documents", newDocuments, {shouldValidate: true});
-      return newDocuments
+      setValue("documents", newDocuments, { shouldValidate: true });
+      return newDocuments;
     });
   };
 
@@ -140,6 +132,7 @@ const ClaimForm = () => {
       </div>
     );
   }
+
   return (
     <FormProvider {...methods}>
       <form
@@ -277,7 +270,7 @@ const ClaimForm = () => {
               <div className="space-y-2">
                 {uploadedDocuments.map((doc, index) => (
                   <div
-                    key={doc.storageId}
+                    key={index}
                     className="flex justify-between items-center p-3 bg-gray-50 rounded-md"
                   >
                     <div>
@@ -288,12 +281,10 @@ const ClaimForm = () => {
                         ({doc.documentType.replace(/_/g, " ")})
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => removeDocument(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Remove
+                    <button type="button" onClick={() => removeDocument(index)}>
+                      <span className="text-red-500 hover:text-red-700">
+                        Remove
+                      </span>
                     </button>
                   </div>
                 ))}
@@ -313,7 +304,7 @@ const ClaimForm = () => {
             style={{ backgroundColor: "blue" }}
             type="submit"
             disabled={isSubmitting}
-            className=" text-white mt-4 py-2 px-4 rounded rounded-md"
+            className=" text-white mt-4 py-2 px-4  rounded"
           >
             {isSubmitting ? "Submitting..." : "Submit Claim"}
           </button>

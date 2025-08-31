@@ -2,13 +2,16 @@ import { z } from "zod";
 import { type ClaimFormData } from "./Types";
 
 const documentAttachmentSchema = z.object({
-  storageId: z.string(),
-  downloadUrl: z.string().url(),
-  storagePath: z.string(),
+  storageId: z.string().uuid(),
+  storageBucket: z.string(),
   originalFileName: z.string(),
   contentType: z.string(),
-  // sha256Checksum: z.string(),
+  sha256Checksum: z.string(),
   documentType: z.string(),
+  fileKey: z.string(),
+  fileUrl: z.string().url(),
+  fileSize: z.number(),
+  uploadedAt: z.string(),
 });
 
 const addressSchema = z.object({

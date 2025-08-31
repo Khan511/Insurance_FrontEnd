@@ -15,15 +15,19 @@ export type ThirdPartyDetails = {
   insuranceInfo: string;
 };
 
-export type DocumentAttachment = {
+// In your Types.ts file
+export interface DocumentAttachment {
   storageId: string;
-  downloadUrl: string;
-  storagePath: string;
+  storageBucket: string;
   originalFileName: string;
   contentType: string;
-  // sha256Checksum: string;
-  documentType: RequiredDocumentType;
-};
+  sha256Checksum: string;
+  documentType: string;
+  fileKey: string;
+  fileUrl: string;
+  fileSize: number;
+  uploadedAt: string;
+}
 
 export type ClaimFormData = {
   policyNumber: string;
