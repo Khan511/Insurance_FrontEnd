@@ -4,14 +4,14 @@ import callCenter2 from "../assets/What-is-a-Call-Whisper.jpg";
 import "../App.css";
 import { Card, CardGroup } from "react-bootstrap";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
-import { useGetAllPoliciesQuery } from "@/services/InsurancePolicySlice";
+import { useGetAllProductsQuery } from "@/services/InsuranceProductSlice";
 import { InsuranceCardCarousel } from "./carousel/InsuraceCardCarousel";
 
 const Home = () => {
   const { data: currentUser } = useGetCurrenttUserQuery();
-  const { data: policies } = useGetAllPoliciesQuery();
+  const { data: products } = useGetAllProductsQuery();
 
-  console.log("Home Policies", policies);
+  console.log("Home Policies", products);
 
   return (
     <div className="d-flex flex-column">
@@ -53,7 +53,7 @@ const Home = () => {
           className="p-5 rounded d-flex justify-content-between align-items-center"
           style={{ boxShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
         >
-          {policies && <InsuranceCardCarousel policies={policies} />}
+          {products && <InsuranceCardCarousel products={products} />}
         </div>
         {/* Cards Section */}
         <CardGroup className="gap-4 mt-5">

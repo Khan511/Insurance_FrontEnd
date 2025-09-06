@@ -6,7 +6,7 @@ import { type ClaimFormData, type DocumentAttachment } from "./Types";
 import AddressSection from "./AddressSectioin";
 import ThirdPartySection from "./ThirdPartySection";
 import FileUploader from "./FileUploader";
-import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
+
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import {
   useGetClaimTypesQuery,
@@ -14,6 +14,8 @@ import {
   useGetRequiredDocumentsQuery,
   useSubmitClaimMutation,
 } from "@/services/ClaimMetaDataApi";
+import { useDeleteFileMutation } from "@/services/s3Api";
+import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 
 const ClaimForm = () => {
   const { data: claimTypes } = useGetClaimTypesQuery();
@@ -25,6 +27,7 @@ const ClaimForm = () => {
   const [uploadedDocuments, setUploadedDocuments] = useState<
     DocumentAttachment[]
   >([]);
+  const [deleteFile] = useDeleteFileMutation();
   const { data: incidentTypes = [] } = useGetIncidentTypesQuery(
     selectedClaimType,
     {
@@ -73,6 +76,7 @@ const ClaimForm = () => {
       documents: [],
     },
   });
+
   const claimType = methods.watch("claimType");
 
   useEffect(() => {
@@ -81,7 +85,6 @@ const ClaimForm = () => {
 
   const {
     handleSubmit,
-    reset,
     formState: { isSubmitting },
     setValue,
   } = methods;
@@ -90,13 +93,6 @@ const ClaimForm = () => {
     try {
       const response = await submitClaim(data).unwrap();
       setSubmitSuccess(true);
-
-      // Reset form to default values
-      reset();
-
-      // Clear local state
-      setUploadedDocuments([]);
-      setSelectedClaimType("");
     } catch (error) {
       console.error("Submission error:", error);
     }
@@ -111,24 +107,51 @@ const ClaimForm = () => {
     });
   };
 
-  const removeDocument = (index: number) => {
-    setUploadedDocuments((prev) => {
-      const newDocuments = [...prev];
-      newDocuments.splice(index, 1);
+  const removeDocument = async (
+    index: number,
+    document: DocumentAttachment
+  ) => {
+    try {
+      await deleteFile(document.fileUrl).unwrap();
 
-      setValue("documents", newDocuments, { shouldValidate: true });
-      return newDocuments;
-    });
+      setUploadedDocuments((prev) => {
+        const newDocuments = [...prev];
+        newDocuments.splice(index, 1);
+        setValue("documents", newDocuments, { shouldValidate: true });
+        return newDocuments;
+      });
+    } catch (error: any) {
+      console.error("Error deleting file:", error);
+
+      if (error.status === 403) {
+        alert(
+          "You don't have permission to delete this file. Please check your AWS permissions."
+        );
+      } else {
+        alert("Failed to delete file. Please try again.");
+      }
+    }
   };
+  // const removeDocument = async (
+  //   index: number,
+  //   document: DocumentAttachment
+  // ) => {
+  //   // Delete the file from S# first
+  //   await deleteFile(document.fileUrl).unwrap();
+  //   // If successful, remove from UI and form state1
+  //   setUploadedDocuments((prev) => {
+  //     const newDocuments = [...prev];
+  //     newDocuments.splice(index, 1);
+
+  //     setValue("documents", newDocuments, { shouldValidate: true });
+  //     return newDocuments;
+  //   });
+  // };
 
   if (submitSuccess) {
     return (
-      <div className="p-6 bg-green-50 rounded-lg">
-        <h2 className="text-2xl font-bold text-green-800">Claim Submitted!</h2>
-        <p className="mt-2 text-green-600">
-          Your claim has been received (Reference #:
-          {Math.floor(Math.random() * 1000000)})
-        </p>
+      <div className="container flex justify-center p-6 bg-green-50 rounded-lg">
+        <p className="mt-2 text-green-600">Your claim has been submitted</p>
       </div>
     );
   }
@@ -281,7 +304,10 @@ const ClaimForm = () => {
                         ({doc.documentType.replace(/_/g, " ")})
                       </span>
                     </div>
-                    <button type="button" onClick={() => removeDocument(index)}>
+                    <button
+                      type="button"
+                      onClick={() => removeDocument(index, doc)}
+                    >
                       <span className="text-red-500 hover:text-red-700">
                         Remove
                       </span>

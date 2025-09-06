@@ -1,60 +1,3 @@
-// import { Card, CardContent } from "@/components/ui/card";
-// import {
-//   Carousel,
-//   CarouselContent,
-//   CarouselItem,
-//   CarouselNext,
-//   CarouselPrevious,
-// } from "@/components/ui/carousel";
-// import { CardTitle } from "react-bootstrap";
-// import { Link } from "react-router";
-
-// export interface InsuracePolicy {
-//   id: number;
-//   title: string;
-//   description: string;
-//   targetAudience: string[];
-//   region: string[];
-//   category: {
-//     id: number;
-//     name: string;
-//   };
-// }
-
-// interface Props {
-//   policy?: InsuracePolicy;
-// }
-// export function InsuraceCardCarousel({ policy }: Props) {
-//   return (
-//     <Carousel
-//       opts={{
-//         align: "start",
-//       }}
-//       className="w-full max-w-sm"
-//     >
-//       <CarouselContent>
-//         <Link to="/">
-//           <CarouselItem
-//             key={policy?.id}
-//             className="pl-3 md:basis-1/2 lg:basis-1/3"
-//           >
-//             <div className="p-1">
-//               <Card>
-//                 <CardTitle>{policy?.title} </CardTitle>
-//                 <CardContent className="flex aspect-square items-center justify-center p-6">
-//                   <span className="">{policy?.description}</span>
-//                 </CardContent>
-//               </Card>
-//             </div>
-//           </CarouselItem>
-//         </Link>
-//       </CarouselContent>
-//       <CarouselPrevious />
-//       <CarouselNext />
-//     </Carousel>
-//   );
-// }
-
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -110,7 +53,7 @@ export type InsuraceProduct = {
   displayName: string;
   description: string;
   productType: ProductType;
-  basePremium: MonetaryAmount;
+  basePremium?: MonetaryAmount;
   coverageDetails: CoverageDetails[];
   eligibilityRules: { [key: string]: string };
   targetAudience: string[];
@@ -122,10 +65,10 @@ export type InsuraceProduct = {
 };
 
 interface Props {
-  policies: InsuraceProduct[];
+  products: InsuraceProduct[];
 }
 
-export function InsuranceCardCarousel({ policies }: Props) {
+export function InsuranceCardCarousel({ products }: Props) {
   return (
     <Carousel
       opts={{
@@ -136,12 +79,12 @@ export function InsuranceCardCarousel({ policies }: Props) {
       className="w-full max-w-7xl mx-auto "
     >
       <CarouselContent>
-        {policies.map((policy) => (
+        {products.map((policy) => (
           <CarouselItem
             key={policy.id}
             className="pl-3 basis-1/1 sm:basis-1/2 md:basis-1/3 "
           >
-            <Link to={`/policies/${policy.id}`}>
+            <Link to={`/products/${policy.id}`}>
               <div className="m-1 transition-shadow hover:shadow-xl rounded-2xl hover:shadow-gray-800">
                 <Card className="flex justify-around p-2 h-80 text-white bg-blue-600">
                   <CardTitle className="text-md px-2 pt-3">

@@ -38,12 +38,10 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 // import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  useBuyInsuranceMutation,
-  useGetPolicyDetailsQuery,
-} from "@/services/InsurancePolicySlice";
+import { useGetProductDetailsQuery } from "@/services/InsuranceProductSlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import { useParams } from "react-router";
+import { useBuyPolicyMutation } from "@/services/InsurancePolicySlice";
 
 const addressKeys = ["street", "city", "postalCode", "country"] as const;
 
@@ -110,7 +108,6 @@ const formSchema = z.object({
     .object({
       amount: z.string().optional(),
       currency: z.string().optional(),
-   
     })
     .optional(),
 
@@ -128,12 +125,12 @@ const formSchema = z.object({
     .optional(),
 });
 
-export function CustomerPolicyForm() {
+export function CustomerProductForm() {
   const { policyId } = useParams();
-  const { data: policy } = useGetPolicyDetailsQuery(Number(policyId));
+  const { data: policy } = useGetProductDetailsQuery(Number(policyId));
   const { data: currentUser } = useGetCurrenttUserQuery();
   const [sameAsPrimary, setSameAsPrimary] = useState(false);
-  const [buyInsurance, { isLoading }] = useBuyInsuranceMutation();
+  const [buyInsurance, { isLoading }] = useBuyPolicyMutation();
 
   console.log("Policy ", policy);
 
@@ -302,7 +299,7 @@ export function CustomerPolicyForm() {
               </p>
 
               {/* Product */}
-              <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <FormField
                   control={form.control}
                   name="policyNumber"

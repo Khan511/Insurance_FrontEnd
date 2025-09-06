@@ -230,19 +230,6 @@ function FileUploader({
           </div>
         ))}
       </div>
-
-      {/* Debug information - remove in production */}
-      <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
-        <p>
-          <strong>Debug Info:</strong>
-        </p>
-        <p>Storage: AWS S3</p>
-        <p>
-          Current User: {currentUser?.data?.user.name.firstName}{" "}
-          {currentUser?.data?.user.name.lastName}
-        </p>
-        <p>Upload Status: {isUploading ? "Uploading..." : "Ready"}</p>
-      </div>
     </div>
   );
 }

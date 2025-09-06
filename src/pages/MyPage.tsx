@@ -3,39 +3,41 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 
 import { User, FileText, Activity, CreditCard, Plus } from "lucide-react";
-import MyPolicies from "@/components/mypage/MyPolicies";
+import MyPolicies from "@/components/mypage/myPolicies/MyPolicies";
 import MyClaims from "@/components/mypage/MyClaims";
 import Mypayments from "@/components/mypage/MyPayments";
 import MyDocuments from "@/components/mypage/MyDocuments";
-import { useGetAllPoliciesQuery } from "@/services/InsurancePolicySlice";
+import { Link } from "react-router";
+import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
+import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 
 // Mock data - replace with real API data
-const policies = [
-  {
-    id: 1,
-    number: "POL-87654321",
-    type: "Auto Insurance",
-    status: "Active",
-    premium: "$120.00",
-    renewal: "2024-12-15",
-  },
-  {
-    id: 2,
-    number: "POL-12345678",
-    type: "Home Insurance",
-    status: "Active",
-    premium: "$85.50",
-    renewal: "2025-03-22",
-  },
-  {
-    id: 3,
-    number: "POL-13579246",
-    type: "Life Insurance",
-    status: "Inactive",
-    premium: "$210.75",
-    renewal: "2024-11-30",
-  },
-];
+// const policies = [
+//   {
+//     id: 1,
+//     number: "POL-87654321",
+//     type: "Auto Insurance",
+//     status: "Active",
+//     premium: "$120.00",
+//     renewal: "2024-12-15",
+//   },
+//   {
+//     id: 2,
+//     number: "POL-12345678",
+//     type: "Home Insurance",
+//     status: "Active",
+//     premium: "$85.50",
+//     renewal: "2025-03-22",
+//   },
+//   {
+//     id: 3,
+//     number: "POL-13579246",
+//     type: "Life Insurance",
+//     status: "Inactive",
+//     premium: "$210.75",
+//     renewal: "2024-11-30",
+//   },
+// ];
 
 const claims = [
   {
@@ -76,7 +78,15 @@ const documents = [
 ];
 
 export default function MyPage() {
-  const { data: myAllPolicies, isLoading } = useGetAllPoliciesQuery();
+  const { data: currentUser } = useGetCurrenttUserQuery();
+  const userId = currentUser?.data?.user?.userId;
+
+  const { data: myAllPolicies, isLoading } = useGetAllPoliciesOfUserQuery(
+    userId || "",
+    {
+      skip: !userId,
+    }
+  );
 
   console.log("Plicies: ", myAllPolicies);
 
@@ -89,10 +99,13 @@ export default function MyPage() {
             activities.
           </p>
         </div>
-        <Button className="md:mt-0 text-white">
-          <Plus className="mr-2 h-4 w-4" />
+        <Link
+          to="/my-claim"
+          className=" md:mt-0  flex justify-center items-center gap-0.5 bg-blue-500 py-2 px-2 rounded-md text-white font-semibold"
+        >
+          <Plus className="mr-2 h-4 w-4   " />
           New Claim
-        </Button>
+        </Link>
       </div>
 
       {/* Summary Cards */}
@@ -122,9 +135,7 @@ export default function MyPage() {
 
         <Card className="p-2">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Pending Claims
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Claims</CardTitle>
             <Activity className="h-5 w-5 text-orange-500" />
           </CardHeader>
           <CardContent>
@@ -168,7 +179,7 @@ export default function MyPage() {
         </TabsList>
 
         {/* Policies Tab */}
-        <MyPolicies policies={policies} />
+        <MyPolicies policies={myAllPolicies ?? []} />
 
         {/* Claims Tab */}
         <MyClaims claims={claims} />
@@ -189,7 +200,9 @@ export default function MyPage() {
               <CardTitle className="text-lg">Policy Recommendations</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-4">Get personalized insurance recommendations based on your needs</p>
+              <p className="text-gray-600 mb-4">
+                Get personalized insurance recommendations based on your needs
+              </p>
               <Button variant="outline">View Suggestions</Button>
             </CardContent>
           </Card> */}

@@ -1,4 +1,4 @@
-import { useGetPolicyDetailsQuery } from "@/services/InsurancePolicySlice";
+import { useGetProductDetailsQuery } from "@/services/InsuranceProductSlice";
 import image from "../assets/image.png";
 import {
   ResizablePanel,
@@ -10,13 +10,13 @@ import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import { useState } from "react";
 import PremiumCaculator from "@/components/premiumcalculation/PremiumCaculator";
 
-const PolicyDetailsPage = () => {
+const ProductDetailsPage = () => {
   const { policyId } = useParams();
   const [showCalculator, setShowCalculator] = useState(false);
   const [calculatedPremium, setCalculatedPremium] = useState<number | null>(
     null
   );
-  const { data: policyDetails, isLoading } = useGetPolicyDetailsQuery(
+  const { data: policyDetails, isLoading } = useGetProductDetailsQuery(
     Number(policyId)
   );
   const { data: currentUser } = useGetCurrenttUserQuery();
@@ -56,7 +56,7 @@ const PolicyDetailsPage = () => {
       )}
       <div className="flex  gap-2 px-5">
         <Link
-          to={`/customer-policy-form/${policyId}`}
+          to={`/product-buy-form/${policyId}`}
           className="btn btn-primary w-sm mt-0"
         >
           Buy Policy
@@ -97,6 +97,5 @@ const PolicyDetailsPage = () => {
     </div>
   );
 };
- 
 
-export default PolicyDetailsPage;
+export default ProductDetailsPage;

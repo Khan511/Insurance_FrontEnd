@@ -38,7 +38,7 @@ export type ProductType =
   | "TRAVEL"
   | "LIABILITY"
   | "PET";
-
+// New types for premium calculation
 export type AgeBracket = {
   minAge?: number;
   maxAge?: number;
@@ -54,13 +54,12 @@ export type PremiumCalculationConfig = {
   includeTax?: boolean;
   commissionRate?: number;
 };
-export type InsuracePolicy = {
+export type InsuraceProduct = {
   id: number;
   productCode: string;
   policyNumber: string;
   displayName: string;
   description: string;
-  status: string;
   productType: ProductType;
   coverageDetails: CoverageDetails[];
   eligibilityRules: { [key: string]: string };
@@ -85,6 +84,7 @@ export type GovernmentId = {
 export type Address = {
   street: string;
   city: string;
+  // state: string;
   postalCode: string;
   country: string;
 };
@@ -112,17 +112,9 @@ export type Customer = {
   governmentId: GovernmentId;
   contactInfo: ContactInfo;
 };
-type BuyPolicyFormValues = {
-  policyId?: string;
-  status: string;
-  customer: Customer;
-  // product: string;
-  coveragePeriod: CoveragePeriod;
-  beneficiaries?: Beneficiaries[];
-};
 
-export const InsurancePolicySlice = createApi({
-  reducerPath: "InsuracePolicyApi",
+export const InsuranceProductSlice = createApi({
+  reducerPath: "InsuraceProductApi",
   baseQuery: fetchBaseQuery({
     baseUrl,
     credentials: "include",
@@ -135,24 +127,16 @@ export const InsurancePolicySlice = createApi({
 
   tagTypes: ["policy"],
   endpoints: (builder) => ({
-    getAllPoliciesOfUser: builder.query<InsuracePolicy[], string>({
-      query: (userId) => ({
-        url: `/policy/user-all-policies/${userId}`,
+    getAllProducts: builder.query<InsuraceProduct[], void>({
+      query: () => ({
+        url: "/product/all-products",
         method: "GET",
       }),
     }),
 
-    buyPolicy: builder.mutation<string, BuyPolicyFormValues>({
-      query: (data) => ({
-        url: "/policy/buy-policy",
-        method: "POST",
-        body: data,
-      }),
-    }),
-
-    getPolicyDetails: builder.query<InsuracePolicy, string>({
+    getProductDetails: builder.query<InsuraceProduct, number>({
       query: (policyId) => ({
-        url: `/policy/policies/${policyId}`,
+        url: `/product/product-details/${policyId}`,
         method: "GET",
       }),
     }),
@@ -160,7 +144,7 @@ export const InsurancePolicySlice = createApi({
 });
 
 export const {
-  useBuyPolicyMutation,
-  useGetAllPoliciesOfUserQuery,
-  useGetPolicyDetailsQuery,
-} = InsurancePolicySlice;
+  useGetAllProductsQuery,
+  useGetProductDetailsQuery,
+  // useBuyPolicyMutation,
+} = InsuranceProductSlice;

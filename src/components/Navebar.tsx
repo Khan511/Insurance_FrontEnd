@@ -39,10 +39,10 @@ function Navbare() {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/private-policies">Private</Nav.Link>
-            <Nav.Link href="/commercial-policies">Commercial</Nav.Link>
+            <Nav.Link href="/private-products">Private</Nav.Link>
+            <Nav.Link href="/commercial-products">Commercial</Nav.Link>
             <NavDropdown title="Insurrances" id="collapsible-nav-dropdown">
-              <NavDropdown.Item href="/all-insurances">
+              <NavDropdown.Item href="/all-products">
                 All Insurrances
               </NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">

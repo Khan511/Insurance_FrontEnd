@@ -2,11 +2,12 @@ import { Card, CardGroup, Spinner } from "react-bootstrap";
 import callCenter2 from "../../assets/What-is-a-Call-Whisper.jpg";
 import callCenter3 from "../../assets/all-insurances2.jpg";
 import { IoStar } from "react-icons/io5";
-import { useGetAllPoliciesQuery } from "@/services/InsurancePolicySlice";
+import { useGetAllProductsQuery } from "@/services/InsuranceProductSlice";
 import InsuranceCardComponent from "../card/InsuranceCardComponent";
 
 const AllInsurances = () => {
-  const { data: policies, isLoading } = useGetAllPoliciesQuery();
+  const { data: policies, isLoading } = useGetAllProductsQuery();
+  console.log("All Products: " + policies);
 
   if (isLoading) {
     return (
@@ -63,7 +64,7 @@ const AllInsurances = () => {
           <InsuranceCardComponent policies={policies} />
         </div>
       </div>
-      <CardGroup className="gap-4 rounded  " style={{ marginTop: "60px" }}>
+      <CardGroup className="gap-4 rounded" style={{ marginTop: "60px" }}>
         <Card
           className="border-0"
           style={{

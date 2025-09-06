@@ -44,7 +44,7 @@ export type InsuraceProduct = {
   displayName: string;
   description: string;
   productType: ProductType;
-  basePremium: MonetaryAmount;
+  basePremium?: MonetaryAmount;
   coverageDetails: CoverageDetails[];
   eligibilityRules: { [key: string]: string };
   targetAudience: string[];
@@ -60,6 +60,8 @@ interface Props {
 }
 
 const InsuranceCardComponent = ({ policies = [] }: Props) => {
+  console.log("Policies in insuraceprodctcard" + policies);
+
   return (
     <div className="d-flex flex-wrap gap-3 justify-content-center">
       {policies &&
@@ -67,7 +69,7 @@ const InsuranceCardComponent = ({ policies = [] }: Props) => {
           return (
             <Link
               key={card.id}
-              to={`/policies/${card.id}`}
+              to={`/products/${card.id}`}
               style={{ cursor: "pointer", textDecoration: "none" }}
               className="card-link"
             >

@@ -1,9 +1,9 @@
 import InsuranceCardComponent from "@/components/card/InsuranceCardComponent";
-import { useGetAllPoliciesQuery } from "@/services/InsurancePolicySlice";
+import { useGetAllProductsQuery } from "@/services/InsuranceProductSlice";
 import { Spinner } from "react-bootstrap";
 
 const CommercialPolicies = () => {
-  const { data: policies, isLoading } = useGetAllPoliciesQuery();
+  const { data: policies, isLoading } = useGetAllProductsQuery();
   console.log(policies);
 
   if (isLoading)
