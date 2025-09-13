@@ -91,8 +91,8 @@ interface Props {
 
 export default function MyPolicies({ policies }: Props) {
   return (
-    <TabsContent value="policies">
-      <Card className="mt-4">
+    <TabsContent value="policies" className="mt-3 mb-5">
+      <Card className="">
         <CardHeader className="pt-4 text-center text-2xl text-blue-500">
           <CardTitle>Insurance Policies</CardTitle>
         </CardHeader>

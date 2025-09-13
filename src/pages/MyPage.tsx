@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 import { User, FileText, Activity, CreditCard, Plus } from "lucide-react";
 import MyPolicies from "@/components/mypage/myPolicies/MyPolicies";
-import MyClaims from "@/components/mypage/MyClaims";
+import MyClaims from "@/components/mypage/myClaims/MyClaims";
 import Mypayments from "@/components/mypage/MyPayments";
 import MyDocuments from "@/components/mypage/MyDocuments";
 import { Link } from "react-router";
@@ -12,32 +12,32 @@ import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 
 // Mock data - replace with real API data
-// const policies = [
-//   {
-//     id: 1,
-//     number: "POL-87654321",
-//     type: "Auto Insurance",
-//     status: "Active",
-//     premium: "$120.00",
-//     renewal: "2024-12-15",
-//   },
-//   {
-//     id: 2,
-//     number: "POL-12345678",
-//     type: "Home Insurance",
-//     status: "Active",
-//     premium: "$85.50",
-//     renewal: "2025-03-22",
-//   },
-//   {
-//     id: 3,
-//     number: "POL-13579246",
-//     type: "Life Insurance",
-//     status: "Inactive",
-//     premium: "$210.75",
-//     renewal: "2024-11-30",
-//   },
-// ];
+const policies = [
+  {
+    id: 1,
+    number: "POL-87654321",
+    type: "Auto Insurance",
+    status: "Active",
+    premium: "$120.00",
+    renewal: "2024-12-15",
+  },
+  {
+    id: 2,
+    number: "POL-12345678",
+    type: "Home Insurance",
+    status: "Active",
+    premium: "$85.50",
+    renewal: "2025-03-22",
+  },
+  {
+    id: 3,
+    number: "POL-13579246",
+    type: "Life Insurance",
+    status: "Inactive",
+    premium: "$210.75",
+    renewal: "2024-11-30",
+  },
+];
 
 const claims = [
   {

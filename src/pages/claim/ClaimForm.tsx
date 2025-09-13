@@ -61,6 +61,7 @@ const ClaimForm = () => {
     defaultValues: {
       policyNumber: policyNumber[0],
       claimType: "",
+
       incidentDetails: {
         incidentDateTime: new Date().toISOString().slice(0, 16),
         type: incidentTypes[0] || "",
@@ -132,21 +133,6 @@ const ClaimForm = () => {
       }
     }
   };
-  // const removeDocument = async (
-  //   index: number,
-  //   document: DocumentAttachment
-  // ) => {
-  //   // Delete the file from S# first
-  //   await deleteFile(document.fileUrl).unwrap();
-  //   // If successful, remove from UI and form state1
-  //   setUploadedDocuments((prev) => {
-  //     const newDocuments = [...prev];
-  //     newDocuments.splice(index, 1);
-
-  //     setValue("documents", newDocuments, { shouldValidate: true });
-  //     return newDocuments;
-  //   });
-  // };
 
   if (submitSuccess) {
     return (

@@ -58,6 +58,8 @@ function FileUploader({
     return null;
   };
 
+  console.log("Uplaoding DOc", uploadingDoc);
+
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     docType: string

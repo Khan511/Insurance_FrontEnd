@@ -1,7 +1,9 @@
-import type { ClaimFormData } from "@/pages/claim/Types";
+import type { ClaimApiResponse, ClaimFormData } from "@/pages/claim/Types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseUrl = "http://localhost:8080/api/claim-metadata";
+
+type GetClaimsResponse = { claim: ClaimApiResponse[] };
 
 export const claimMetadataApi = createApi({
   reducerPath: "claimMetadataApi",
@@ -35,6 +37,13 @@ export const claimMetadataApi = createApi({
         body: claimData,
       }),
     }),
+
+    getAllClaimsOfUser: builder.query<GetClaimsResponse, string>({
+      query: (userId) => ({
+        url: `/get-all-claims/${userId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -43,4 +52,5 @@ export const {
   useGetRequiredDocumentsQuery,
   useGetIncidentTypesQuery,
   useSubmitClaimMutation,
+  useGetAllClaimsOfUserQuery,
 } = claimMetadataApi;

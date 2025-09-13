@@ -15,8 +15,10 @@ import { CustomerProductForm } from "./components/forms/customerPolicyForm/Custo
 import MyPage from "./pages/MyPage";
 import Claim from "./pages/claim/Claim";
 import MyPoliciesDetails from "./components/mypage/myPolicies/MyPoliciesDetails";
+import ClaimDetailsPage from "./components/mypage/myClaims/ClaimDetails";
 
 // Working in myPage in my polices. Add beneficiary details
+// Working in myPage in my Claim. Doceumtn attachemtn need some more properties
 
 // INSURANCE YOUTUBE WEBSITE
 // https://www.codewithmurad.com/2024/05/insurance-management-system-project.html
@@ -50,6 +52,10 @@ function App() {
               element={<MyPoliciesDetails />}
             />
             <Route path="/my-claim" element={<Claim />} />
+            <Route
+              path="/my-claims/:claimNumber"
+              element={<ClaimDetailsPage />}
+            />
           </Route>
         </Routes>
       </main>
@@ -59,3 +65,5 @@ function App() {
   );
 }
 export default App;
+
+// Need to set up Make Payment in My Policies + Evergency COntact+ Insurace Agent
