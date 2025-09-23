@@ -1,5 +1,7 @@
 import { useGetPolicyDetailsQuery } from "@/services/InsurancePolicySlice";
 import { useParams } from "react-router";
+import { Button } from "@/components/ui/button";
+import { Link as RouterLink } from "react-router-dom";
 
 // Define the TypeScript interfaces for the policy data
 interface Category {
@@ -163,6 +165,14 @@ export default function MyPoliciesDetails() {
       {/* Tailwind CSS CDN script for styling */}
 
       <div className="max-w-4xl mx-auto  font-sans">
+        <div>
+          <Button asChild variant="outline" className=" ">
+            <RouterLink to="/my-page">
+              <span>←</span>
+              <span>Back</span>
+            </RouterLink>
+          </Button>
+        </div>
         {/* Header Section */}
         <div className="bg-white shadow-xl rounded-2xl p-4 my-4 sm:p-5 text-center border-t-8 border-indigo-500">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">

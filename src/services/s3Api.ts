@@ -1,4 +1,60 @@
+// import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+// const baseUrl = "http://localhost:8080/api/s3";
+
+// export const s3Api = createApi({
+//   reducerPath: "s3Api",
+//   baseQuery: fetchBaseQuery({
+//     baseUrl,
+//     credentials: "include",
+//     prepareHeaders: (headers, { getState }) => {
+//       headers.set("Content-Type", "application/json");
+//       headers.set("Accept", "application/json");
+//       return headers;
+//     },
+//   }),
+//   // tagTypes: ["Auth"],
+//   tagTypes: ["user", "roles"],
+//   endpoints: (builder) => ({
+//     deleteFile: builder.mutation<void, string>({
+//       query: (fileUrl) => ({
+//         url: `/delete-object?imageUrl=${encodeURIComponent(fileUrl)}`,
+//         method: "DELETE",
+//       }),
+//     }),
+
+//     getDownloadUrl: builder.mutation<
+//       {
+//         downloadUrl: string;
+//         expiresAt: number;
+//       },
+//       string
+//     >({
+//       query: (fileKey) => ({
+//         url: `/presigned-download-url?fileKey=${encodeURIComponent(fileKey)}`,
+//         method: "GET",
+//       }),
+//     }),
+
+//     // Add this endpoint for direct file download
+//     downloadFile: builder.mutation<Blob, { fileKey: string; fileName: string }>(
+//       {
+//         query: ({ fileKey }) => ({
+//           url: `/download-file?fileKey=${encodeURIComponent(fileKey)}`,
+//           method: "GET",
+//           responseHandler: (response) => response.blob(), // Handle response as blob
+//         }),
+//       }
+//     ),
+//   }),
+// });
+// export const {
+//   useDeleteFileMutation,
+//   useGetDownloadUrlMutation,
+//   useDownloadFileMutation,
+// } = s3Api;
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 const baseUrl = "http://localhost:8080/api/s3";
 
 export const s3Api = createApi({
@@ -6,14 +62,12 @@ export const s3Api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl,
     credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
+    prepareHeaders: (headers) => {
       headers.set("Content-Type", "application/json");
       headers.set("Accept", "application/json");
       return headers;
     },
   }),
-  // tagTypes: ["Auth"],
-  tagTypes: ["user", "roles"],
   endpoints: (builder) => ({
     deleteFile: builder.mutation<void, string>({
       query: (fileUrl) => ({
@@ -21,6 +75,35 @@ export const s3Api = createApi({
         method: "DELETE",
       }),
     }),
+
+    getDownloadUrl: builder.mutation<
+      {
+        downloadUrl: string;
+        expiresAt: number;
+      },
+      string
+    >({
+      query: (fileKey) => ({
+        url: `/presigned-download-url?fileKey=${encodeURIComponent(fileKey)}`,
+        method: "GET",
+      }),
+    }),
+
+    // Use query instead of mutation for direct download
+    downloadFile: builder.query<Blob, string>({
+      query: (fileKey) => ({
+        url: `/download-file?fileKey=${encodeURIComponent(fileKey)}`,
+        method: "GET",
+        responseHandler: (response) => response.blob(),
+      }),
+      // Mark this as a non-serializable value to avoid Redux warnings
+      transformResponse: (response: Blob) => response,
+    }),
   }),
 });
-export const { useDeleteFileMutation } = s3Api;
+
+export const {
+  useDeleteFileMutation,
+  useGetDownloadUrlMutation,
+  useDownloadFileQuery, // Changed to useQuery
+} = s3Api;

@@ -29,7 +29,7 @@ const ProductDetailsPage = () => {
     );
   }
 
-  console.log("Policy Id: ", policyDetails);
+  console.log("Policy Details: ", policyDetails);
 
   return (
     <div className="container bg-gray-200 min-h-screen ">

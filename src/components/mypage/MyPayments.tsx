@@ -2,6 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
+import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
+import {
+  useGetAllPoliciesOfUserQuery,
+  // useGetPolicyPaymentsQuery,
+} from "@/services/InsurancePolicySlice";
 
 export type Payment = {
   id: number;
@@ -15,6 +20,19 @@ interface Props {
 }
 
 export default function Mypayments({ upcomingPayments }: Props) {
+  const { data: currentUser } = useGetCurrenttUserQuery();
+  const userId = currentUser?.data?.user?.userId;
+  const { data: myAllPolicies, isLoading } = useGetAllPoliciesOfUserQuery(
+    userId || "",
+    {
+      skip: !userId,
+    }
+  );
+
+  // const { data: policyPayments } = useGetPolicyPaymentsQuery();
+
+  // console.log("PolicyPayments", policyPayments);
+
   return (
     <TabsContent value="payments">
       <Card className="mt-6">
@@ -23,22 +41,22 @@ export default function Mypayments({ upcomingPayments }: Props) {
         </CardHeader>
         <CardContent>
           <div className="mb-6">
-            <h3 className="font-semibold mb-4">Upcoming Payments</h3>
+            <h3 className="font-semibold  m-2 mb-3">Upcoming Payments</h3>
             <div className="space-y-4">
-              {upcomingPayments.map((payment) => (
+              {myAllPolicies?.map((policy) => (
                 <div
-                  key={payment.id}
+                  key={policy.id}
                   className="flex justify-between items-center p-3 border rounded-lg"
                 >
                   <div>
-                    <p className="font-medium">Policy #{payment.policy}</p>
-                    <p className="text-sm text-gray-600 flex items-center">
+                    <p className="font-medium">Policy #{policy.productCode}</p>
+                    <p className="text-sm text-gray-600 flex iteyou ms-center">
                       <Calendar className="h-4 w-4 mr-1" />
-                      Due: {payment.dueDate}
+                      {/* Due: {policy.dueDate} */}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium">{payment.amount}</p>
+                    <p className="font-medium">{}</p>
                     <Button size="sm" className="text-white">
                       Pay Now
                     </Button>

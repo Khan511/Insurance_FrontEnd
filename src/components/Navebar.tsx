@@ -56,7 +56,7 @@ function Navbare() {
             </NavDropdown>
           </Nav>
           <Nav>
-            <Nav.Link href="/my-claim">Report damage</Nav.Link>
+            <Nav.Link href="/file-claim">File Claim</Nav.Link>
             {currentUser?.status !== 200 && !currentUser?.data.user ? (
               <Nav.Link eventKey={2} href="/login">
                 Log in

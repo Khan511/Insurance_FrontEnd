@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { useGetAllClaimsOfUserQuery } from "@/services/ClaimMetaDataApi";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
+import { useFileDownload } from "./useFileDownlaod";
 
 type DateTuple = [number, number, number, number?, number?];
 
@@ -42,9 +43,11 @@ function formatDateTime(value?: DateTuple | string, locale = "en-GB") {
 }
 
 export default function ClaimDetailsPage() {
+  const { downloadFile, activeKey, error } = useFileDownload();
   const { claimNumber } = useParams<{ claimNumber: string }>();
   const location = useLocation() as { state?: { claim?: any } };
-  const fastClaim = location.state?.claim; // comes from Link state if available
+  // comes from Link state if available
+  const fastClaim = location.state?.claim;
 
   // Fallback: load all claims for current user and find by claimNumber (in case user refreshed page)
   const { data: currentUser } = useGetCurrenttUserQuery();
@@ -257,11 +260,11 @@ export default function ClaimDetailsPage() {
                 </div>
               ) : (
                 <Table>
-                  <TableHeader>
+                  <TableHeader className="">
                     <TableRow>
                       <TableHead>Type</TableHead>
                       <TableHead>File Name</TableHead>
-                      <TableHead>Checksum (SHA-256)</TableHead>
+                      {/* <TableHead>Checksum (SHA-256)</TableHead> */}
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -272,20 +275,20 @@ export default function ClaimDetailsPage() {
                           {doc.documentType}
                         </TableCell>
                         <TableCell>{doc.originalFileName}</TableCell>
-                        <TableCell className="text-xs break-all">
-                          {doc.sha256Checksum}
-                        </TableCell>
+
                         <TableCell>
                           {doc.fileUrl ? (
-                            <Button asChild variant="outline" size="sm">
-                              <a
-                                href={doc.fileUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Download
-                              </a>
-                            </Button>
+                            <button
+                              className="btn btn-secondary"
+                              disabled={activeKey === doc.fileKey}
+                              onClick={() =>
+                                downloadFile(doc.fileKey, doc.originalFileName)
+                              }
+                            >
+                              {activeKey === doc.fileKey
+                                ? "Preparing..."
+                                : "Downlaod"}
+                            </button>
                           ) : (
                             <span className="text-xs text-muted-foreground">
                               No file URL

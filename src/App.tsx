@@ -51,7 +51,7 @@ function App() {
               path="/my-page/policy/:policyId"
               element={<MyPoliciesDetails />}
             />
-            <Route path="/my-claim" element={<Claim />} />
+            <Route path="/file-claim" element={<Claim />} />
             <Route
               path="/my-claims/:claimNumber"
               element={<ClaimDetailsPage />}

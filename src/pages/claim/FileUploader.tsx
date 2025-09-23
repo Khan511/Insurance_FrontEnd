@@ -2,6 +2,7 @@ import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import { FileKey } from "lucide-react";
 
 interface DocumentType {
   name: string;
@@ -86,18 +87,22 @@ function FileUploader({
       const sha256Checksum = await calculateSHA256(file);
 
       // Generate a Uniq storage ID
-      const storageId = uuidv4();
+      // const storageId = uuidv4();
 
       // Get file extension
-      const fileExtension = file.name.split(".").pop()?.toLowerCase() || "";
+      // const fileExtension = file.name.split(".").pop()?.toLowerCase() || "";
 
       // Create user folder name
-      const userName = `${currentUser?.data?.user.name.firstName || "User"}_${
-        currentUser?.data?.user.name.lastName || "Unknown"
-      }`;
+      // const userName = `${currentUser?.data?.user.name.firstName || "User"}_${
+      //   currentUser?.data?.user.name.lastName || "Unknown"
+      // }`.replace(/[^a-zA-Z0-9_-]/g, "_");
 
-      // const fileKey = `${userName}_${currentUser?.data.user.userId}`;
-      const fileKey = `${userName}_${currentUser?.data.user.userId}/${storageId}.${fileExtension}`;
+      // Create a safe filename
+      const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+
+      // Use the original file extension
+
+      // const fileKey = `${userName}_${currentUser?.data.user.userId}/${storageId}.${fileExtension}`;
 
       // Step 1: Get pre-signed URL from backend
       const presignedUrlResponse = await fetch(
@@ -130,7 +135,10 @@ function FileUploader({
       }
 
       const responseData = JSON.parse(responseText);
-      const { presignedUrl, fileUrl } = responseData;
+      const { presignedUrl, fileUrl, fileKey } = responseData;
+
+      // const urlObj = new URL(fileUrl);
+      // const fileKey = decodeURIComponent(urlObj.pathname.substring(1));
 
       // Step 2: Upload file to S3 using pre-signed URL
       const uploadResponse = await fetch(presignedUrl, {
@@ -147,7 +155,7 @@ function FileUploader({
 
       // Create complete metadata for the document
       const metadata = {
-        storageId,
+        storageId: fileKey.split("/").pop()?.split("_")[0],
         storageBucket: "insurance-documents",
         originalFileName: file.name,
         contentType: file.type,

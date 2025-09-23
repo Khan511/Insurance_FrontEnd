@@ -1,95 +1,115 @@
 import { TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "../../ui/button";
 import { Calendar } from "lucide-react";
 import { Link } from "react-router";
+import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
+import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 
-// export type Policy = {
-//   id: number;
-//   number: string;
-//   type: string;
-//   status: string;
-//   premium: string;
-//   renewal: string;
+// export type MonetaryAmount = {
+//   amount: number;
+//   currency: string;
 // };
 
-export type MonetaryAmount = {
-  amount: number;
-  currency: string;
-};
+// export type CoverageDetails = {
+//   coverageType: string;
+//   description: string;
+//   coverageLimit: MonetaryAmount;
+//   deductible: MonetaryAmount;
+// };
 
-export type CoverageDetails = {
-  coverageType: string;
-  description: string;
-  coverageLimit: MonetaryAmount;
-  deductible: MonetaryAmount;
-};
+// export type ProductType =
+//   | "AUTO"
+//   | "HEALTH"
+//   | "LIFE"
+//   | "PROPERTY"
+//   | "TRAVEL"
+//   | "LIABILITY"
+//   | "PET";
 
-export type ProductType =
-  | "AUTO"
-  | "HEALTH"
-  | "LIFE"
-  | "PROPERTY"
-  | "TRAVEL"
-  | "LIABILITY"
-  | "PET";
+// export type Category = {
+//   id: number;
+//   name: string;
+//   description: string;
+// };
 
-export type Category = {
-  id: number;
-  name: string;
-  description: string;
-};
+// export type PolicyPeriod = {
+//   effectiveDate: DateTuple | string;
+//   expirationDate: DateTuple | string;
+// };
 
-export type PolicyPeriod = {
-  effectiveDate: string;
-  expirationDate: string;
-};
+// export type ProductTranslation = {
+//   displayName: string;
+//   description: string;
+// };
 
-export type ProductTranslation = {
-  displayName: string;
-  description: string;
-};
+// export type AgeBracket = {
+//   minAge?: number;
+//   maxAge?: number;
+//   multiplier?: number;
+//   factor?: number;
+// };
 
-export type AgeBracket = {
-  minAge?: number;
-  maxAge?: number;
-  multiplier?: number;
-  factor?: number;
-};
+// export type PremiumCalculationConfig = {
+//   formula?: string;
+//   factors?: Record<string, number>;
+//   basePremium?: MonetaryAmount;
+//   ageBrackets?: AgeBracket[];
+//   includeTax?: boolean;
+//   commissionRate?: number;
+// };
 
-export type PremiumCalculationConfig = {
-  formula?: string;
-  factors?: Record<string, number>;
-  basePremium?: MonetaryAmount;
-  ageBrackets?: AgeBracket[];
-  includeTax?: boolean;
-  commissionRate?: number;
-};
+// export type InsuraceProduct = {
+//   id: number;
+//   productCode: string;
+//   policyNumber: string;
+//   displayName: string;
+//   status: string;
+//   description: string;
+//   productType: ProductType;
+//   coverageDetails: CoverageDetails[];
+//   eligibilityRules: { [key: string]: string };
+//   targetAudience: string[];
+//   regions: string[];
+//   category: Category;
+//   validityPeriod: PolicyPeriod;
+//   allowedClaimTypes: string[];
+//   translation: { [locale: string]: ProductTranslation };
+//   calculationConfig?: PremiumCalculationConfig;
+// };
 
-export type InsuraceProduct = {
-  id: number;
-  productCode: string;
-  policyNumber: string;
-  displayName: string;
-  status: string;
-  description: string;
-  productType: ProductType;
-  coverageDetails: CoverageDetails[];
-  eligibilityRules: { [key: string]: string };
-  targetAudience: string[];
-  regions: string[];
-  category: Category;
-  validityPeriod: PolicyPeriod;
-  allowedClaimTypes: string[];
-  translation: { [locale: string]: ProductTranslation };
-  calculationConfig?: PremiumCalculationConfig;
-};
+// interface Props {
+//   policies: InsuraceProduct[];
+// }
 
-interface Props {
-  policies: InsuraceProduct[];
+type DateTuple = [number, number, number, number?, number?];
+
+function formatDate(dateInput: string | DateTuple, locale = "en-GB"): string {
+  let date: Date;
+
+  if (typeof dateInput === "string") {
+    date = new Date(dateInput);
+  } else {
+    // Handle DateTuple case
+    const [y, m, d, h = 0, min = 0] = dateInput;
+    date = new Date(y, m - 1, d, h, min);
+  }
+
+  return date.toLocaleDateString(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
-export default function MyPolicies({ policies }: Props) {
+export default function MyPolicies() {
+  const { data: currentUser } = useGetCurrenttUserQuery();
+  const userId = currentUser?.data?.user?.userId;
+  const { data: myAllPolicies, isLoading } = useGetAllPoliciesOfUserQuery(
+    userId || "",
+    {
+      skip: !userId,
+    }
+  );
   return (
     <TabsContent value="policies" className="mt-3 mb-5">
       <Card className="">
@@ -98,16 +118,16 @@ export default function MyPolicies({ policies }: Props) {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {policies.map((policy) => (
+            {myAllPolicies?.map((policy) => (
               <div
                 key={policy.id}
-                className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                className=" flex justify-between items-center border rounded-lg p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                  <div>
-                    <div className="flex justify-center items-center">
+                  <div className="flex-co">
+                    <div className="flex  ">
                       <h3 className="font-semibold">
-                        {policy.policyNumber.split("-")[0]} Insurance
+                        {policy.policyNumber.split("-")[0]} insurance
                       </h3>
                       <span
                         className={`ml-2 px-2 py-1 text-xs rounded-full ${
@@ -122,14 +142,15 @@ export default function MyPolicies({ policies }: Props) {
                     <p className="text-sm text-gray-600 mt-1">
                       {/* Policy #: {policy.number} */}
                     </p>
-                  </div>
 
-                  <div className="mt-3 sm:mt-0 text-right">
-                    {/* <p className="font-medium">{policy.premium}/mo</p> */}
-                    <p className="text-sm text-gray-600 flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {/* Renewal: {policy.renewal} */}
-                    </p>
+                    <div className="mt-3 sm:mt-0 text-right">
+                      {/* <p className="font-medium">{policy.premium}/mo</p> */}
+                      <p className="text-sm text-gray-600 flex gap-1 justify-start items-center">
+                        <span>Started:</span>{" "}
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {formatDate(policy.validityPeriod.effectiveDate)}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -140,12 +161,12 @@ export default function MyPolicies({ policies }: Props) {
                   >
                     View Details
                   </Link>
-                  <Link to="" className="btn btn-secondary  ">
+                  {/* <Link to="" className="btn btn-secondary  ">
                     Make Payment
-                  </Link>
-                  {/* <Button variant="outline" size="sm">
+                  </Link> */}
+                  {/* <Link to="#" className="btn btn-secondary">
                     File Claim
-                  </Button> */}
+                  </Link> */}
                 </div>
               </div>
             ))}

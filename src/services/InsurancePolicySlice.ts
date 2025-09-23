@@ -113,13 +113,36 @@ export type Customer = {
   contactInfo: ContactInfo;
 };
 type BuyPolicyFormValues = {
-  policyId?: string;
+  productId?: string;
   status: string;
   customer: Customer;
   // product: string;
   coveragePeriod: CoveragePeriod;
   beneficiaries?: Beneficiaries[];
 };
+
+// Policy Payments
+interface Payment {
+  id: number;
+  dueAmount: {
+    amount: number;
+    currency: string;
+  };
+  dueDate: string;
+  paidDate: string | null;
+  status: "pending" | "paid" | "overdue";
+}
+
+interface PolicyWithPayments {
+  id: number;
+  policyNumber: string;
+  productType: string;
+  premium: {
+    amount: number;
+    currency: string;
+  };
+  paymentSchedule: Payment[];
+}
 
 export const InsurancePolicySlice = createApi({
   reducerPath: "InsuracePolicyApi",
@@ -156,6 +179,12 @@ export const InsurancePolicySlice = createApi({
         method: "GET",
       }),
     }),
+    // getPolicyPayments: builder.query<PolicyWithPayments, void>({
+    //   query: () => ({
+    //     url: `/my-policies/payments`,
+    //     method: "GET",
+    //   }),
+    // }),
   }),
 });
 
@@ -163,4 +192,5 @@ export const {
   useBuyPolicyMutation,
   useGetAllPoliciesOfUserQuery,
   useGetPolicyDetailsQuery,
+  // useGetPolicyPaymentsQuery,
 } = InsurancePolicySlice;

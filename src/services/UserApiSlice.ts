@@ -16,6 +16,7 @@ type UserResponse = {
     user: {
       userId: string;
       email: string;
+      createdAt: string;
       name: {
         firstName: string;
         lastName: string;
