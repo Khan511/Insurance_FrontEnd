@@ -77,13 +77,10 @@ const ProductDetailsPage = () => {
 
       {showCalculator && policyDetails && (
         <PremiumCaculator
-          productType={policyDetails.productType}
-          calculationConfig={policyDetails.calculationConfig}
-          basePremium={policyDetails.calculationConfig?.basePremium?.amount}
-          onCalculate={setCalculatedPremium}
+          insuranceType={policyDetails.productType}
+          productId={policyDetails.id}
         />
       )}
-
       <ResizablePanelGroup
         direction="vertical"
         className="min-h-[600px]  rounded-lg border w-full"

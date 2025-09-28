@@ -42,6 +42,7 @@ import { useGetProductDetailsQuery } from "@/services/InsuranceProductSlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import { useParams } from "react-router";
 import { useBuyPolicyMutation } from "@/services/InsurancePolicySlice";
+import PremiumCaculator from "@/components/premiumcalculation/PremiumCaculator";
 
 const addressKeys = ["street", "city", "postalCode", "country"] as const;
 
@@ -63,9 +64,8 @@ const formSchema = z.object({
   healthCondition: z.string().optional(), // For life insurance
   propertyValue: z.number().optional(), // For home insurance
   propertyLocation: z.string().optional(),
-  paymentFrequency: z
-    .enum(["MONTHLY", "QUARTERLY", "ANNUAL"])
-    .default("MONTHLY"),
+  paymentFrequency: z.enum(["MONTHLY", "QUARTERLY", "ANNUAL"]),
+
   customer: z.object({
     userId: z.string(),
 
@@ -212,7 +212,7 @@ export function CustomerProductForm() {
       form.setValue("customer.contactInfo.billingAddress", primaryAddress);
       form.clearErrors("customer.contactInfo.billingAddress");
     }
-  }, ["customer.contactInfo.primaryAddress", sameAsPrimary]);
+  }, [sameAsPrimary, form]);
 
   const onSubmit = async (data: FormValues) => {
     console.log("Form submitted:", data);
@@ -314,20 +314,26 @@ export function CustomerProductForm() {
 
   return (
     <div className="  p-3 max-w-5xl m-auto my-5 rounded-2xl shadow-2xl">
+      {insuranceType && (
+        <PremiumCaculator
+          insuranceType={insuranceType}
+          productId={Number(productId)}
+        />
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-6">
           <p className="text-xl font-semibold underline mb-4 text-center text-blue-500">
             Customer Information
           </p>
+
           {/* Customer Information */}
 
           {/* Risk Factors Section - Conditionally shown based on insurance type */}
-          {insuranceType && (
+          {/* {insuranceType && (
             <div>
               <p className="text-xl font-semibold underline mb-4 text-center text-blue-500">
                 Risk Factors
               </p>
-
               {insuranceType === "AUTO" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <FormField
@@ -374,7 +380,6 @@ export function CustomerProductForm() {
                   />
                 </div>
               )}
-
               {insuranceType === "LIFE" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <FormField
@@ -405,7 +410,6 @@ export function CustomerProductForm() {
                   />
                 </div>
               )}
-
               {insuranceType === "PROPERTY" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <FormField
@@ -462,6 +466,7 @@ export function CustomerProductForm() {
                   />
                 </div>
               )}
+
               <FormField
                 control={form.control}
                 name="paymentFrequency"
@@ -486,6 +491,8 @@ export function CustomerProductForm() {
               />
             </div>
           )}
+          */}
+
           <div>
             {/* <Separator className="max-w-40 bg-black  m-auto mt-4" /> */}
             {/* Policy Information */}

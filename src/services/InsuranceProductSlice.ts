@@ -32,12 +32,12 @@ export type ProductTranslation = {
 
 export type ProductType =
   | "AUTO"
-  | "HEALTH"
+  // | "HEALTH"
   | "LIFE"
-  | "PROPERTY"
-  | "TRAVEL"
-  | "LIABILITY"
-  | "PET";
+  | "PROPERTY";
+// | "TRAVEL"
+// | "LIABILITY"
+// | "PET";
 // New types for premium calculation
 export type AgeBracket = {
   minAge?: number;

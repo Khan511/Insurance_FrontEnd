@@ -31,12 +31,12 @@ export type ProductTranslation = {
 
 export type ProductType =
   | "AUTO"
-  | "HEALTH"
+  // | "HEALTH"
   | "LIFE"
-  | "PROPERTY"
-  | "TRAVEL"
-  | "LIABILITY"
-  | "PET";
+  | "PROPERTY";
+// | "TRAVEL"
+// | "LIABILITY"
+// | "PET";
 
 export type InsuraceProduct = {
   id: number;

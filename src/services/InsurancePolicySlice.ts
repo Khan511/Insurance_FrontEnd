@@ -32,12 +32,12 @@ export type ProductTranslation = {
 
 export type ProductType =
   | "AUTO"
-  | "HEALTH"
+  // | "HEALTH"
   | "LIFE"
-  | "PROPERTY"
-  | "TRAVEL"
-  | "LIABILITY"
-  | "PET";
+  | "PROPERTY";
+// | "TRAVEL"
+// | "LIABILITY"
+// | "PET";
 
 export type AgeBracket = {
   minAge?: number;
@@ -115,34 +115,41 @@ export type Customer = {
 type BuyPolicyFormValues = {
   productId?: string;
   status: string;
+
+  // Risk factor
+  vehicleValue?: number | undefined;
+  drivingExperience?: number | undefined;
+  healthCondition?: string;
+  propertyValue?: number | undefined;
+  propertyLocation?: string;
+  paymentFrequency: string;
+
   customer: Customer;
   // product: string;
   coveragePeriod: CoveragePeriod;
   beneficiaries?: Beneficiaries[];
 };
 
-// Policy Payments
-interface Payment {
-  id: number;
-  dueAmount: {
-    amount: number;
-    currency: string;
+export type PremiumCalculationRequest = {
+  productId: number;
+  riskFactors: {
+    vehicleValue?: number;
+    drivingExperience?: number;
+    healthCondition?: string;
+    propertyValue?: number;
+    propertyLocation?: string;
+    // age?: number;
   };
-  dueDate: string;
-  paidDate: string | null;
-  status: "pending" | "paid" | "overdue";
-}
+  paymentFrequency: string;
+};
 
-interface PolicyWithPayments {
-  id: number;
-  policyNumber: string;
-  productType: string;
-  premium: {
-    amount: number;
-    currency: string;
-  };
-  paymentSchedule: Payment[];
-}
+export type PremiumCalculationResponse = {
+  amount: number;
+  currency: string;
+  installmentAmount: number;
+  paymentFrequency: string;
+  formulaUsed: string;
+};
 
 export const InsurancePolicySlice = createApi({
   reducerPath: "InsuracePolicyApi",
@@ -185,6 +192,17 @@ export const InsurancePolicySlice = createApi({
     //     method: "GET",
     //   }),
     // }),
+
+    calculatePremium: builder.mutation<
+      PremiumCalculationResponse,
+      PremiumCalculationRequest
+    >({
+      query: (data) => ({
+        url: "/premium/calculate",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -192,5 +210,6 @@ export const {
   useBuyPolicyMutation,
   useGetAllPoliciesOfUserQuery,
   useGetPolicyDetailsQuery,
+  useCalculatePremiumMutation,
   // useGetPolicyPaymentsQuery,
 } = InsurancePolicySlice;
