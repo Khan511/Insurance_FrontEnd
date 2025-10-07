@@ -10,12 +10,10 @@ import { Link } from "react-router";
 import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import { useGetAllClaimsOfUserQuery } from "@/services/ClaimMetaDataApi";
-import { membershipDuration } from "./MembershipDuration";
 
-const upcomingPayments = [
-  { id: 1, policy: "POL-87654321", amount: "$120.00", dueDate: "2024-09-15" },
-  { id: 2, policy: "POL-12345678", amount: "$85.50", dueDate: "2024-10-22" },
-];
+import { membershipDuration } from "@/components/memberShipDuration/MembershipDuration";
+import { Spinner } from "react-bootstrap";
+import { getUpcomingPayments } from "@/components/mypage/Utils";
 
 export default function MyPage() {
   const { data: currentUser } = useGetCurrenttUserQuery();
@@ -51,6 +49,17 @@ export default function MyPage() {
   );
   console.log("Plicies: ", myAllPolicies);
 
+  const upcomingPayments = getUpcomingPayments(myAllPolicies || [], 20);
+
+  console.log("UpcomingPayments", upcomingPayments);
+
+  if (isLoading)
+    return (
+      <div className=" flex justify-center items-center ext-center mt-5 mx-auto">
+        <Spinner />
+      </div>
+    );
+
   return (
     <div className="container mx-auto px-4 py-5">
       <div className="flex flex-col md:flex-row justify-between items-start ">
@@ -61,10 +70,10 @@ export default function MyPage() {
           </p>
         </div>
         <Link
-          to="/my-claim"
+          to="/file-claim"
           className=" md:mt-0  flex justify-center items-center gap-0.5 bg-blue-500 py-2 px-2 rounded-md text-white font-semibold"
         >
-          <Plus className="mr-2 h-4 w-4   " />
+          <Plus className="mr-2 h-4 w-4" />
           New Claim
         </Link>
       </div>
@@ -116,8 +125,13 @@ export default function MyPage() {
             <CreditCard className="h-5 w-5 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
-            <p className="text-xs text-gray-500">Next due in 45 days</p>
+            {/* Upcoming Payments Section - FIXED LINE BELOW */}
+            <CardContent>
+              <div className="text-2xl font-bold mb-2">
+                {upcomingPayments.length}
+              </div>
+              <p className="text-xs text-gray-500">Next due in 20 days</p>
+            </CardContent>
           </CardContent>
         </Card>
 
@@ -150,18 +164,17 @@ export default function MyPage() {
 
         {/* Claims Tab */}
         <MyClaimComponent />
-        {/* <MyClaimComponent claims={claims} /> */}
 
         {/* Payments Tab */}
-        <Mypayments upcomingPayments={upcomingPayments} />
+        <Mypayments />
 
         {/* Documents Tab */}
         {/* <MyDocuments documents={documents} /> */}
       </Tabs>
 
       {/* Additional Suggestions Section */}
-      <div className="mt-10">
-        <h2 className="text-xl font-bold mb-4">More Services</h2>
+      <div className="mt-5">
+        <p className="text-xl font-bold mb-4">More Services</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* <Card className="hover:shadow-md transition-shadow p-2">
             <CardHeader>
@@ -183,7 +196,9 @@ export default function MyPage() {
               <p className="text-gray-600 mb-4">
                 Access 24/7 support and emergency service contacts
               </p>
-              <Button variant="outline">View Contacts</Button>
+              <Link to="/all-products" className="btn outline">
+                View Contacts
+              </Link>
             </CardContent>
           </Card>
 

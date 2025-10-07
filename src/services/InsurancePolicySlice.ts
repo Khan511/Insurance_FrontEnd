@@ -54,6 +54,7 @@ export type PremiumCalculationConfig = {
   includeTax?: boolean;
   commissionRate?: number;
 };
+
 export type InsuracePolicy = {
   id: number;
   productCode: string;
@@ -71,6 +72,23 @@ export type InsuracePolicy = {
   allowedClaimTypes: string[];
   translation: { [locale: string]: ProductTranslation };
   calculationConfig?: PremiumCalculationConfig;
+
+  premium: number;
+  currency: string;
+  paymentFrequency: string; // 'MONTHLY' | 'QUARTERLY' | 'ANNUAL'
+  paymentSchedules: PaymentSchedule[];
+
+  beneficiaries: Beneficiaries[];
+};
+
+//PaymentSchedule type
+export type PaymentSchedule = {
+  id: number;
+  dueAmount: number;
+  currency: string;
+  dueDate: string;
+  paidDate: string | null;
+  status: string; // 'PENDING' | 'PAID' | 'OVERDUE'
 };
 
 export type GovernmentId = {
@@ -100,8 +118,8 @@ export type Beneficiaries = {
   name: string;
   relationship: string;
   dateOfBirth?: Date;
-  taxCountry: string;
-  taxIdentifier: string;
+  // taxCountry: string;
+  // taxIdentifier: string;
 };
 
 export type CoveragePeriod = {
@@ -112,7 +130,7 @@ export type Customer = {
   governmentId: GovernmentId;
   contactInfo: ContactInfo;
 };
-type BuyPolicyFormValues = {
+export type BuyPolicyFormValues = {
   productId?: string;
   status: string;
 

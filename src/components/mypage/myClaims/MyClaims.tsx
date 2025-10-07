@@ -1,13 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { useGetAllClaimsOfUserQuery } from "@/services/ClaimMetaDataApi";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
-import { useState } from "react";
+import { Spinner } from "react-bootstrap";
+// import { useState } from "react";
 
 // import ClaimDetails from "./ClaimDetails";
 
-import type { ClaimApiResponse } from "@/pages/claim/Types";
+// import type { ClaimApiResponse } from "@/pages/claim/Types";
 import { Link } from "react-router";
 
 type DateTuple = [number, number, number, number?, number?];
@@ -61,12 +62,18 @@ export default function MyClaims() {
 
   const userId = currentUser?.data.user.userId;
 
-  const { data: claims } = useGetAllClaimsOfUserQuery(userId || "", {
+  const { data: claims, isLoading } = useGetAllClaimsOfUserQuery(userId || "", {
     skip: !userId,
   });
 
   console.log("My Claims: ", claims);
 
+  if (isLoading)
+    return (
+      <div className=" flex justify-center items-center ext-center mt-5 mx-auto">
+        <Spinner />
+      </div>
+    );
   return (
     <TabsContent value="claims" className="mt-3 mb-5">
       <Card className=" ">

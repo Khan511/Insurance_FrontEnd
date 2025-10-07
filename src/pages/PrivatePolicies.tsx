@@ -8,7 +8,7 @@ export const PrivatePolicies = () => {
 
   if (isLoading)
     return (
-      <div className="text-center mt-5">
+      <div className=" flex justify-center items-center ext-center mt-5 mx-auto">
         <Spinner />
       </div>
     );

@@ -1,20 +1,4 @@
-import {
-  FormField,
-  FormItem,
-  FormMessage,
-  FormControl,
-  FormLabel,
-  Form,
-} from "../ui/form";
-import { Input } from "../ui/input";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "../ui/form";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,7 +48,6 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
   });
 
   const onSubmit = async (data: InsuranceFormData) => {
-    console.log("Form data:", data);
     setCalculationError(null);
     setCalculatedPremium(null);
     // Handle form submission
@@ -129,151 +112,6 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
         return "";
     }
   };
-
-  // const renderInputs = () => {
-  //   switch (insuranceType) {
-  //     case "AUTO":
-  //       return (
-  //         <div className="grid grid-cols-1 gap-6 mb-3">
-  //           <FormField
-  //             control={form.control}
-  //             name="vehicleValue"
-  //             render={({ field }) => (
-  //               <FormItem>
-  //                 <FormLabel>Vehicle Value (DKK)</FormLabel>
-  //                 <FormControl>
-  //                   <Input
-  //                     type="number"
-  //                     className="bg-white"
-  //                     placeholder="e.g., 200000"
-  //                     {...field}
-  //                     onChange={(e) =>
-  //                       field.onChange(parseFloat(e.target.value))
-  //                     }
-  //                   />
-  //                 </FormControl>
-  //                 <FormMessage />
-  //               </FormItem>
-  //             )}
-  //           />
-  //           <FormField
-  //             control={form.control}
-  //             name="drivingExperience"
-  //             render={({ field }) => (
-  //               <FormItem>
-  //                 <FormLabel>Driving Experience (Years)</FormLabel>
-  //                 <FormControl>
-  //                   <Input
-  //                     type="number"
-  //                     className="bg-white"
-  //                     placeholder="e.g., 5"
-  //                     {...field}
-  //                     onChange={(e) => field.onChange(parseInt(e.target.value))}
-  //                   />
-  //                 </FormControl>
-  //                 <FormMessage />
-  //               </FormItem>
-  //             )}
-  //           />
-  //         </div>
-  //       );
-
-  //     case "LIFE":
-  //       return (
-  //         <div className="grid grid-cols-1 gap-6 mb-6">
-  //           <FormField
-  //             control={form.control}
-  //             name="healthCondition"
-  //             render={({ field }) => (
-  //               <FormItem className="w-full">
-  //                 <FormLabel>Health Condition</FormLabel>
-  //                 <Select onValueChange={field.onChange} value={field.value}>
-  //                   <FormControl>
-  //                     <SelectTrigger className="bg-white w-full min-w-[200px]">
-  //                       <SelectValue placeholder="Select health condition" />
-  //                     </SelectTrigger>
-  //                   </FormControl>
-  //                   <SelectContent>
-  //                     <SelectItem className="p-2" value="EXCELLENT">
-  //                       Excellent
-  //                     </SelectItem>
-  //                     <SelectItem className="p-2" value="GOOD">
-  //                       Good
-  //                     </SelectItem>
-  //                     <SelectItem className="p-2" value="FAIR">
-  //                       Fair
-  //                     </SelectItem>
-  //                     <SelectItem className="p-2" value="POOR">
-  //                       Poor
-  //                     </SelectItem>
-  //                   </SelectContent>
-  //                 </Select>
-  //                 <FormMessage />
-  //               </FormItem>
-  //             )}
-  //           />
-  //         </div>
-  //       );
-
-  //     case "PROPERTY":
-  //       return (
-  //         <div className="grid grid-cols-1 gap-6 mb-6">
-  //           <FormField
-  //             control={form.control}
-  //             name="propertyValue"
-  //             render={({ field }) => (
-  //               <FormItem>
-  //                 <FormLabel>Property Value (DKK)</FormLabel>
-  //                 <FormControl>
-  //                   <Input
-  //                     type="number"
-  //                     className="bg-white"
-  //                     placeholder="e.g., 2500000"
-  //                     {...field}
-  //                     onChange={(e) =>
-  //                       field.onChange(parseFloat(e.target.value))
-  //                     }
-  //                   />
-  //                 </FormControl>
-  //                 <FormMessage />
-  //               </FormItem>
-  //             )}
-  //           />
-  //           <FormField
-  //             control={form.control}
-  //             name="propertyLocation"
-  //             render={({ field }) => (
-  //               <FormItem className="w-full">
-  //                 <FormLabel>Property Location</FormLabel>
-  //                 <Select onValueChange={field.onChange} value={field.value}>
-  //                   <FormControl>
-  //                     <SelectTrigger className="bg-white w-full min-w-[200px]">
-  //                       <SelectValue placeholder="Select location risk" />
-  //                     </SelectTrigger>
-  //                   </FormControl>
-  //                   <SelectContent className="w-[var(--radix-select-trigger-width)] max-w-[400px]">
-  //                     <SelectItem className="p-2" value="LOW_RISK">
-  //                       Low Risk Area
-  //                     </SelectItem>
-  //                     <SelectItem className="p-2" value="MEDIUM_RISK">
-  //                       Medium Risk Area
-  //                     </SelectItem>
-  //                     <SelectItem className="p-2" value="HIGH_RISK">
-  //                       High Risk Area
-  //                     </SelectItem>
-  //                   </SelectContent>
-  //                 </Select>
-  //                 <FormMessage />
-  //               </FormItem>
-  //             )}
-  //           />
-  //         </div>
-  //       );
-
-  //     default:
-  //       return null;
-  //   }
-  // };
 
   return (
     <div className=" mt-4 border rounded bg-gray-200 p-3">

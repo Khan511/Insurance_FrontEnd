@@ -4,6 +4,7 @@ import { Calendar } from "lucide-react";
 import { Link } from "react-router";
 import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
+import { Spinner } from "react-bootstrap";
 
 // export type MonetaryAmount = {
 //   amount: number;
@@ -110,6 +111,14 @@ export default function MyPolicies() {
       skip: !userId,
     }
   );
+
+  if (isLoading)
+    return (
+      <div className=" flex justify-center items-center ext-center mt-5 mx-auto">
+        <Spinner />
+      </div>
+    );
+
   return (
     <TabsContent value="policies" className="mt-3 mb-5">
       <Card className="">
@@ -133,7 +142,7 @@ export default function MyPolicies() {
                         className={`ml-2 px-2 py-1 text-xs rounded-full ${
                           policy.status === "ACTIVE"
                             ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-800"
+                            : "bg-yellow-100 text-gray-800"
                         }`}
                       >
                         {policy.status.toLocaleLowerCase()}

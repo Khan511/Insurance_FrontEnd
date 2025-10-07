@@ -9,13 +9,12 @@ const AllInsurances = () => {
   const { data: policies, isLoading } = useGetAllProductsQuery();
   console.log("All Products: " + policies);
 
-  if (isLoading) {
+  if (isLoading)
     return (
-      <div>
+      <div className=" flex justify-center items-center ext-center mt-5 mx-auto">
         <Spinner />
       </div>
     );
-  }
 
   return (
     <div className="container mb-5 ">

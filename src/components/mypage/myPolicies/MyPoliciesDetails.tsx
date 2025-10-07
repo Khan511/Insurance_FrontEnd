@@ -135,7 +135,7 @@ export default function MyPoliciesDetails() {
     // const [year, month, day] = dateString;
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
   };
@@ -304,6 +304,53 @@ export default function MyPoliciesDetails() {
             </ul>
           </div>
 
+          {/* Beneficiaries Card - Only show for Life insurance */}
+          {policyDetails?.productType === "LIFE" &&
+            policyDetails?.beneficiaries &&
+            policyDetails.beneficiaries.length > 0 && (
+              <div className="bg-white shadow-xl rounded-2xl p-4 md:col-span-2">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                  <span className="text-indigo-500 mr-2">👥</span> Beneficiaries
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {policyDetails?.beneficiaries.map((beneficiary, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 rounded-lg p-3 border border-gray-200"
+                    >
+                      <div className="flex items-center mb-3 gap-1 ">
+                        <div className="w-10 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                          <span className="text-indigo-600 font-semibold">
+                            {beneficiary.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </span>
+                        </div>
+                        <div className=" w-full flex justify-between items-center">
+                          <p className="font-semibold text-gray-800 m-0">
+                            {beneficiary.name}
+                          </p>
+                          <span className="text-sm text-gray-500">
+                            {beneficiary.relationship.charAt(0).toUpperCase() +
+                              beneficiary.relationship.slice(1).toLowerCase()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        <div className="flex justify-between">
+                          <span>Date of Birth:</span>
+                          <span className="font-medium">
+                            {formatDate(beneficiary.dateOfBirth?.toString())}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           {/* Audience, Regions, and Claim Types Card */}
           <div className="bg-white shadow-xl rounded-2xl p-4 md:col-span-2">
             <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
@@ -341,21 +388,23 @@ export default function MyPoliciesDetails() {
                   ))}
                 </div>
               </div>
-              <div className="flex-1 min-w-[200px]">
-                <span className="font-semibold text-gray-700 block mb-2">
-                  Allowed Claim Types:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {policyData.allowedClaimTypes.map((claimType, index) => (
-                    <span
-                      key={index}
-                      className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full"
-                    >
-                      {claimType.replace(/_/g, " ")}
-                    </span>
-                  ))}
+              {policyDetails?.productType === "LIFE" && (
+                <div className="flex-1 min-w-[200px]">
+                  <span className="font-semibold text-gray-700 block mb-2">
+                    Allowed Documents:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {policyData.allowedClaimTypes.map((claimType, index) => (
+                      <span
+                        key={index}
+                        className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full"
+                      >
+                        {claimType.replace(/_/g, " ")}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
