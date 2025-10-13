@@ -16,6 +16,7 @@ import MyPage from "./pages/MyPage";
 import Claim from "./pages/claim/Claim";
 import MyPoliciesDetails from "./components/mypage/myPolicies/MyPoliciesDetails";
 import ClaimDetailsPage from "./components/mypage/myClaims/ClaimDetails";
+import InsuranceAdminDashboard from "./pages/admin/InsuranceAdminDashbord";
 
 // Working in myPage in my polices. Add beneficiary details
 // Working in myPage in my Claim. Doceumtn attachemtn need some more properties
@@ -42,6 +43,7 @@ function App() {
           <Route path="/create-user" element={<CreateUser />} />
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
+            <Route path="/admin" element={<InsuranceAdminDashboard />} />
             <Route
               path="/product-buy-form/:productId"
               element={<CustomerProductForm />}

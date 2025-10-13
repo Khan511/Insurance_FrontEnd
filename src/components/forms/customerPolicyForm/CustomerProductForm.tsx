@@ -311,7 +311,7 @@ export function CustomerProductForm() {
 
   if (isLoading)
     return (
-      <div className=" flex justify-center items-center ext-center mt-5 mx-auto">
+      <div className=" flex justify-center items-center text-center mt-5 mx-auto">
         <Spinner />
       </div>
     );
