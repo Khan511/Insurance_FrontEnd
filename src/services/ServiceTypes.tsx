@@ -71,7 +71,7 @@ export type InsuracePolicy = {
   translation: { [locale: string]: ProductTranslation };
   calculationConfig?: PremiumCalculationConfig;
 
-  premium: number;
+  premium: string;
   currency: string;
   paymentFrequency: string; // 'MONTHLY' | 'QUARTERLY' | 'ANNUAL'
   paymentSchedules: PaymentSchedule[];

@@ -189,7 +189,6 @@ export default function Mypayments() {
           <div className="mb-6">
             <h3 className="font-semibold  m-2 mb-3">Upcoming Payments</h3>
             <div className="space-y-4">
-              {/* {myAllPolicies?.map((policy) => { */}
               {nextPendingPayments?.map(({ policy, nextPayment }) => {
                 // const nextPayment = policy.paymentSchedules?.[0];
                 const dueSoon = isDueSoon(nextPayment?.dueDate);
