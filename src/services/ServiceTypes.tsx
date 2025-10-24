@@ -116,7 +116,7 @@ export type ContactInfo = {
 export type Beneficiaries = {
   name: string;
   relationship: string;
-  dateOfBirth?: Date;
+  dateOfBirth?: Date | string;
   // taxCountry: string;
   // taxIdentifier: string;
 };
