@@ -132,21 +132,24 @@ export default function MyPoliciesDetails() {
 
   const formatDate = (dateString?: string): string => {
     if (!dateString) return "Date not available";
-    // const [year, month, day] = dateString;
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
   };
-  // const formatDate = (dateArray?: [number, number, number]): string => {
-  //   if (!dateArray) return "Date not available";
-  //   const [year, month, day] = dateArray;
-  //   return new Date(year, month - 1, day).toLocaleDateString("en-US", {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric",
-  //   });
+
+  // const formatDateForInput = (dateString?: Date | string | null): string => {
+  //   if (!dateString) return "";
+
+  //   const date = new Date(dateString);
+
+  //   // Get local date components (this avoids timezone issues)
+  //   const year = date.getFullYear();
+  //   const month = String(date.getMonth() + 1).padStart(2, "0");
+  //   const day = String(date.getDate()).padStart(2, "0");
+
+  //   return `${year}-${month}-${day}`;
   // };
 
   const getStatusColor = (status: string) => {

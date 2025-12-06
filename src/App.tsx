@@ -17,9 +17,8 @@ import Claim from "./pages/claim/Claim";
 import MyPoliciesDetails from "./components/mypage/myPolicies/MyPoliciesDetails";
 import ClaimDetailsPage from "./components/mypage/myClaims/ClaimDetails";
 import InsuranceAdminDashboard from "./pages/admin/InsuranceAdminDashbord";
-
-// Working in myPage in my polices. Add beneficiary details
-// Working in myPage in my Claim. Doceumtn attachemtn need some more properties
+import CustomerView from "./pages/admin/CustomerView";
+import CustomerEdit from "./pages/admin/EditCustomer";
 
 // INSURANCE YOUTUBE WEBSITE
 // https://www.codewithmurad.com/2024/05/insurance-management-system-project.html
@@ -44,6 +43,15 @@ function App() {
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/admin" element={<InsuranceAdminDashboard />} />
+            <Route
+              path="/admin/customers/:customerId"
+              element={<CustomerView />}
+            />
+            <Route
+              path="/admin/customers/:customerId/edit"
+              element={<CustomerEdit />}
+            />
+
             <Route
               path="/product-buy-form/:productId"
               element={<CustomerProductForm />}

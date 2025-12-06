@@ -43,7 +43,7 @@ function formatDateTime(value?: DateTuple | string, locale = "en-GB") {
 }
 
 export default function ClaimDetailsPage() {
-  const { downloadFile, activeKey, error } = useFileDownload();
+  const { downloadFile, activeKey } = useFileDownload();
   const { claimNumber } = useParams<{ claimNumber: string }>();
   const location = useLocation() as { state?: { claim?: any } };
   // comes from Link state if available
@@ -275,7 +275,6 @@ export default function ClaimDetailsPage() {
                           {doc.documentType}
                         </TableCell>
                         <TableCell>{doc.originalFileName}</TableCell>
-
                         <TableCell>
                           {doc.fileUrl ? (
                             <button

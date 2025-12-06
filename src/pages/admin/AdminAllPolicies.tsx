@@ -200,6 +200,7 @@ const AdminAllPolicies = () => {
 
   return (
     <div className="">
+      <p className="text-2xl font-semibold text-grau-600 mt-2 mb-0">Policies</p>
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-4">
           <div className="relative flex items-center">
