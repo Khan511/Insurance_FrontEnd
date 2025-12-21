@@ -2,6 +2,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import toast from "react-hot-toast";
 
 import {
@@ -29,16 +36,24 @@ import {
   UserCircle,
   Building,
   AlertCircle,
+  Filter,
+  RefreshCw,
+  FileCheck,
+  FileX,
+  Hourglass,
+  ShieldAlert,
+  CheckSquare,
+  TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFileDownload } from "@/components/mypage/myClaims/useFileDownlaod";
 import type { ClaimApiResponse } from "../claim/Types";
+import { getTimeDifferenceInHours } from "@/utils/Utils";
 
 // Edit form type
 type EditClaimForm = {
   status: string;
   claimId: string;
-
   incidentDetails: {
     description: string;
     claimAmount: string | null;
@@ -61,6 +76,17 @@ type EditClaimForm = {
 // Modal types for specific actions
 type ActionModalType = "approve" | "reject" | "pay" | "details" | "edit";
 
+// Filter type
+type ClaimFilter = {
+  status: string;
+  timeframe: string;
+  amountRange: string;
+  processingTime: string;
+  claimType: string;
+  hasDocuments: string;
+  searchTerm: string;
+};
+
 const AdminAllClaims = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -71,6 +97,17 @@ const AdminAllClaims = () => {
   const [activeModal, setActiveModal] = useState<ActionModalType | null>(null);
   const [editForm, setEditForm] = useState<EditClaimForm | null>(null);
 
+  // Filter state
+  const [filter, setFilter] = useState<ClaimFilter>({
+    status: "all",
+    timeframe: "all",
+    amountRange: "all",
+    processingTime: "all",
+    claimType: "all",
+    hasDocuments: "all",
+    searchTerm: "",
+  });
+
   // Action form states
   const [approveAmount, setApproveAmount] = useState<string>("");
   const [rejectionReason, setRejectionReason] = useState<string>("");
@@ -80,7 +117,12 @@ const AdminAllClaims = () => {
     data: allClaimsResponse,
     refetch,
     isLoading,
-  } = useGetAllClaimsQuery();
+    fulfilledTimeStamp,
+  } = useGetAllClaimsQuery({
+    sortBy: "submissiondate",
+    sortDirection: "DESC", // Changed to DESC for newest first
+  });
+
   const [updateClaim] = useUpdateClaimMutation();
   const [approveClaim, { isLoading: isApproving }] = useApproveClaimMutation();
   const [rejectClaim, { isLoading: isRejecting }] = useRejectClaimMutation();
@@ -90,16 +132,188 @@ const AdminAllClaims = () => {
   // Correctly access the claims array from the response
   const allClaims: ClaimApiResponse[] = allClaimsResponse || [];
 
-  const filteredClaims = allClaims?.filter(
-    (claim) =>
-      claim.claimNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.policyNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.incidentDetails.type
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      claim.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      claim.customerEmail?.toLowerCase().includes(searchTerm.toLowerCase())
+  // Get unique claim types for filter
+  const uniqueClaimTypes = Array.from(
+    new Set(allClaims.map((claim) => claim.claimType))
   );
+
+  // Apply filters
+  const filteredClaims = allClaims?.filter((claim) => {
+    // Search filter (unchanged)
+    if (
+      filter.searchTerm &&
+      !(
+        claim.claimNumber
+          .toLowerCase()
+          .includes(filter.searchTerm.toLowerCase()) ||
+        claim.policyNumber
+          .toLowerCase()
+          .includes(filter.searchTerm.toLowerCase()) ||
+        claim.incidentDetails.type
+          .toLowerCase()
+          .includes(filter.searchTerm.toLowerCase()) ||
+        claim.customerName
+          ?.toLowerCase()
+          .includes(filter.searchTerm.toLowerCase()) ||
+        claim.customerEmail
+          ?.toLowerCase()
+          .includes(filter.searchTerm.toLowerCase())
+      )
+    ) {
+      return false;
+    }
+
+    // Status filter (unchanged)
+    if (filter.status !== "all" && claim.status !== filter.status) {
+      return false;
+    }
+
+    // Claim type filter (unchanged)
+    if (filter.claimType !== "all" && claim.claimType !== filter.claimType) {
+      return false;
+    }
+
+    // Documents filter (unchanged)
+    if (filter.hasDocuments !== "all") {
+      const hasDocs = claim.documents.length > 0;
+      if (filter.hasDocuments === "with" && !hasDocs) return false;
+      if (filter.hasDocuments === "without" && hasDocs) return false;
+    }
+
+    // Processing time filter (unchanged)
+    if (filter.processingTime !== "all" && claim.processingDays !== null) {
+      const days = claim.processingDays;
+      switch (filter.processingTime) {
+        case "under7":
+          if (days > 7) return false;
+          break;
+        case "7to14":
+          if (days < 7 || days > 14) return false;
+          break;
+        case "over14":
+          if (days <= 14) return false;
+          break;
+        case "notStarted":
+          if (days > 0) return false;
+          break;
+      }
+    }
+
+    // AMOUNT RANGE FILTER - FIXED VERSION
+    if (filter.amountRange !== "all") {
+      // Determine which amount to use for filtering
+      let amountToCheck: number | null = null;
+
+      // For approved/rejected/paid/closed claims, use approvedAmount if available
+      if (["APPROVED", "REJECTED", "PAID", "CLOSED"].includes(claim.status)) {
+        if (
+          claim.approvedAmount !== null &&
+          claim.approvedAmount !== undefined
+        ) {
+          amountToCheck = claim.approvedAmount;
+        }
+      }
+
+      // If no approvedAmount or not applicable status, use claimed amount
+      if (
+        amountToCheck === null &&
+        claim.incidentDetails.claimAmount !== null
+      ) {
+        amountToCheck = Number(claim.incidentDetails.claimAmount);
+      }
+
+      // Apply the filter if we have an amount
+      if (amountToCheck !== null) {
+        switch (filter.amountRange) {
+          case "under1000":
+            if (amountToCheck >= 1000) return false;
+            break;
+          case "1000to5000":
+            if (amountToCheck < 1000 || amountToCheck > 5000) return false;
+            break;
+          case "over5000":
+            if (amountToCheck <= 5000) return false;
+            break;
+        }
+      }
+    }
+
+    // Timeframe filter
+    if (filter.timeframe !== "all" && claim.submissionDate) {
+      const hoursDiff = getTimeDifferenceInHours(claim.submissionDate);
+
+      switch (filter.timeframe) {
+        case "today":
+          if (hoursDiff > 24) return false;
+          break;
+        case "week":
+          if (hoursDiff > 168) return false; // 7 * 24
+          break;
+        case "month":
+          if (hoursDiff > 720) return false; // 30 * 24
+          break;
+        case "quarter":
+          if (hoursDiff > 2160) return false; // 90 * 24
+          break;
+      }
+    }
+
+    return true;
+  });
+
+  const getLastUpdatedTime = () => {
+    if (fulfilledTimeStamp) {
+      return new Date(fulfilledTimeStamp).toLocaleTimeString();
+    }
+    return "Never";
+  };
+
+  // Get status counts for badge display
+  const getStatusCounts = () => {
+    const counts: Record<string, number> = {
+      all: allClaims.length,
+      PENDING: 0,
+      APPROVED: 0,
+      REJECTED: 0,
+      UNDER_REVIEW: 0,
+      UNDER_INVESTIGATION: 0,
+      PAID: 0,
+      CLOSED: 0,
+    };
+
+    allClaims.forEach((claim) => {
+      if (counts[claim.status] !== undefined) {
+        counts[claim.status]++;
+      }
+    });
+
+    return counts;
+  };
+
+  const statusCounts = getStatusCounts();
+
+  // Reset all filters
+  const resetFilters = () => {
+    setFilter({
+      status: "all",
+      timeframe: "all",
+      amountRange: "all",
+      processingTime: "all",
+      claimType: "all",
+      hasDocuments: "all",
+      searchTerm: "",
+    });
+    setSearchTerm("");
+  };
+
+  // Update search term in filter
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setFilter((prev) => ({ ...prev, searchTerm: searchTerm }));
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   console.log("Selected Claim: ", selectedClaim);
 
@@ -230,6 +444,7 @@ const AdminAllClaims = () => {
       day: "numeric",
     });
   }
+
   const formatCurrency = (amount: number | null | undefined) => {
     if (amount === null || amount === undefined) return "Not specified";
     return new Intl.NumberFormat("da-DK", {
@@ -272,7 +487,6 @@ const AdminAllClaims = () => {
     // Reset form values
     if (action === "approve") {
       setApproveAmount("");
-      // setApproveAmount(claim.amount?.toString() || "");
     } else if (action === "reject") {
       setRejectionReason("");
     }
@@ -333,6 +547,14 @@ const AdminAllClaims = () => {
     }
   };
 
+  console.log("Query result:", allClaimsResponse); // Just the data
+  console.log(
+    "Full hook return:",
+    useGetAllClaimsQuery({
+      sortBy: "submissiondate",
+      sortDirection: "DESC",
+    })
+  );
   const handleSaveClaim = async () => {
     if (!selectedClaim || !editForm) return;
 
@@ -363,7 +585,6 @@ const AdminAllClaims = () => {
     }
 
     setIsUpdating(true);
-    console.log("Selected Claim", selectedClaim);
 
     try {
       const updateData = {
@@ -396,8 +617,6 @@ const AdminAllClaims = () => {
             : undefined,
         },
       };
-
-      console.log("Sending update data:", updateData);
 
       await updateClaim({ updates: updateData }).unwrap();
 
@@ -445,15 +664,331 @@ const AdminAllClaims = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search claims..."
-              className="pl-10 w-64"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={resetFilters}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Reset Filters
+          </Button>
+        </div>
+      </div>
+
+      {/* Filter Section */}
+      <Card className="mb-4">
+        <CardContent className="p-2">
+          <div className="flex flex-col md:flex-row md:items-center gap-3">
+            {/* Search */}
+            <div className="relative flex-1 flex items-center ">
+              <Search className="absolute left-2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search claims by ID, policy, customer, or type..."
+                className="px-4"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Status Filter */}
+            <div className="w-full md:w-48">
+              <Select
+                value={filter.status}
+                onValueChange={(value) =>
+                  setFilter({ ...filter, status: value })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    <SelectValue placeholder="Filter by status" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    <div className="flex justify-between w-full gap-1">
+                      <span>All Statuses</span>
+                      <Badge variant="outline">{statusCounts.all}</Badge>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="PENDING">
+                    <div className="flex justify-between w-full gap-1">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-yellow-600" />
+                        <span>Pending</span>
+                      </div>
+                      <Badge variant="outline">{statusCounts.PENDING}</Badge>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="UNDER_REVIEW">
+                    <div className="flex justify-between w-full gap-1">
+                      <div className="flex items-center gap-2">
+                        <Eye className="h-4 w-4 text-blue-600" />
+                        <span>Under Review</span>
+                      </div>
+                      <Badge variant="outline">
+                        {statusCounts.UNDER_REVIEW}
+                      </Badge>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="UNDER_INVESTIGATION">
+                    <div className="flex justify-between w-full gap-1">
+                      <div className="flex items-center gap-2">
+                        <ShieldAlert className="h-4 w-4 text-purple-600" />
+                        <span>Investigation</span>
+                      </div>
+                      <Badge variant="outline">
+                        {statusCounts.UNDER_INVESTIGATION}
+                      </Badge>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="APPROVED">
+                    <div className="flex justify-between w-full gap-1">
+                      <div className="flex items-center gap-2">
+                        <CheckSquare className="h-4 w-4 text-green-600" />
+                        <span>Approved</span>
+                      </div>
+                      <Badge variant="outline">{statusCounts.APPROVED}</Badge>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="REJECTED">
+                    <div className="flex justify-between w-full gap-1">
+                      <div className="flex items-center gap-2">
+                        <FileX className="h-4 w-4 text-red-600" />
+                        <span>Rejected</span>
+                      </div>
+                      <Badge variant="outline">{statusCounts.REJECTED}</Badge>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="PAID">
+                    <div className="flex justify-between w-full gap-1">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-emerald-600" />
+                        <span>Paid</span>
+                      </div>
+                      <Badge variant="outline">{statusCounts.PAID}</Badge>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Claim Type Filter */}
+            <div className="w-full md:w-60">
+              <Select
+                value={filter.claimType}
+                onValueChange={(value) =>
+                  setFilter({ ...filter, claimType: value })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <div className="flex items-center gap-2 w-full">
+                    <FileText className="h-4 w-4" />
+                    <SelectValue placeholder="Claim Type" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Claim Types</SelectItem>
+                  {uniqueClaimTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.replace(/_/g, " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+
+          {/* Advanced Filters Row */}
+          <div className="grid grid-cols-1 md:grid-cols-6  mt-4">
+            {/* Timeframe Filter */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Timeframe
+              </label>
+              <Select
+                value={filter.timeframe}
+                onValueChange={(value) =>
+                  setFilter({ ...filter, timeframe: value })
+                }
+              >
+                <SelectTrigger>
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Submission Time" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Time</SelectItem>
+                  <SelectItem value="today">Last 24 Hours</SelectItem>
+                  <SelectItem value="week">Last 7 Days</SelectItem>
+                  <SelectItem value="month">Last 30 Days</SelectItem>
+                  <SelectItem value="quarter">Last 90 Days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Amount Range Filter */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Claim Amount
+              </label>
+              <Select
+                value={filter.amountRange}
+                onValueChange={(value) =>
+                  setFilter({ ...filter, amountRange: value })
+                }
+              >
+                <SelectTrigger>
+                  <DollarSign className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Amount Range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Amounts</SelectItem>
+                  <SelectItem value="under1000">Under 1,000 DKK</SelectItem>
+                  <SelectItem value="1000to5000">1,000 - 5,000 DKK</SelectItem>
+                  <SelectItem value="over5000">Over 5,000 DKK</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Processing Time Filter */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Processing Time
+              </label>
+              <Select
+                value={filter.processingTime}
+                onValueChange={(value) =>
+                  setFilter({ ...filter, processingTime: value })
+                }
+              >
+                <SelectTrigger>
+                  <Hourglass className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Processing Time" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="notStarted">
+                    Not Started (0 days)
+                  </SelectItem>
+                  <SelectItem value="under7">Under 7 Days</SelectItem>
+                  <SelectItem value="7to14">7-14 Days</SelectItem>
+                  <SelectItem value="over14">Over 14 Days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Documents Filter */}
+          <div className="mt-4">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">
+              Documents
+            </label>
+            <div className="flex gap-2 ">
+              <Button
+                variant={filter.hasDocuments === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter({ ...filter, hasDocuments: "all" })}
+              >
+                All
+              </Button>
+              <Button
+                variant={filter.hasDocuments === "with" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter({ ...filter, hasDocuments: "with" })}
+                className="flex items-center gap-2"
+              >
+                <FileCheck className="h-4 w-4" />
+                With Documents
+              </Button>
+              <Button
+                variant={
+                  filter.hasDocuments === "without" ? "default" : "outline"
+                }
+                size="sm"
+                onClick={() =>
+                  setFilter({ ...filter, hasDocuments: "without" })
+                }
+                className="flex items-center gap-2"
+              >
+                <FileX className="h-4 w-4" />
+                Without Documents
+              </Button>
+            </div>
+          </div>
+
+          {/* Active Filters Display */}
+          {Object.values(filter).some(
+            (value) => value !== "all" && value !== ""
+          ) && (
+            <div className="mt-4 p-3 bg-blue-50 rounded-md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-800">
+                    Active Filters:
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  Clear All
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {filter.status !== "all" && (
+                  <Badge variant="secondary" className="bg-blue-100">
+                    Status: {filter.status.replace(/_/g, " ")}
+                  </Badge>
+                )}
+                {filter.timeframe !== "all" && (
+                  <Badge variant="secondary" className="bg-blue-100">
+                    Timeframe: {filter.timeframe}
+                  </Badge>
+                )}
+                {filter.amountRange !== "all" && (
+                  <Badge variant="secondary" className="bg-blue-100">
+                    Amount: {filter.amountRange}
+                  </Badge>
+                )}
+                {filter.processingTime !== "all" && (
+                  <Badge variant="secondary" className="bg-blue-100">
+                    Processing: {filter.processingTime}
+                  </Badge>
+                )}
+                {filter.claimType !== "all" && (
+                  <Badge variant="secondary" className="bg-blue-100">
+                    Type: {filter.claimType.replace(/_/g, " ")}
+                  </Badge>
+                )}
+                {filter.hasDocuments !== "all" && (
+                  <Badge variant="secondary" className="bg-blue-100">
+                    Documents:{" "}
+                    {filter.hasDocuments === "with" ? "With" : "Without"}
+                  </Badge>
+                )}
+                {filter.searchTerm && (
+                  <Badge variant="secondary" className="bg-blue-100">
+                    Search: "{filter.searchTerm}"
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Results Summary */}
+      <div className="mb-4 flex items-center justify-between">
+        <div className="text-sm text-gray-600">
+          Showing {filteredClaims?.length || 0} of {allClaims.length} claims
+          {filteredClaims?.length !== allClaims.length && " (filtered)"}
+        </div>
+        <div className="text-sm text-gray-500">
+          Last updated: {getLastUpdatedTime()}
         </div>
       </div>
 
@@ -946,48 +1481,6 @@ const AdminAllClaims = () => {
                 >
                   Close
                 </Button>
-                {/* <div className="flex gap-3 flex-1">
-                  {selectedClaim.canBeApproved && (
-                    <Button
-                      onClick={() =>
-                        handleActionModal(selectedClaim, "approve")
-                      }
-                      className="bg-green-600 hover:bg-green-700 flex-1"
-                    >
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                      Approve
-                    </Button>
-                  )}
-                  {selectedClaim.canBeRejected && (
-                    <Button
-                      onClick={() => handleActionModal(selectedClaim, "reject")}
-                      className="bg-red-600 hover:bg-red-700 flex-1"
-                    >
-                      <XCircle className="h-5 w-5 mr-2" />
-                      Reject
-                    </Button>
-                  )}
-                  {selectedClaim.canBePaid && (
-                    <Button
-                      onClick={() => handleActionModal(selectedClaim, "pay")}
-                      className="bg-blue-600 hover:bg-blue-700 flex-1"
-                    >
-                      <DollarSign className="h-5 w-5 mr-2" />
-                      Mark Paid
-                    </Button>
-                  )}
-                  {!selectedClaim.canBeApproved &&
-                    !selectedClaim.canBeRejected &&
-                    !selectedClaim.canBePaid && (
-                      <Button
-                        variant="outline"
-                        onClick={() => setActiveModal(null)}
-                        className="flex-1"
-                      >
-                        Close
-                      </Button>
-                    )}
-                </div> */}
               </div>
             </div>
           </div>

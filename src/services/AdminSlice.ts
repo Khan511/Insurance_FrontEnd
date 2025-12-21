@@ -105,11 +105,18 @@ export const AdminSlice = createApi({
           : ["Policy"],
     }),
 
-    getAllClaims: builder.query<ClaimApiResponse[], void>({
+    getAllClaims: builder.query<
+      ClaimApiResponse[],
+      { sortBy?: string; sortDirection?: string }
+    >({
       // <-- Changed type to ClaimApiResponse[]
-      query: () => ({
+      query: (params = {}) => ({
         url: "/admin/get-all-claims",
         method: "GET",
+        params: {
+          sortBy: params.sortBy || "submissionDate",
+          sortDirection: params.sortDirection || "DESC",
+        },
       }),
       // Add providesTags for Claims
       providesTags: (result) =>

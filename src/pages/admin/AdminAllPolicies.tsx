@@ -27,7 +27,10 @@ const AdminAllPolicies = () => {
   const [beneficiaries, setBeneficiaries] = useState<Beneficiaries[]>([]);
 
   const { data: allPolicies } = useGetAllPoliciesQuery();
-  const { data: allClaims } = useGetAllClaimsQuery();
+  const { data: allClaims, isLoading } = useGetAllClaimsQuery({
+    sortBy: "paidDate",
+    sortDirection: "DESC",
+  });
   const [updatePolicy] = useUpdatePolicyMutation();
 
   const filteredPolicies =
