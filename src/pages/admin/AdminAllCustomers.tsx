@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useGetAllCustomersQuery } from "@/services/AdminSlice";
-import { Download, Edit, Eye, Filter, Search } from "lucide-react";
+import { Edit, Eye, Filter, Search } from "lucide-react";
 import { useNavigate } from "react-router";
 
 const AminAllCustomers = () => {
@@ -42,10 +42,10 @@ const AminAllCustomers = () => {
             Filter
           </Button>
         </div>
-        <Button className="flex items-center gap-2">
+        {/* <Button className="flex items-center gap-2">
           <Download className="h-4 w-4" />
           Export
-        </Button>
+        </Button> */}
       </div>
 
       <Card>
@@ -93,7 +93,15 @@ const AminAllCustomers = () => {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              navigate(
+                                `/admin/customers/${customer.customerId}/edit`
+                              )
+                            }
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
                         </div>

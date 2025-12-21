@@ -57,6 +57,7 @@ function Navbare() {
                   <Button variant="ghost">Private</Button>
                 </Link>
               </NavigationMenuItem>
+
               <NavigationMenuItem>
                 <Link to="/commercial-products">
                   <Button variant="ghost">Commercial</Button>
@@ -67,10 +68,14 @@ function Navbare() {
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-4 w-[200px]">
                     <Link to="/all-products">
-                      <NavigationMenuLink>All Insurances</NavigationMenuLink>
+                      <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground rounded p-2">
+                        All Insurances
+                      </NavigationMenuLink>
                     </Link>
                     <Link to="/admin">
-                      <NavigationMenuLink>Admin</NavigationMenuLink>
+                      <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground rounded p-2">
+                        Admin
+                      </NavigationMenuLink>
                     </Link>
                   </div>
                 </NavigationMenuContent>
@@ -97,7 +102,7 @@ function Navbare() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <Link to="/my-page">
+                <Link to={`/my-page/policies`}>
                   <DropdownMenuItem>My Page</DropdownMenuItem>
                 </Link>
                 <DropdownMenuItem onClick={handleLogout}>

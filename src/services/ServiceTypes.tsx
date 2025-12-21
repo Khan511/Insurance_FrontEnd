@@ -81,6 +81,7 @@ export type InsuracePolicy = {
 
 //PaymentSchedule type
 export type PaymentSchedule = {
+  [x: string]: unknown;
   id: number;
   dueAmount: number;
   currency: string;

@@ -176,8 +176,6 @@ export default function Mypayments() {
     );
   }
 
-  console.log("Payment History", paymentHistory);
-
   return (
     <TabsContent value="payments">
       <Card className="mt-6">
@@ -190,7 +188,6 @@ export default function Mypayments() {
             <h3 className="font-semibold  m-2 mb-3">Upcoming Payments</h3>
             <div className="space-y-4">
               {nextPendingPayments?.map(({ policy, nextPayment }) => {
-                // const nextPayment = policy.paymentSchedules?.[0];
                 const dueSoon = isDueSoon(nextPayment?.dueDate);
                 const isProcessing = isPaymentProcessing(nextPayment.id);
                 return (

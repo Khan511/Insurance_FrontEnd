@@ -8,7 +8,7 @@ import {
   useUpdatePolicyMutation,
 } from "@/services/AdminSlice";
 import type { InsuracePolicy, Beneficiaries } from "@/services/ServiceTypes";
-import { Download, Edit, Filter, Search, Trash2 } from "lucide-react";
+import { Edit, Filter, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 const AdminAllPolicies = () => {
@@ -52,10 +52,10 @@ const AdminAllPolicies = () => {
           "bg-yellow-100 text-yellow-800 px-1 py-1 flex items-center justify-center",
         label: "Pending",
       },
-      EXPIRED: {
+      INACTIVE: {
         color:
           "bg-red-100 text-red-800 px-1 py-1 flex items-center justify-center",
-        label: "Expired",
+        label: "Inactive",
       },
       CANCELLED: {
         color:
@@ -217,10 +217,10 @@ const AdminAllPolicies = () => {
             Filter
           </Button>
         </div>
-        <Button className="flex items-center gap-2">
+        {/* <Button className="flex items-center gap-2">
           <Download className="h-4 w-4" />
           Export
-        </Button>
+        </Button> */}
       </div>
 
       <Card>
@@ -377,7 +377,7 @@ const AdminAllPolicies = () => {
                     >
                       <option value="ACTIVE">Active</option>
                       <option value="PENDING">Pending</option>
-                      <option value="EXPIRED">Expired</option>
+                      <option value="INACTIVE">Inactive</option>
                       <option value="CANCELLED">Cancelled</option>
                     </select>
                   </div>

@@ -56,14 +56,14 @@ function App() {
               path="/product-buy-form/:productId"
               element={<CustomerProductForm />}
             />
-            <Route path="/my-page" element={<MyPage />} />
+            <Route path="/my-page/:tab" element={<MyPage />} />
             <Route
-              path="/my-page/policy/:policyId"
+              path="/my-page/policies/:policyId/policiy-details"
               element={<MyPoliciesDetails />}
             />
             <Route path="/file-claim" element={<Claim />} />
             <Route
-              path="/my-claims/:claimNumber"
+              path="/my-claims/:claimNumber/claim-details"
               element={<ClaimDetailsPage />}
             />
           </Route>

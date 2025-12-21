@@ -64,6 +64,7 @@ const ClaimForm = () => {
 
       incidentDetails: {
         incidentDateTime: new Date().toISOString().slice(0, 16),
+        claimAmount: null,
         type: incidentTypes[0] || "",
         thirdPartyInvolved: false,
         location: {
@@ -250,6 +251,14 @@ const ClaimForm = () => {
           </div>
 
           <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Claim amount
+            </label>
+            <input
+              {...methods.register("incidentDetails.claimAmount")}
+              className="mt-1 block w-full rounded-md p-2 border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
+              placeholder="Optional"
+            />
             <label className="block text-sm font-medium text-gray-700">
               Police Report Number
             </label>

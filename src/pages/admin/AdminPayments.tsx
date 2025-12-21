@@ -1,7 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetAllPaymentsQuery } from "@/services/AdminSlice";
+import {
+  useGetAllPaymentsQuery,
+  useGetAllPoliciesQuery,
+} from "@/services/AdminSlice";
 import { useState } from "react";
 
 export type Payment = {
@@ -25,6 +28,7 @@ type PaymentData = {
 };
 
 const AdminPayments = () => {
+  const { data: allPolicies } = useGetAllPoliciesQuery();
   const { data, isLoading } = useGetAllPaymentsQuery();
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -38,13 +42,50 @@ const AdminPayments = () => {
     );
   }
 
-  const paymentData = data as PaymentData;
+  const getNextPendingPayments = (): Payment[] => {
+    if (!allPolicies) return [];
+
+    return allPolicies
+      .map((policy) => {
+        const nextPayment = policy.paymentSchedules
+          ?.filter((schedule) => schedule.status === "PENDING")
+          .sort(
+            (a, b) =>
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+          )[0];
+
+        if (!nextPayment) return null;
+
+        // Transform into Payment shape
+        return {
+          id: nextPayment.id,
+          customer: policy.policiyHolderName || "Unknown",
+          policyNumber: policy.policyNumber || policy.id?.toString() || "N/A",
+          dueAmount: {
+            amount: nextPayment.dueAmount,
+            currency: nextPayment.currency,
+          },
+          currency: nextPayment.currency,
+          dueDate: nextPayment.dueDate, // keep as DateTuple or string
+          paidDate: nextPayment.paidDate,
+          status: nextPayment.status,
+        };
+      })
+      .filter(Boolean) as Payment[]; // remove nulls
+  };
+
+  const nextpendingPayment = getNextPendingPayments();
+
+  const paymentData = data as unknown as PaymentData;
+  console.log("All payments", paymentData);
+  console.log("All policies", allPolicies);
 
   // Calculate statistics
-  const totalComingAmount = paymentData.coming.reduce(
+  const totalComingAmount = nextpendingPayment.reduce(
     (sum, payment) => sum + payment.dueAmount.amount,
     0
   );
+
   const totalOverdueAmount = paymentData.overdue.reduce(
     (sum, payment) => sum + payment.dueAmount.amount,
     0
@@ -55,9 +96,8 @@ const AdminPayments = () => {
   );
 
   const totalPayments =
-    paymentData.coming.length +
-    paymentData.overdue.length +
-    paymentData.paid.length;
+    // nextpendingPayment.length +
+    paymentData.overdue.length + paymentData.paid.length;
   const successRate =
     totalPayments > 0
       ? ((paymentData.paid.length / totalPayments) * 100).toFixed(1)
@@ -111,7 +151,7 @@ const AdminPayments = () => {
     return `${date}`;
   }
 
-  console.log("Admin payments", data);
+  console.log("Next Pending payment", nextpendingPayment);
 
   const PaymentTable = ({
     payments,
@@ -153,8 +193,8 @@ const AdminPayments = () => {
                   <td className="p-4">{payment.customer}</td>
                   <td className="p-4 font-medium">
                     {formatCurrency(
-                      payment.dueAmount.amount,
-                      payment.dueAmount.currency || payment.currency
+                      payment.dueAmount?.amount,
+                      payment.dueAmount?.currency
                     )}
                   </td>
                   <td className="p-4">
@@ -214,7 +254,7 @@ const AdminPayments = () => {
               )}
             </p>
             <p className="text-xs text-yellow-600 mt-1">
-              {paymentData.coming.length} upcoming payments
+              {nextpendingPayment.length} upcoming payments
             </p>
           </CardContent>
         </Card>
@@ -248,7 +288,7 @@ const AdminPayments = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="coming">
-            Coming ({paymentData.coming.length})
+            Coming ({nextpendingPayment.length})
           </TabsTrigger>
           <TabsTrigger value="overdue">
             Overdue ({paymentData.overdue.length})
@@ -267,7 +307,7 @@ const AdminPayments = () => {
               defaultStatus="OVERDUE"
             />
             <PaymentTable
-              payments={paymentData.coming.slice(0, 5)}
+              payments={nextpendingPayment}
               title="Upcoming Payments"
               defaultStatus="PENDING"
             />
@@ -282,8 +322,9 @@ const AdminPayments = () => {
         {/* Coming Payments Tab */}
         <TabsContent value="coming">
           <PaymentTable
-            payments={paymentData.coming}
-            title="All Upcoming Payments"
+            payments={nextpendingPayment}
+            title={`Next Month Payments`}
+            // title={`Next Month Payments - ${getMonthName(1)}`}
             defaultStatus="PENDING"
           />
         </TabsContent>

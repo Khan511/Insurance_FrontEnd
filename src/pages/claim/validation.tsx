@@ -40,6 +40,7 @@ export const claimFormSchema = z.object({
       }),
       type: z.string().min(1, "Incident type is required"),
       location: addressSchema,
+      claimAmount: z.string().optional(),
       description: z
         .string()
         .min(20, "Description must be at least 20 characters"),

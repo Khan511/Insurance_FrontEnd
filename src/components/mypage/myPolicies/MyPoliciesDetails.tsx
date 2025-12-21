@@ -1,5 +1,5 @@
 import { useGetPolicyDetailsQuery } from "@/services/InsurancePolicySlice";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -122,6 +122,7 @@ const policyData: PolicyDetails = {
 
 // Main App component to display the policy details
 export default function MyPoliciesDetails() {
+  const navigate = useNavigate();
   const { policyId } = useParams();
 
   const { data: policyDetails } = useGetPolicyDetailsQuery(policyId || "", {
@@ -139,19 +140,6 @@ export default function MyPoliciesDetails() {
     });
   };
 
-  // const formatDateForInput = (dateString?: Date | string | null): string => {
-  //   if (!dateString) return "";
-
-  //   const date = new Date(dateString);
-
-  //   // Get local date components (this avoids timezone issues)
-  //   const year = date.getFullYear();
-  //   const month = String(date.getMonth() + 1).padStart(2, "0");
-  //   const day = String(date.getDate()).padStart(2, "0");
-
-  //   return `${year}-${month}-${day}`;
-  // };
-
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "active":
@@ -166,15 +154,12 @@ export default function MyPoliciesDetails() {
   return (
     <div className="bg-gray-50 min-h-screen py-2 px-4 sm:px-5  lg:px-8">
       {/* Tailwind CSS CDN script for styling */}
-
       <div className="max-w-4xl mx-auto  font-sans">
         <div>
-          <Button asChild variant="outline" className=" ">
-            <RouterLink to="/my-page">
-              <span>←</span>
-              <span>Back</span>
-            </RouterLink>
-          </Button>
+          <button className="btn btn-secondary" onClick={() => navigate(-1)}>
+            <span>←</span>
+            <span>Back to My Policies</span>
+          </button>
         </div>
         {/* Header Section */}
         <div className="bg-white shadow-xl rounded-2xl p-4 my-4 sm:p-5 text-center border-t-8 border-indigo-500">

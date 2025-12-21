@@ -89,7 +89,7 @@ export default function MyPolicies() {
 
                 <div className="flex flex-wrap gap-2 mt-4">
                   <Link
-                    to={`/my-page/policy/${policy.id}`}
+                    to={`/my-page/policies/${policy.id}/policiy-details`}
                     className="btn btn-primary"
                   >
                     View Details

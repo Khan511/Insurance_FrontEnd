@@ -6,7 +6,7 @@ import { User, FileText, Activity, CreditCard, Plus } from "lucide-react";
 import MyPolicies from "@/components/mypage/myPolicies/MyPolicies";
 import MyClaimComponent from "@/components/mypage/myClaims/MyClaims";
 import Mypayments from "@/components/mypage/MyPayments";
-import { Link } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import { useGetAllClaimsOfUserQuery } from "@/services/ClaimMetaDataApi";
@@ -14,8 +14,11 @@ import { useGetAllClaimsOfUserQuery } from "@/services/ClaimMetaDataApi";
 import { membershipDuration } from "@/components/memberShipDuration/MembershipDuration";
 import { Spinner } from "react-bootstrap";
 import { getUpcomingPayments } from "@/components/mypage/Utils";
+import { TabsContent } from "@radix-ui/react-tabs";
 
 export default function MyPage() {
+  const { tab = "policies" } = useParams();
+  const navigate = useNavigate();
   const { data: currentUser } = useGetCurrenttUserQuery();
   const userId = currentUser?.data?.user?.userId;
 
@@ -151,43 +154,49 @@ export default function MyPage() {
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="policies" className="w-full">
-        <TabsList className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full">
-          <TabsTrigger value="policies">My Policies</TabsTrigger>
-          <TabsTrigger value="claims">My Claims</TabsTrigger>
-          <TabsTrigger value="payments">Payments</TabsTrigger>
-          {/* <TabsTrigger value="documents">Documents</TabsTrigger> */}
+      <Tabs
+        className="w-full "
+        value={tab}
+        onValueChange={(value) => navigate(`/my-page/${value}`)}
+      >
+        <TabsList className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full ">
+          <TabsTrigger
+            value="policies"
+            className="data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-all"
+          >
+            My Policies
+          </TabsTrigger>
+          <TabsTrigger
+            value="claims"
+            className="data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-all"
+          >
+            My Claims
+          </TabsTrigger>
+          <TabsTrigger
+            value="payments"
+            className="data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-all"
+          >
+            My Payments
+          </TabsTrigger>
         </TabsList>
 
-        {/* Policies Tab */}
-        <MyPolicies />
+        <TabsContent value="policies" className="mt-6">
+          <MyPolicies />
+        </TabsContent>
 
-        {/* Claims Tab */}
-        <MyClaimComponent />
+        <TabsContent value="claims" className="mt-6">
+          <MyClaimComponent />
+        </TabsContent>
 
-        {/* Payments Tab */}
-        <Mypayments />
-
-        {/* Documents Tab */}
-        {/* <MyDocuments documents={documents} /> */}
+        <TabsContent value="payments" className="mt-6">
+          <Mypayments />
+        </TabsContent>
       </Tabs>
 
       {/* Additional Suggestions Section */}
       <div className="mt-5">
         <p className="text-xl font-bold mb-4">More Services</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* <Card className="hover:shadow-md transition-shadow p-2">
-            <CardHeader>
-              <CardTitle className="text-lg">Policy Recommendations</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">
-                Get personalized insurance recommendations based on your needs
-              </p>
-              <Button variant="outline">View Suggestions</Button>
-            </CardContent>
-          </Card> */}
-
           <Card className="hover:shadow-md transition-shadow p-2">
             <CardHeader>
               <CardTitle className="text-lg">Emergency Contacts</CardTitle>
