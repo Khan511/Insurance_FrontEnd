@@ -128,6 +128,13 @@ export const AdminSlice = createApi({
           : ["Claims"],
     }),
 
+    getClaimDetails: builder.query<ClaimApiResponse, number>({
+      query: (claimId) => ({
+        url: `/admin/claim-details/${claimId}`,
+        method: "GET",
+      }),
+    }),
+
     updatePolicy: builder.mutation({
       query: (policyData) => ({
         url: `/admin/update-policy`,
@@ -234,4 +241,5 @@ export const {
   useRejectClaimMutation,
   useMarkClaimAsPaidMutation,
   useUpdateClaimStatusMutation,
+  useGetClaimDetailsQuery,
 } = AdminSlice;

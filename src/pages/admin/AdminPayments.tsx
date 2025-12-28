@@ -25,6 +25,8 @@ type PaymentData = {
   coming: Payment[];
   overdue: Payment[];
   paid: Payment[];
+  paused: Payment[];
+  cancelled: Payment[];
 };
 
 const AdminPayments = () => {
@@ -59,14 +61,14 @@ const AdminPayments = () => {
         // Transform into Payment shape
         return {
           id: nextPayment.id,
-          customer: policy.policiyHolderName || "Unknown",
+          customer: policy.policyHolderName || "Unknown",
           policyNumber: policy.policyNumber || policy.id?.toString() || "N/A",
           dueAmount: {
             amount: nextPayment.dueAmount,
             currency: nextPayment.currency,
           },
           currency: nextPayment.currency,
-          dueDate: nextPayment.dueDate, // keep as DateTuple or string
+          dueDate: nextPayment.dueDate,
           paidDate: nextPayment.paidDate,
           status: nextPayment.status,
         };
@@ -111,6 +113,8 @@ const AdminPayments = () => {
         label: "Pending",
       },
       OVERDUE: { color: "bg-red-100 text-red-800 p-1", label: "Overdue" },
+      PAUSED: { color: "bg-blue-100 text-blue-800 p-1", label: "paused" },
+      CANCELLED: { color: "bg-gray-100 text-gray-800 p-1", label: "Cancelled" },
       FAILED: { color: "bg-gray-100 text-gray-800 p-1", label: "Failed" },
     };
 
@@ -190,7 +194,7 @@ const AdminPayments = () => {
                 <tr key={payment.id} className="border-b hover:bg-gray-50">
                   <td className="p-4 font-medium">#{payment.id}</td>
                   <td className="p-4 font-mono">{payment.policyNumber}</td>
-                  <td className="p-4">{payment.customer}</td>
+                  <td className="p-4">{payment?.customer}</td>
                   <td className="p-4 font-medium">
                     {formatCurrency(
                       payment.dueAmount?.amount,
@@ -285,7 +289,7 @@ const AdminPayments = () => {
 
       {/* Tabs for different payment types */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="coming">
             Coming ({nextpendingPayment.length})
@@ -295,6 +299,12 @@ const AdminPayments = () => {
           </TabsTrigger>
           <TabsTrigger value="paid">
             Paid ({paymentData.paid.length})
+          </TabsTrigger>
+          <TabsTrigger value="paused">
+            Paused ({paymentData.paused.length})
+          </TabsTrigger>
+          <TabsTrigger value="cancelled">
+            Cancelled ({paymentData.cancelled.length})
           </TabsTrigger>
         </TabsList>
 
@@ -311,12 +321,22 @@ const AdminPayments = () => {
               title="Upcoming Payments"
               defaultStatus="PENDING"
             />
+            <PaymentTable
+              payments={paymentData.paid}
+              title="Recently Paid"
+              defaultStatus="PAID"
+            />
+            <PaymentTable
+              payments={paymentData.paused}
+              title="Paused"
+              defaultStatus="PAUSED"
+            />
+            <PaymentTable
+              payments={paymentData.cancelled}
+              title="Cancelled"
+              defaultStatus="CANCELLED"
+            />
           </div>
-          <PaymentTable
-            payments={paymentData.paid}
-            title="Recently Paid"
-            defaultStatus="PAID"
-          />
         </TabsContent>
 
         {/* Coming Payments Tab */}
@@ -344,6 +364,22 @@ const AdminPayments = () => {
             payments={paymentData.paid}
             title="All Paid Payments"
             defaultStatus="PAID"
+          />
+        </TabsContent>
+        {/* Paid Payments Tab */}
+        <TabsContent value="paused">
+          <PaymentTable
+            payments={paymentData.paused}
+            title="All Paid Payments"
+            defaultStatus="PAUSED"
+          />
+        </TabsContent>
+        {/* Paid Payments Tab */}
+        <TabsContent value="cancelled">
+          <PaymentTable
+            payments={paymentData.cancelled}
+            title="All Paid Payments"
+            defaultStatus="CANCELLED"
           />
         </TabsContent>
       </Tabs>

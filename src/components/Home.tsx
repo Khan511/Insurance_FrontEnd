@@ -11,7 +11,7 @@ const Home = () => {
   const { data: currentUser } = useGetCurrenttUserQuery();
   const { data: products } = useGetAllProductsQuery();
 
-  console.log("Home Policies", products);
+  console.log("Home Products", products);
 
   return (
     <div className="d-flex flex-column">

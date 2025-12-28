@@ -1,197 +1,14 @@
-// import {
-//   LineChart,
-//   Line,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   Legend,
-//   ResponsiveContainer,
-// } from "recharts";
-
-// interface RevenueChartProps {
-//   period: string;
-//   detailed?: boolean;
-//   paymentData?: any; // Add payment data prop
-//   claimsData?: any; // Add claims data prop
-// }
-
-// const RevenueChart = ({
-//   period,
-//   detailed = false,
-//   paymentData = null,
-//   claimsData = null,
-// }: RevenueChartProps) => {
-//   // Transform real payment data into chart format
-//   const transformPaymentData = () => {
-//     if (!paymentData?.paid) return [];
-
-//     // Group payments by month
-//     const monthlyData: Record<string, { revenue: number; claims?: number }> =
-//       {};
-
-//     // Initialize months for the selected period
-//     const months = getMonthsForPeriod(period);
-//     months.forEach((month) => {
-//       monthlyData[month] = { revenue: 0, claims: 0 };
-//     });
-
-//     // Sum revenue by month
-//     paymentData.paid.forEach((payment: any) => {
-//       if (!payment.paidDate) return;
-
-//       const paidDate = toDate(payment.paidDate);
-//       if (!paidDate) return;
-
-//       const monthKey = paidDate.toLocaleDateString("en-US", { month: "short" });
-//       const year = paidDate.getFullYear();
-//       const fullMonthKey = `${monthKey} ${year}`;
-
-//       const amount = payment.dueAmount?.amount || 0;
-
-//       if (monthlyData[fullMonthKey]) {
-//         monthlyData[fullMonthKey].revenue += Number(amount);
-//       }
-//     });
-
-//     // Convert to array format for chart
-//     return Object.entries(monthlyData)
-//       .map(([month, data]) => ({
-//         month,
-//         revenue: data.revenue,
-//         claims: data.claims,
-//       }))
-//       .filter((item) => item.revenue > 0 || (item.claims && item.claims > 0));
-//   };
-
-//   // Helper function to convert date
-//   const toDate = (value: any) => {
-//     if (!value) return null;
-
-//     if (Array.isArray(value)) {
-//       const [y, m, d, h = 0, min = 0] = value;
-//       return new Date(y, m - 1, d, h, min);
-//     }
-
-//     const dt = new Date(value);
-//     return isNaN(dt.getTime()) ? null : dt;
-//   };
-
-//   // Get months for the selected period
-//   const getMonthsForPeriod = (period: string) => {
-//     const now = new Date();
-//     const months: string[] = [];
-//     let monthsCount = 12; // Default for 1 year
-
-//     switch (period) {
-//       case "7d":
-//         // For 7 days, show last 30 days for context
-//         monthsCount = 1;
-//         break;
-//       case "30d":
-//         monthsCount = 2;
-//         break;
-//       case "90d":
-//         monthsCount = 4;
-//         break;
-//       case "1y":
-//         monthsCount = 12;
-//         break;
-//       case "all":
-//         // For all time, show last 24 months
-//         monthsCount = 24;
-//         break;
-//     }
-
-//     for (let i = monthsCount - 1; i >= 0; i--) {
-//       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-//       const monthName = date.toLocaleDateString("en-US", {
-//         month: "short",
-//         year: "numeric",
-//       });
-//       months.push(monthName);
-//     }
-
-//     return months;
-//   };
-
-//   // // Use real data if available, otherwise use sample data
-//   const chartData = paymentData && transformPaymentData();
-
-//   const currencyCode = "DKK";
-//   const currencySymbol = "kr";
-
-//   return (
-//     <div className="h-80 min-h-[320px]">
-//       <ResponsiveContainer width="100%" height="100%">
-//         <LineChart
-//           data={chartData}
-//           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-//         >
-//           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-//           <XAxis dataKey="month" stroke="#888888" fontSize={12} />
-//           <YAxis
-//             stroke="#888888"
-//             fontSize={12}
-//             tickFormatter={(value) => {
-//               if (value >= 1000) {
-//                 return `${currencyCode}${Math.round(value / 1000)}k`;
-//               }
-//               return `${currencyCode}${Math.round(value)}`;
-//             }}
-//           />
-
-//           <Tooltip
-//             formatter={(value, name) => {
-//               const formattedValue = new Intl.NumberFormat("en-US", {
-//                 style: "currency",
-//                 currency: currencyCode,
-//                 minimumFractionDigits: 0,
-//                 maximumFractionDigits: 2,
-//               }).format(Number(value));
-//               return [formattedValue, name];
-//             }}
-//             labelFormatter={(label) => `Month: ${label}`}
-//           />
-
-//           <Legend />
-//           <Line
-//             type="monotone"
-//             dataKey="revenue"
-//             name="Revenue"
-//             stroke="#2563eb"
-//             strokeWidth={2}
-//             dot={{ r: 4 }}
-//             activeDot={{ r: 6 }}
-//           />
-
-//           {detailed && (
-//             <Line
-//               type="monotone"
-//               dataKey="claims"
-//               name="Claims Paid"
-//               stroke="#ef4444"
-//               strokeWidth={2}
-//               strokeDasharray="5 5"
-//             />
-//           )}
-//         </LineChart>
-//       </ResponsiveContainer>
-//     </div>
-//   );
-// };
-
-// export default RevenueChart;
-
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  BarChart,
+  Bar,
+  Area,
+  AreaChart,
 } from "recharts";
 
 interface RevenueChartProps {
@@ -205,12 +22,12 @@ interface ClaimData {
   policyNumber: string;
   claimNumber: string;
   status: string;
-  amount: number | null;
-  claimDate?: string; // Make sure your claims have a date field
-  paidDate?: string; // If claims have a paid date
-  submissionDate?: string; // Alternative date field
-  createdAt?: string; // Another alternative
-  // ... other fields
+  approvedAmount: number | null;
+  claimAmount: number | null;
+  submissionDate?: string;
+  approvedDate?: string;
+  paidDate?: string;
+  createdAt?: string;
 }
 
 const RevenueChart = ({
@@ -219,148 +36,6 @@ const RevenueChart = ({
   paymentData = null,
   claimsData = null,
 }: RevenueChartProps) => {
-  // Transform real payment data into chart format
-  const transformPaymentData = () => {
-    if (!paymentData?.paid) return [];
-
-    // Group payments by month
-    const monthlyData: Record<string, { revenue: number; claims: number }> = {};
-
-    // Initialize months for the selected period
-    const months = getMonthsForPeriod(period);
-    months.forEach((month) => {
-      monthlyData[month] = { revenue: 0, claims: 0 };
-    });
-
-    // Sum revenue by month from payments
-    paymentData.paid.forEach((payment: any) => {
-      if (!payment.paidDate) return;
-
-      const paidDate = toDate(payment.paidDate);
-      if (!paidDate) return;
-
-      const monthKey = paidDate.toLocaleDateString("en-US", { month: "short" });
-      const year = paidDate.getFullYear();
-      const fullMonthKey = `${monthKey} ${year}`;
-
-      const amount = payment.dueAmount?.amount || 0;
-
-      if (monthlyData[fullMonthKey]) {
-        monthlyData[fullMonthKey].revenue += Number(amount);
-      }
-    });
-
-    // Sum claims paid by month from claims data
-    if (claimsData && Array.isArray(claimsData)) {
-      claimsData.forEach((claim: ClaimData) => {
-        // Only process APPROVED claims as paid
-        if (claim.status !== "APPROVED") return;
-
-        // Try to get claim date from various fields
-        const claimDateStr =
-          claim.paidDate ||
-          claim.claimDate ||
-          claim.submissionDate ||
-          claim.createdAt;
-        if (!claimDateStr) return;
-
-        const claimDate = toDate(claimDateStr);
-        if (!claimDate) return;
-
-        const monthKey = claimDate.toLocaleDateString("en-US", {
-          month: "short",
-        });
-        const year = claimDate.getFullYear();
-        const fullMonthKey = `${monthKey} ${year}`;
-
-        // Use claim amount or default to 0
-        const claimAmount = claim.amount || 0;
-
-        if (monthlyData[fullMonthKey]) {
-          monthlyData[fullMonthKey].claims += Number(claimAmount);
-        }
-      });
-    }
-
-    // Convert to array format for chart
-    return Object.entries(monthlyData)
-      .map(([month, data]) => ({
-        month,
-        revenue: data.revenue,
-        claims: data.claims,
-      }))
-      .filter((item) => item.revenue > 0 || item.claims > 0);
-  };
-
-  // Alternative: If you want to show claims by status over time
-  const transformClaimsByStatusOverTime = () => {
-    if (!claimsData || !Array.isArray(claimsData)) return null;
-
-    const months = getMonthsForPeriod(period);
-    const monthlyClaims: Record<
-      string,
-      {
-        approved: number;
-        pending: number;
-        rejected: number;
-        underReview: number;
-      }
-    > = {};
-
-    // Initialize all months
-    months.forEach((month) => {
-      monthlyClaims[month] = {
-        approved: 0,
-        pending: 0,
-        rejected: 0,
-        underReview: 0,
-      };
-    });
-
-    claimsData.forEach((claim: ClaimData) => {
-      // Try to get claim date
-      const claimDateStr =
-        claim.claimDate || claim.submissionDate || claim.createdAt;
-      if (!claimDateStr) return;
-
-      const claimDate = toDate(claimDateStr);
-      if (!claimDate) return;
-
-      const monthKey = claimDate.toLocaleDateString("en-US", {
-        month: "short",
-      });
-      const year = claimDate.getFullYear();
-      const fullMonthKey = `${monthKey} ${year}`;
-
-      if (monthlyClaims[fullMonthKey]) {
-        switch (claim.status) {
-          case "APPROVED":
-            monthlyClaims[fullMonthKey].approved++;
-            break;
-          case "PENDING":
-            monthlyClaims[fullMonthKey].pending++;
-            break;
-          case "REJECTED":
-            monthlyClaims[fullMonthKey].rejected++;
-            break;
-          case "UNDER_REVIEW":
-            monthlyClaims[fullMonthKey].underReview++;
-            break;
-        }
-      }
-    });
-
-    // Convert to array format
-    return Object.entries(monthlyClaims)
-      .map(([month, data]) => ({
-        month,
-        ...data,
-        totalClaims:
-          data.approved + data.pending + data.rejected + data.underReview,
-      }))
-      .filter((item) => item.totalClaims > 0);
-  };
-
   // Helper function to convert date
   const toDate = (value: any) => {
     if (!value) return null;
@@ -378,7 +53,7 @@ const RevenueChart = ({
   const getMonthsForPeriod = (period: string) => {
     const now = new Date();
     const months: string[] = [];
-    let monthsCount = 12; // Default for 1 year
+    let monthsCount = 12;
 
     switch (period) {
       case "7d":
@@ -410,154 +85,339 @@ const RevenueChart = ({
     return months;
   };
 
-  // Calculate total approved claims amount
-  const calculateTotalApprovedClaims = () => {
-    if (!claimsData || !Array.isArray(claimsData)) return 0;
+  // Calculate comprehensive financial metrics
+  const calculateFinancialMetrics = () => {
+    const months = getMonthsForPeriod(period);
+    const monthlyData: Record<
+      string,
+      {
+        premiumRevenue: number;
+        approvedClaims: number;
+        paidClaims: number;
+        pendingClaims: number;
+        rejectedClaims: number;
+        totalClaimsValue: number;
+        netRevenue: number;
+        claimsRatio: number;
+      }
+    > = {};
 
-    return claimsData
-      .filter((claim: ClaimData) => claim.status === "APPROVED")
-      .reduce(
-        (total: number, claim: ClaimData) => total + (claim.amount || 0),
-        0
-      );
+    // Initialize months
+    months.forEach((month) => {
+      monthlyData[month] = {
+        premiumRevenue: 0,
+        approvedClaims: 0,
+        paidClaims: 0,
+        pendingClaims: 0,
+        rejectedClaims: 0,
+        totalClaimsValue: 0,
+        netRevenue: 0,
+        claimsRatio: 0,
+      };
+    });
+
+    // Process premium payments
+    if (paymentData?.paid) {
+      paymentData.paid.forEach((payment: any) => {
+        if (!payment.paidDate) return;
+
+        const paidDate = toDate(payment.paidDate);
+        if (!paidDate) return;
+
+        const monthKey = paidDate.toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        });
+
+        const amount = payment.dueAmount?.amount || payment.amount || 0;
+
+        if (monthlyData[monthKey]) {
+          monthlyData[monthKey].premiumRevenue += Number(amount);
+        }
+      });
+    }
+
+    // Process claims
+    if (claimsData && Array.isArray(claimsData)) {
+      claimsData.forEach((claim: ClaimData) => {
+        // Get claim date (prefer submission date)
+        const claimDateStr = claim.submissionDate || claim.createdAt;
+        if (!claimDateStr) return;
+
+        const claimDate = toDate(claimDateStr);
+        if (!claimDate) return;
+
+        const monthKey = claimDate.toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        });
+
+        if (!monthlyData[monthKey]) return;
+
+        const claimAmount = claim.approvedAmount || claim.claimAmount || 0;
+
+        // Categorize by status
+        switch (claim.status) {
+          case "PENDING":
+            monthlyData[monthKey].pendingClaims += 1;
+            monthlyData[monthKey].totalClaimsValue += Number(claimAmount);
+            break;
+          case "UNDER_REVIEW":
+            monthlyData[monthKey].pendingClaims += 1;
+            monthlyData[monthKey].totalClaimsValue += Number(claimAmount);
+            break;
+          case "APPROVED":
+            monthlyData[monthKey].approvedClaims += Number(claimAmount);
+            monthlyData[monthKey].totalClaimsValue += Number(claimAmount);
+            break;
+          case "PAID":
+            monthlyData[monthKey].paidClaims += Number(claimAmount);
+            monthlyData[monthKey].totalClaimsValue += Number(claimAmount);
+            break;
+          case "REJECTED":
+            monthlyData[monthKey].rejectedClaims += 1;
+            break;
+          // CANCELLED and EXPIRED don't count toward liabilities
+        }
+      });
+    }
+
+    // Calculate net revenue and claims ratio
+    Object.keys(monthlyData).forEach((month) => {
+      const data = monthlyData[month];
+      data.netRevenue = data.premiumRevenue - data.paidClaims;
+      data.claimsRatio =
+        data.premiumRevenue > 0
+          ? (data.paidClaims / data.premiumRevenue) * 100
+          : 0;
+    });
+
+    return monthlyData;
   };
 
-  // Calculate claims statistics
-  const calculateClaimsStats = () => {
+  // Calculate summary statistics
+  const calculateSummaryStats = () => {
     if (!claimsData || !Array.isArray(claimsData)) {
       return {
-        total: 0,
-        approved: 0,
-        pending: 0,
-        rejected: 0,
-        underReview: 0,
-        approvedAmount: 0,
+        totalClaims: 0,
+        approvedClaims: 0,
+        paidClaims: 0,
+        pendingClaims: 0,
+        rejectedClaims: 0,
+        totalApprovedAmount: 0,
+        totalPaidAmount: 0,
+        averageClaimValue: 0,
+        approvalRate: 0,
+        rejectionRate: 0,
       };
     }
 
+    let total = 0;
     let approved = 0;
+    let paid = 0;
     let pending = 0;
     let rejected = 0;
-    let underReview = 0;
-    let approvedAmount = 0;
+    let totalApprovedAmount = 0;
+    let totalPaidAmount = 0;
 
     claimsData.forEach((claim: ClaimData) => {
+      total++;
+      const amount = claim.approvedAmount || claim.claimAmount || 0;
+
       switch (claim.status) {
-        case "APPROVED":
-          approved++;
-          approvedAmount += claim.amount || 0;
-          break;
         case "PENDING":
           pending++;
+          break;
+        case "UNDER_REVIEW":
+          pending++;
+          break;
+        case "APPROVED":
+          approved++;
+          totalApprovedAmount += Number(amount);
+          break;
+        case "PAID":
+          paid++;
+          totalPaidAmount += Number(amount);
           break;
         case "REJECTED":
           rejected++;
           break;
-        case "UNDER_REVIEW":
-          underReview++;
-          break;
+        // CANCELLED and EXPIRED are excluded from active counts
       }
     });
 
     return {
-      total: claimsData.length,
-      approved,
-      pending,
-      rejected,
-      underReview,
-      approvedAmount,
+      totalClaims: total,
+      approvedClaims: approved,
+      paidClaims: paid,
+      pendingClaims: pending,
+      rejectedClaims: rejected,
+      totalApprovedAmount,
+      totalPaidAmount,
+      averageClaimValue: approved > 0 ? totalApprovedAmount / approved : 0,
+      approvalRate: total > 0 ? (approved / total) * 100 : 0,
+      rejectionRate: total > 0 ? (rejected / total) * 100 : 0,
     };
   };
 
   // Get transformed data
-  const chartData = paymentData ? transformPaymentData() : [];
-  const claimsByStatusData = transformClaimsByStatusOverTime();
-  const claimsStats = calculateClaimsStats();
+  const monthlyData = calculateFinancialMetrics();
+  const summaryStats = calculateSummaryStats();
 
-  // If no data is available, use sample data
-  const displayData =
-    chartData.length > 0
-      ? chartData
-      : claimsByStatusData && claimsByStatusData.length > 0
-      ? claimsByStatusData.map((item) => ({
-          month: item.month,
-          revenue: 0,
-          claims: item.approved * 1000, // Example conversion if you want to show claims count as amount
-        }))
-      : [
-          { month: "Jan", revenue: 21500, claims: 4500 },
-          { month: "Feb", revenue: 22800, claims: 5200 },
-          { month: "Mar", revenue: 24500, claims: 4800 },
-          { month: "Apr", revenue: 23200, claims: 5100 },
-          { month: "May", revenue: 25100, claims: 4900 },
-          { month: "Jun", revenue: 26800, claims: 5300 },
-          { month: "Jul", revenue: 27500, claims: 5500 },
-          { month: "Aug", revenue: 28200, claims: 5600 },
-          { month: "Sep", revenue: 29500, claims: 5800 },
-          { month: "Oct", revenue: 30800, claims: 6000 },
-          { month: "Nov", revenue: 32200, claims: 6200 },
-          { month: "Dec", revenue: 33500, claims: 6400 },
-        ];
+  // Convert to array for chart
+  const chartData = Object.entries(monthlyData).map(([month, data]) => ({
+    month,
+    ...data,
+  }));
+
+  // If no data, use sample
+  const displayData = chartData;
 
   const currencyCode = "DKK";
   const currencySymbol = "kr";
 
-  // Check if we're showing claims by status instead of revenue
-  const isShowingClaimsByStatus =
-    !paymentData && claimsByStatusData && claimsByStatusData.length > 0;
+  // Format currency
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currencyCode,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  // Custom tooltip formatter
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 border rounded-lg shadow-lg">
+          <p className="font-semibold text-gray-900">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} style={{ color: entry.color }} className="text-sm">
+              {entry.name}: {formatCurrency(entry.value)}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div>
-      {/* Claims Statistics Summary */}
-      {detailed && claimsData && (
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-2 mb-4">
+      {/* Financial Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-1 mb-4">
+        <div className="bg-white p-1 flex  flex-col justify-center rounded-lg shadow-sm border">
+          <div className="text-sm text-gray-500">Premium Revenue</div>
+          <div className="text-xl font-semibold text-green-600">
+            {formatCurrency(
+              displayData.reduce((sum, item) => sum + item.premiumRevenue, 0)
+            )}
+          </div>
+          <div className="text-xs text-gray-400 mt-1">
+            Total collected premiums
+          </div>
+        </div>
+
+        <div className="bg-white p-1 flex  flex-col justify-center rounded-lg shadow-sm border">
+          <div className="text-sm text-gray-500">Claims Paid</div>
+          <div className="text-xl font-semibold text-red-600">
+            {formatCurrency(
+              displayData.reduce((sum, item) => sum + item.paidClaims, 0)
+            )}
+          </div>
+          <div className="text-xs text-gray-400 mt-1">Total paid out</div>
+        </div>
+
+        <div className="bg-white p-1 flex  flex-col justify-center rounded-lg shadow-sm border">
+          <div className="text-sm text-gray-500">Net Revenue</div>
+          <div className="text-xl font-semibold text-blue-600">
+            {formatCurrency(
+              displayData.reduce((sum, item) => sum + item.netRevenue, 0)
+            )}
+          </div>
+          <div className="text-xs text-gray-400 mt-1">Revenue - Claims</div>
+        </div>
+
+        <div className="bg-white p-1 flex  flex-col justify-center rounded-lg shadow-sm border">
+          <div className="text-sm text-gray-500">Claims Ratio</div>
+          <div className="text-xl font-semibold text-purple-600">
+            {Math.round(
+              (displayData.reduce((sum, item) => sum + item.paidClaims, 0) /
+                Math.max(
+                  displayData.reduce(
+                    (sum, item) => sum + item.premiumRevenue,
+                    0
+                  ),
+                  1
+                )) *
+                100
+            )}
+            %
+          </div>
+          <div className="text-xs text-gray-400 mt-1">Claims / Revenue</div>
+        </div>
+      </div>
+
+      {/* Claims Statistics */}
+      {detailed && (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           <div className="bg-white p-3 rounded-lg shadow-sm border">
             <div className="text-sm text-gray-500">Total Claims</div>
-            <div className="text-lg font-semibold">{claimsStats.total}</div>
+            <div className="text-lg font-semibold">
+              {summaryStats.totalClaims}
+            </div>
           </div>
           <div className="bg-white p-3 rounded-lg shadow-sm border">
             <div className="text-sm text-gray-500">Approved</div>
             <div className="text-lg font-semibold text-green-600">
-              {claimsStats.approved}
+              {summaryStats.approvedClaims}
+            </div>
+            <div className="text-xs text-gray-400">
+              {Math.round(summaryStats.approvalRate)}% rate
+            </div>
+          </div>
+          <div className="bg-white p-3 rounded-lg shadow-sm border">
+            <div className="text-sm text-gray-500">Paid</div>
+            <div className="text-lg font-semibold text-blue-600">
+              {summaryStats.paidClaims}
+            </div>
+            <div className="text-xs text-gray-400">
+              {formatCurrency(summaryStats.totalPaidAmount)}
             </div>
           </div>
           <div className="bg-white p-3 rounded-lg shadow-sm border">
             <div className="text-sm text-gray-500">Pending</div>
             <div className="text-lg font-semibold text-yellow-600">
-              {claimsStats.pending}
-            </div>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow-sm border">
-            <div className="text-sm text-gray-500">Under Review</div>
-            <div className="text-lg font-semibold text-blue-600">
-              {claimsStats.underReview}
+              {summaryStats.pendingClaims}
             </div>
           </div>
           <div className="bg-white p-3 rounded-lg shadow-sm border">
             <div className="text-sm text-gray-500">Rejected</div>
             <div className="text-lg font-semibold text-red-600">
-              {claimsStats.rejected}
+              {summaryStats.rejectedClaims}
             </div>
-          </div>
-          <div className="bg-white p-3 rounded-lg shadow-sm border">
-            <div className="text-sm text-gray-500">Approved Amount</div>
-            <div className="text-lg font-semibold text-purple-600">
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: currencyCode,
-                minimumFractionDigits: 0,
-              }).format(claimsStats.approvedAmount)}
+            <div className="text-xs text-gray-400">
+              {Math.round(summaryStats.rejectionRate)}% rate
             </div>
           </div>
         </div>
       )}
-
-      {/* Chart Container */}
+      {/* Data Info */}
+      <div className="mt-4 text-xs text-gray-500">
+        {paymentData && (
+          <p>
+            Showing {period} period | Premium payments:{" "}
+            {paymentData.paid?.length || 0}
+          </p>
+        )}
+      </div>
+      {/* Main Chart */}
       <div className="h-80 min-h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart
+          <AreaChart
             data={displayData}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis dataKey="month" stroke="#888888" fontSize={12} />
@@ -565,117 +425,89 @@ const RevenueChart = ({
               stroke="#888888"
               fontSize={12}
               tickFormatter={(value) => {
-                if (isShowingClaimsByStatus) {
-                  // If showing claims by status (count), don't format as currency
-                  return Math.round(value).toString();
-                }
                 if (value >= 1000) {
                   return `${currencySymbol}${Math.round(value / 1000)}k`;
                 }
                 return `${currencySymbol}${Math.round(value)}`;
               }}
             />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
 
-            <Tooltip
-              formatter={(value, name) => {
-                if (isShowingClaimsByStatus) {
-                  // For claims by status, show count
-                  return [`${value} claims`, name];
-                }
-                const formattedValue = new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: currencyCode,
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 2,
-                }).format(Number(value));
-                return [formattedValue, name];
-              }}
-              labelFormatter={(label) => `Month: ${label}`}
+            <Area
+              type="monotone"
+              dataKey="premiumRevenue"
+              name="Premium Revenue"
+              stroke="#10b981"
+              fill="#10b981"
+              fillOpacity={0.3}
+              strokeWidth={2}
             />
 
-            <Legend />
-            {!isShowingClaimsByStatus && (
-              <Line
-                type="monotone"
-                dataKey="revenue"
-                name="Revenue"
-                stroke="#2563eb"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-            )}
+            <Area
+              type="monotone"
+              dataKey="paidClaims"
+              name="Claims Paid"
+              stroke="#ef4444"
+              fill="#ef4444"
+              fillOpacity={0.3}
+              strokeWidth={2}
+            />
 
-            {detailed && (
-              <>
-                {isShowingClaimsByStatus ? (
-                  // If showing claims by status, show multiple lines
-                  <>
-                    <Line
-                      type="monotone"
-                      dataKey="approved"
-                      name="Approved Claims"
-                      stroke="#10b981"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      activeDot={{ r: 5 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="pending"
-                      name="Pending Claims"
-                      stroke="#f59e0b"
-                      strokeWidth={2}
-                      strokeDasharray="3 3"
-                      dot={{ r: 3 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="underReview"
-                      name="Under Review"
-                      stroke="#3b82f6"
-                      strokeWidth={2}
-                      strokeDasharray="2 2"
-                      dot={{ r: 3 }}
-                    />
-                  </>
-                ) : (
-                  // Otherwise show claims paid line
-                  <Line
-                    type="monotone"
-                    dataKey="claims"
-                    name="Claims Paid"
-                    stroke="#ef4444"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                )}
-              </>
-            )}
-          </LineChart>
+            <Area
+              type="monotone"
+              dataKey="netRevenue"
+              name="Net Revenue"
+              stroke="#3b82f6"
+              fill="#3b82f6"
+              fillOpacity={0.3}
+              strokeWidth={2}
+              strokeDasharray="5 5"
+            />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Data Info */}
-      <div className="mt-2 text-xs text-gray-500">
-        {paymentData && (
-          <p>
-            Showing revenue from {paymentData.paid?.length || 0} payment
-            {paymentData.paid?.length !== 1 ? "s" : ""}
-          </p>
-        )}
-        {claimsData && (
-          <p>
-            Showing {claimsStats.approved} approved claims as paid out of{" "}
-            {claimsStats.total} total claims
-          </p>
-        )}
-        {!paymentData && !claimsData && (
-          <p>Using sample data - connect to real data source</p>
-        )}
-      </div>
+      {/* Additional Detailed Chart for Claims Breakdown */}
+      {detailed && (
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-4">
+            Claims Status Distribution
+          </h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={displayData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar
+                  dataKey="approvedClaims"
+                  name="Approved Claims"
+                  fill="#10b981"
+                  stackId="a"
+                />
+                <Bar
+                  dataKey="paidClaims"
+                  name="Paid Claims"
+                  fill="#3b82f6"
+                  stackId="a"
+                />
+                <Bar
+                  dataKey="pendingClaims"
+                  name="Pending Claims"
+                  fill="#f59e0b"
+                  stackId="a"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

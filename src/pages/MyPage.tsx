@@ -194,7 +194,7 @@ export default function MyPage() {
       </Tabs>
 
       {/* Additional Suggestions Section */}
-      <div className="mt-5">
+      {/* <div className="mt-5">
         <p className="text-xl font-bold mb-4">More Services</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="hover:shadow-md transition-shadow p-2">
@@ -222,8 +222,9 @@ export default function MyPage() {
               <Button variant="outline">Find Agent</Button>
             </CardContent>
           </Card>
-        </div>
+        </div> 
       </div>
+        */}
     </div>
   );
 }

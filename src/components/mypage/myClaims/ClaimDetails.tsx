@@ -151,8 +151,6 @@ export default function ClaimDetailsPage() {
     );
   }
 
-  console.log("Claim in claimDetails: ", claim);
-
   if (!claim) {
     return (
       <div className="max-w-6xl mx-auto p-4 space-y-4">
@@ -176,6 +174,7 @@ export default function ClaimDetailsPage() {
   }
 
   const { incidentDetails, documents } = claim;
+  console.log("Claim in claimDetails: ", claim);
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
@@ -220,11 +219,11 @@ export default function ClaimDetailsPage() {
                       {getStatusIcon(claim.status)}
                       {claim.status}
                     </Badge>
-                    {claim.isActive && (
+                    {/* {claim.isActive && (
                       <span className="text-xs text-green-600 font-medium px-2 py-1 bg-green-50 rounded">
                         Active
                       </span>
-                    )}
+                    )} */}
                   </div>
                 </div>
                 <div className="text-right">
@@ -581,7 +580,7 @@ export default function ClaimDetailsPage() {
                 <div>
                   <div className="text-sm text-gray-500">Claimed Amount</div>
                   <div className="text-2xl font-bold mt-1">
-                    {formatCurrency(claim.amount)}
+                    {formatCurrency(claim.incidentDetails?.claimAmount)}
                   </div>
                 </div>
                 <Separator />

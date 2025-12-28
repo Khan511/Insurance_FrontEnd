@@ -1,4 +1,5 @@
 import { useGetAllClaimsQuery } from "@/services/AdminSlice";
+import { useState, useEffect } from "react";
 import {
   PieChart,
   Pie,
@@ -10,358 +11,525 @@ import {
 
 interface ClaimsDistributionChartProps {
   detailed?: boolean;
-  // Real data props
-  claimsData?: any;
-  paymentData?: any; // Optional: if you need payment-related claims data
+  period?: "7d" | "30d" | "90d" | "1y" | "all";
+  claimsData?: any[];
 }
+
+type ChartDataItem = {
+  name: string;
+  value: number;
+  count: number;
+  amount: number;
+  color: string;
+} & Record<string, any>;
 
 const ClaimsDistributionChart = ({
   detailed = false,
-  claimsData = null,
-  paymentData = null,
+  period = "30d",
+  claimsData: externalClaimsData,
 }: ClaimsDistributionChartProps) => {
-  const { data: allClaims } = useGetAllClaimsQuery();
-  /**
-   * Transform real claims data into distribution by status
-   * This function processes the actual claims data and categorizes by status
-   */
-  const transformClaimsByStatus = () => {
-    // Return sample data if no real data provided
-    if (!allClaims || !Array.isArray(allClaims)) {
-      return [
-        { name: "Approved", value: 65, color: "#10b981" },
-        { name: "Pending", value: 18, color: "#f59e0b" },
-        { name: "Under Review", value: 12, color: "#3b82f6" },
-        { name: "Rejected", value: 5, color: "#ef4444" },
-      ];
+  const {
+    data: internalClaimsData,
+    isLoading,
+    error,
+  } = useGetAllClaimsQuery({}, { skip: !!externalClaimsData });
+  const [activeView, setActiveView] = useState<"status" | "type">("status");
+  const [totalClaims, setTotalClaims] = useState(0);
+  const [totalClaimAmount, setTotalClaimAmount] = useState(0);
+  const [avgProcessingDays, setAvgProcessingDays] = useState(0);
+  const [approvalRate, setApprovalRate] = useState(0);
+  const [showAmounts, setShowAmounts] = useState(false);
+
+  // Use whichever data is available
+  const allClaims = externalClaimsData || internalClaimsData || [];
+
+  // Filter claims by period
+  const filterClaimsByPeriod = (claims: any[]) => {
+    if (!claims || claims.length === 0) return [];
+
+    if (period === "all") {
+      return claims;
     }
 
-    // Initialize counters for each status
-    const statusCounts: Record<string, number> = {
-      Approved: 0,
-      Pending: 0,
-      "Under Review": 0,
-      Rejected: 0,
-      // Paid: 0,
-      // Processing: 0,
-      // Denied: 0,
-    };
+    const now = new Date();
+    const cutoffDate = new Date();
 
-    // Count claims by status
-    allClaims.forEach((claim: any) => {
-      const status = claim.status || "Pending";
-      const normalizedStatus = normalizeStatus(status);
+    switch (period) {
+      case "7d":
+        cutoffDate.setDate(now.getDate() - 7);
+        break;
+      case "30d":
+        cutoffDate.setDate(now.getDate() - 30);
+        break;
+      case "90d":
+        cutoffDate.setDate(now.getDate() - 90);
+        break;
+      case "1y":
+        cutoffDate.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        return claims;
+    }
 
-      if (statusCounts[normalizedStatus] !== undefined) {
-        statusCounts[normalizedStatus]++;
+    const filtered = claims.filter((claim) => {
+      let claimDate;
+      if (claim.submissionDate) {
+        if (Array.isArray(claim.submissionDate)) {
+          const [year, month, day] = claim.submissionDate;
+          claimDate = new Date(year, month - 1, day);
+        } else {
+          claimDate = new Date(claim.submissionDate);
+        }
+      } else if (claim.createdAt) {
+        claimDate = new Date(claim.createdAt);
       } else {
-        // For any unexpected status, group as "Other"
-        statusCounts["Pending"] = (statusCounts["Pending"] || 0) + 1;
+        return true;
+      }
+
+      return claimDate >= cutoffDate;
+    });
+
+    return filtered;
+  };
+
+  // Calculate key metrics
+  useEffect(() => {
+    if (!allClaims || allClaims.length === 0) return;
+
+    const filteredClaims = filterClaimsByPeriod(allClaims);
+    setTotalClaims(filteredClaims.length);
+
+    const totalAmount = filteredClaims.reduce((sum, claim) => {
+      const amount =
+        claim.approvedAmount ||
+        claim.incidentDetails?.claimAmount ||
+        (claim.incidentDetails && claim.incidentDetails.claimAmount) ||
+        0;
+      return sum + Number(amount);
+    }, 0);
+    setTotalClaimAmount(totalAmount);
+
+    const processedClaims = filteredClaims.filter(
+      (claim) => claim.isProcessed && claim.processingDays > 0
+    );
+    if (processedClaims.length > 0) {
+      const avgDays =
+        processedClaims.reduce((sum, claim) => sum + claim.processingDays, 0) /
+        processedClaims.length;
+      setAvgProcessingDays(Math.round(avgDays * 10) / 10);
+    } else {
+      setAvgProcessingDays(0);
+    }
+
+    const approvedClaims = filteredClaims.filter(
+      (claim) => claim.status === "APPROVED" || claim.status === "PAID"
+    ).length;
+    setApprovalRate(
+      filteredClaims.length > 0
+        ? Math.round((approvedClaims / filteredClaims.length) * 100)
+        : 0
+    );
+  }, [allClaims, period]);
+
+  // Transform claims by status
+  const transformClaimsByStatus = (): ChartDataItem[] => {
+    if (!allClaims || allClaims.length === 0) return [];
+
+    const filteredClaims = filterClaimsByPeriod(allClaims);
+    if (filteredClaims.length === 0) return [];
+
+    const statusCounts: Record<string, { count: number; totalAmount: number }> =
+      {
+        PENDING: { count: 0, totalAmount: 0 },
+        UNDER_REVIEW: { count: 0, totalAmount: 0 },
+        APPROVED: { count: 0, totalAmount: 0 },
+        PAID: { count: 0, totalAmount: 0 },
+        REJECTED: { count: 0, totalAmount: 0 },
+        CANCELLED: { count: 0, totalAmount: 0 },
+        EXPIRED: { count: 0, totalAmount: 0 },
+      };
+
+    filteredClaims.forEach((claim) => {
+      const status = claim.status || "PENDING";
+      const amount =
+        claim.approvedAmount ||
+        (claim.incidentDetails && claim.incidentDetails.claimAmount) ||
+        0;
+
+      if (statusCounts[status]) {
+        statusCounts[status].count += 1;
+        statusCounts[status].totalAmount += Number(amount);
+      } else {
+        statusCounts[status] = { count: 1, totalAmount: Number(amount) };
       }
     });
 
-    // Calculate total for percentages
-    const totalClaims = Object.values(statusCounts).reduce(
-      (sum, count) => sum + count,
+    const statusesWithClaims = Object.entries(statusCounts).filter(
+      ([_, data]) => data.count > 0
+    );
+
+    if (statusesWithClaims.length === 0) return [];
+
+    const totalCount = statusesWithClaims.reduce(
+      (sum, [_, data]) => sum + data.count,
+      0
+    );
+    const totalAmount = statusesWithClaims.reduce(
+      (sum, [_, data]) => sum + data.totalAmount,
       0
     );
 
-    // Filter out statuses with 0 claims and convert to percentage
-    const result = Object.entries(statusCounts)
-      .filter(([_, count]) => count > 0)
-      .map(([status, count]) => {
-        const percentage = Math.round((count / totalClaims) * 100);
-        return {
-          name: status,
-          value: percentage,
-          count: count,
-          color: getStatusColor(status),
-        };
-      })
-      .sort((a, b) => b.value - a.value); // Sort by percentage descending
+    return statusesWithClaims
+      .map(([status, data]) => {
+        const percentage =
+          totalCount > 0 ? Math.round((data.count / totalCount) * 100) : 0;
+        const amountPercentage =
+          totalAmount > 0
+            ? Math.round((data.totalAmount / totalAmount) * 100)
+            : 0;
 
-    return result;
+        return {
+          name: formatStatusName(status),
+          value: showAmounts ? amountPercentage : percentage,
+          count: data.count,
+          amount: data.totalAmount,
+          color: getStatusColor(status),
+        } as ChartDataItem;
+      })
+      .sort((a, b) => b.value - a.value);
   };
 
-  console.log("All Claims in Claim chat", allClaims);
+  // Transform claims by type
+  const transformClaimsByType = (): ChartDataItem[] => {
+    if (!allClaims || allClaims.length === 0) return [];
 
-  /**
-   * Transform real claims data into distribution by type/category
-   */
-  const transformClaimsByType = () => {
-    // Return sample data if no real data provided
-    if (!claimsData?.claims || !Array.isArray(claimsData.claims)) {
-      return [
-        { name: "Home Damage", value: 35, color: "#f97316" },
-        { name: "Auto Collision", value: 28, color: "#8b5cf6" },
-        { name: "Theft", value: 18, color: "#64748b" },
-        { name: "Fire", value: 12, color: "#dc2626" },
-        { name: "Water Damage", value: 7, color: "#0ea5e9" },
-      ];
-    }
+    const filteredClaims = filterClaimsByPeriod(allClaims);
+    const typeGroups: Record<string, { count: number; totalAmount: number }> =
+      {};
 
-    // Initialize counters for claim types
-    const typeCounts: Record<string, number> = {};
+    filteredClaims.forEach((claim) => {
+      const type =
+        claim.claimType ||
+        (claim.incidentDetails && claim.incidentDetails.type) ||
+        "OTHER";
+      const amount =
+        claim.approvedAmount ||
+        (claim.incidentDetails && claim.incidentDetails.claimAmount) ||
+        0;
 
-    // Count claims by type/category
-    claimsData.claims.forEach((claim: any) => {
-      const type = claim.type || claim.category || claim.claimType || "Other";
-      const normalizedType = normalizeType(type);
+      const formattedType = formatClaimType(type);
+      if (!typeGroups[formattedType]) {
+        typeGroups[formattedType] = { count: 0, totalAmount: 0 };
+      }
 
-      typeCounts[normalizedType] = (typeCounts[normalizedType] || 0) + 1;
+      typeGroups[formattedType].count += 1;
+      typeGroups[formattedType].totalAmount += Number(amount);
     });
 
-    // Calculate total for percentages
-    const totalClaims = Object.values(typeCounts).reduce(
-      (sum, count) => sum + count,
+    const typeEntries = Object.entries(typeGroups);
+    if (typeEntries.length === 0) return [];
+
+    const totalCount = typeEntries.reduce(
+      (sum, [_, data]) => sum + data.count,
+      0
+    );
+    const totalAmount = typeEntries.reduce(
+      (sum, [_, data]) => sum + data.totalAmount,
       0
     );
 
-    // Convert to percentage and format
-    const result = Object.entries(typeCounts)
-      .map(([type, count]) => {
-        const percentage = Math.round((count / totalClaims) * 100);
+    return typeEntries
+      .map(([type, data]) => {
+        const percentage = Math.round((data.count / totalCount) * 100);
+        const amountPercentage =
+          totalAmount > 0
+            ? Math.round((data.totalAmount / totalAmount) * 100)
+            : 0;
+
         return {
           name: type,
-          value: percentage,
-          count: count,
+          value: showAmounts ? amountPercentage : percentage,
+          count: data.count,
+          amount: data.totalAmount,
           color: getTypeColor(type),
-        };
+        } as ChartDataItem;
       })
-      .sort((a, b) => b.value - a.value) // Sort by percentage descending
-      .slice(0, 8); // Limit to top 8 types for readability
-
-    return result;
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8);
   };
 
-  /**
-   * Normalize different status formats to standard ones
-   */
-  const normalizeStatus = (status: string): string => {
+  // Helper functions (keep these the same)
+  const formatStatusName = (status: string): string => {
     const statusMap: Record<string, string> = {
-      APPROVED: "Approved",
-      // APPROVE: "Approved",
-      // PAID: "Paid",
-      // COMPLETED: "Approved",
       PENDING: "Pending",
-      // IN_REVIEW: "Under Review",
       UNDER_REVIEW: "Under Review",
-      // REVIEW: "Under Review",
+      APPROVED: "Approved",
+      PAID: "Paid",
       REJECTED: "Rejected",
-      // DENIED: "Rejected",
-      // DECLINED: "Rejected",
-      // PROCESSING: "Processing",
-      // IN_PROGRESS: "Processing",
+      CANCELLED: "Cancelled",
+      EXPIRED: "Expired",
     };
-
-    const upperStatus = status.toUpperCase();
-    return (
-      statusMap[upperStatus] ||
-      status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
-    );
+    return statusMap[status] || status;
   };
 
-  /**
-   * Normalize different type formats
-   */
-  const normalizeType = (type: string): string => {
+  const formatClaimType = (type: string): string => {
     const typeMap: Record<string, string> = {
-      HOME: "Home Damage",
-      AUTO: "Auto Collision",
-      VEHICLE: "Auto Collision",
-      CAR: "Auto Collision",
+      HEALTH_HOSPITALIZATION: "Health/Hospitalization",
+      AUTO_ACCIDENT: "Auto Accident",
+      HOME_DAMAGE: "Home Damage",
       THEFT: "Theft",
-      BURGLARY: "Theft",
       FIRE: "Fire",
-      WATER: "Water Damage",
-      FLOOD: "Water Damage",
-      HEALTH: "Medical",
-      MEDICAL: "Medical",
       LIABILITY: "Liability",
       PROPERTY: "Property Damage",
+      MEDICAL: "Medical",
+      TRAVEL: "Travel",
+      LIFE: "Life",
     };
-
-    const upperType = type.toUpperCase();
-    return (
-      typeMap[upperType] ||
-      type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
-    );
+    return typeMap[type] || type;
   };
 
-  /**
-   * Get color based on status
-   */
   const getStatusColor = (status: string): string => {
     const colorMap: Record<string, string> = {
-      Approved: "#10b981", // Green
-      Paid: "#10b981", // Green
-      Pending: "#f59e0b", // Yellow/Orange
-      "Under Review": "#3b82f6", // Blue
-      Processing: "#3b82f6", // Blue
-      Rejected: "#ef4444", // Red
-      Denied: "#ef4444", // Red
+      PENDING: "#f59e0b",
+      UNDER_REVIEW: "#3b82f6",
+      APPROVED: "#10b981",
+      PAID: "#059669",
+      REJECTED: "#ef4444",
+      CANCELLED: "#6b7280",
+      EXPIRED: "#9ca3af",
     };
-    return colorMap[status] || "#64748b"; // Default gray
+    return colorMap[status] || "#64748b";
   };
 
-  /**
-   * Get color based on claim type
-   */
   const getTypeColor = (type: string): string => {
-    const colorMap: Record<string, string> = {
-      "Home Damage": "#f97316", // Orange
-      "Auto Collision": "#8b5cf6", // Purple
-      Theft: "#64748b", // Slate
-      Fire: "#dc2626", // Red
-      "Water Damage": "#0ea5e9", // Sky blue
-      Medical: "#ec4899", // Pink
-      Liability: "#84cc16", // Lime
-      "Property Damage": "#f59e0b", // Amber
-    };
-
-    // If type not in map, generate consistent color based on string hash
-    if (!colorMap[type]) {
-      const colors = [
-        "#f97316",
-        "#8b5cf6",
-        "#64748b",
-        "#dc2626",
-        "#0ea5e9",
-        "#ec4899",
-        "#84cc16",
-        "#f59e0b",
-        "#10b981",
-        "#3b82f6",
-        "#ef4444",
-        "#14b8a6",
-      ];
-      const hash = type
-        .split("")
-        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      return colors[hash % colors.length];
-    }
-
-    return colorMap[type];
+    const colors = [
+      "#3b82f6",
+      "#10b981",
+      "#f59e0b",
+      "#ef4444",
+      "#8b5cf6",
+      "#ec4899",
+      "#14b8a6",
+      "#f97316",
+      "#64748b",
+      "#84cc16",
+    ];
+    const hash = type
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
   };
 
-  /**
-   * Transform payment data to get claims paid amounts (if you need to show amounts instead of counts)
-   */
-  // const transformClaimsPaidData = () => {
-  //   if (!paymentData?.paid || !Array.isArray(paymentData.paid)) {
-  //     return null;
-  //   }
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
 
-  //   // Filter payments that are for claims (you might need to adjust this logic)
-  //   const claimPayments = paymentData.paid.filter(
-  //     (payment: any) =>
-  //       payment.type === "claim" ||
-  //       payment.description?.includes("claim") ||
-  //       payment.claimId
-  //   );
+  // Custom Tooltip
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-4 border rounded-lg shadow-lg">
+          <p className="font-semibold text-gray-900">{data.name}</p>
+          <p className="text-sm text-gray-600">
+            {showAmounts ? "Amount Share" : "Claim Share"}: {data.value}%
+          </p>
+          <p className="text-sm text-gray-600">
+            Number of Claims: {data.count}
+          </p>
+          {data.amount > 0 && (
+            <p className="text-sm text-gray-600">
+              Total Amount: {formatCurrency(data.amount)}
+            </p>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
 
-  //   // Group by status or type based on what you want to show
-  //   // This is optional and depends on your data structure
-  //   return claimPayments;
-  // };
+  const statusData = transformClaimsByStatus();
+  const typeData = transformClaimsByType();
 
-  // Get the transformed data
-  const claimsByStatus = transformClaimsByStatus();
-  const claimsByType = transformClaimsByType();
+  if (isLoading) {
+    return (
+      <div className="h-80 flex items-center justify-center">
+        <div className="text-gray-500">Loading claims data...</div>
+      </div>
+    );
+  }
 
-  // Optional: Get total claims count for display
-  const totalClaimsCount =
-    claimsData?.claims?.length ||
-    claimsByStatus.reduce((sum, item: any) => sum + (item.count || 0), 0);
+  if (error) {
+    return (
+      <div className="h-80 flex items-center justify-center">
+        <div className="text-red-500">Error loading claims data</div>
+      </div>
+    );
+  }
+
+  if (!allClaims || allClaims.length === 0) {
+    return (
+      <div className="h-80 flex items-center justify-center">
+        <div className="text-gray-500">No claims data available</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-80">
-      {/* Optional: Display total claims count */}
-      {claimsData && (
-        <div className="text-center text-sm text-gray-600 mb-2">
-          Total Claims: {totalClaimsCount}
+    <div className="h-[28rem] flex flex-col">
+      {/* Header with metrics */}
+      <div className="flex-none mb-2">
+        <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setActiveView("status")}
+              className={`px-3 py-1 text-sm rounded ${
+                activeView === "status"
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              By Status
+            </button>
+            <button
+              onClick={() => setActiveView("type")}
+              className={`px-3 py-1 text-sm rounded ${
+                activeView === "type"
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              By Type
+            </button>
+            <button
+              onClick={() => setShowAmounts(!showAmounts)}
+              className={`px-3 py-1 text-sm rounded ${
+                showAmounts
+                  ? "bg-purple-100 text-purple-600"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {showAmounts ? "Show Counts" : "Show Amounts"}
+            </button>
+          </div>
+          <div className="text-xs text-gray-500">
+            Period: {period.toUpperCase()} | Showing:{" "}
+            {showAmounts ? "Amounts" : "Counts"}
+          </div>
         </div>
-      )}
 
-      <ResponsiveContainer width="100%" height="100%">
-        {detailed ? (
-          // Detailed view: Two concentric pie charts
-          <PieChart>
-            {/* Inner ring: Claims by Type */}
-            <Pie
-              data={claimsByType}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              paddingAngle={2}
-              dataKey="value"
-              nameKey="name"
-              label={(entry) => `${entry.name}: ${entry.value}%`}
-            >
-              {claimsByType.map((entry: any, index) => (
-                <Cell key={`type-cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
+        {/* Metrics summary */}
+        <div className="grid grid-cols-4 gap-2 mb-3">
+          <div className="bg-blue-50 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">Total Claims</div>
+            <div className="font-semibold">{totalClaims}</div>
+          </div>
+          <div className="bg-green-50 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">Total Amount</div>
+            <div className="font-semibold">
+              {formatCurrency(totalClaimAmount)}
+            </div>
+          </div>
+          <div className="bg-yellow-50 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">Avg Processing</div>
+            <div className="font-semibold">{avgProcessingDays} days</div>
+          </div>
+          <div className="bg-purple-50 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">Approval Rate</div>
+            <div className="font-semibold">{approvalRate}%</div>
+          </div>
+        </div>
+      </div>
 
-            {/* Outer ring: Claims by Status */}
-            <Pie
-              data={claimsByStatus}
-              cx="50%"
-              cy="50%"
-              innerRadius={90}
-              outerRadius={110}
-              paddingAngle={2}
-              dataKey="value"
-              nameKey="name"
-              label={(entry) => `${entry.name}: ${entry.value}%`}
-            >
-              {claimsByStatus.map((entry: any, index) => (
-                <Cell key={`status-cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
+      {/* Main chart area - Takes available space */}
+      <div className="flex-1 min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          {activeView === "status" ? (
+            <PieChart>
+              <Pie
+                data={statusData}
+                cx="50%"
+                cy="50%"
+                innerRadius={detailed ? 60 : 40}
+                outerRadius={80}
+                paddingAngle={2}
+                dataKey="value"
+                nameKey="name"
+                label={(entry: any) => `${entry.name}: ${entry.value}%`}
+              >
+                {statusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+            </PieChart>
+          ) : (
+            <PieChart>
+              <Pie
+                data={typeData}
+                cx="50%"
+                cy="50%"
+                innerRadius={detailed ? 60 : 40}
+                outerRadius={80}
+                paddingAngle={2}
+                dataKey="value"
+                nameKey="name"
+                label={(entry: any) => `${entry.name}: ${entry.value}%`}
+              >
+                {typeData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+            </PieChart>
+          )}
+        </ResponsiveContainer>
+      </div>
 
-            <Tooltip
-              formatter={(value: any, name: any, props: any) => {
-                const payload = props.payload;
-                return [
-                  `${value}% (${payload.count || 0} claims)`,
-                  payload.name,
-                ];
-              }}
-            />
-            <Legend />
-          </PieChart>
-        ) : (
-          // Simple view: Only claims by status
-          <PieChart>
-            <Pie
-              data={claimsByStatus}
-              cx="50%"
-              cy="50%"
-              innerRadius={0}
-              outerRadius={80}
-              paddingAngle={2}
-              dataKey="value"
-              label={(entry: any) => `${entry.name}: ${entry.value}%`}
-            >
-              {claimsByStatus.map((entry: any, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+      {/* Footer info - Now properly contained */}
+      <div className="flex-none mt-2">
+        {activeView === "status" && (
+          <div className="text-xs text-gray-600 p-2 bg-gray-50 rounded">
+            <div className="font-medium mb-1">Status Distribution:</div>
+            <div className="flex flex-wrap gap-2">
+              {statusData.map((item, idx) => (
+                <div key={idx} className="flex items-center">
+                  <span
+                    className="inline-block w-3 h-3 rounded-full mr-1"
+                    style={{ backgroundColor: item.color }}
+                  ></span>
+                  <span>{item.name}:</span>
+                  <span className="font-semibold ml-1">{item.count}</span>
+                </div>
               ))}
-            </Pie>
-            <Tooltip
-              formatter={(value: any, name: any, props: any) => {
-                const payload = props.payload;
-                return [
-                  `${value}% (${payload.count || 0} claims)`,
-                  payload.name,
-                ];
-              }}
-            />
-            <Legend />
-          </PieChart>
+            </div>
+          </div>
         )}
-      </ResponsiveContainer>
+        {activeView === "type" && (
+          <div className="text-xs text-gray-600 p-2 bg-gray-50 rounded">
+            <div className="font-medium mb-1">Claim Types:</div>
+            <div className="flex flex-wrap gap-2">
+              {typeData.map((item, idx) => (
+                <div key={idx} className="flex items-center">
+                  <span
+                    className="inline-block w-3 h-3 rounded-full mr-1"
+                    style={{ backgroundColor: item.color }}
+                  ></span>
+                  <span>{item.name}:</span>
+                  <span className="font-semibold ml-1">{item.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

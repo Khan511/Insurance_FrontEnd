@@ -19,6 +19,7 @@ import ClaimDetailsPage from "./components/mypage/myClaims/ClaimDetails";
 import InsuranceAdminDashboard from "./pages/admin/InsuranceAdminDashbord";
 import CustomerView from "./pages/admin/CustomerView";
 import CustomerEdit from "./pages/admin/EditCustomer";
+import AdminClaimDetails from "./pages/admin/AdminClaimDetails";
 
 // INSURANCE YOUTUBE WEBSITE
 // https://www.codewithmurad.com/2024/05/insurance-management-system-project.html
@@ -42,7 +43,7 @@ function App() {
           <Route path="/create-user" element={<CreateUser />} />
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/admin" element={<InsuranceAdminDashboard />} />
+            <Route path="admin/:tab?" element={<InsuranceAdminDashboard />} />
             <Route
               path="/admin/customers/:customerId"
               element={<CustomerView />}
@@ -65,6 +66,10 @@ function App() {
             <Route
               path="/my-claims/:claimNumber/claim-details"
               element={<ClaimDetailsPage />}
+            />
+            <Route
+              path="/admin/claim-details/:claimId"
+              element={<AdminClaimDetails />}
             />
           </Route>
         </Routes>

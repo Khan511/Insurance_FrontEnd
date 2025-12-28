@@ -17,10 +17,15 @@ import {
 import { useDeleteFileMutation } from "@/services/s3Api";
 import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 
+interface Policy {
+  policyNumber: string;
+  status: string;
+}
+
 const ClaimForm = () => {
   const { data: claimTypes } = useGetClaimTypesQuery();
   const [selectedClaimType, setSelectedClaimType] = useState("");
-  const [policyNumber, setPolicyNumber] = useState<string[]>([]);
+  const [policyNumbers, setPolicyNumbers] = useState<string[]>([]);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const { data: currentUser } = useGetCurrenttUserQuery();
   const [submitClaim] = useSubmitClaimMutation();
@@ -28,6 +33,7 @@ const ClaimForm = () => {
     DocumentAttachment[]
   >([]);
   const [deleteFile] = useDeleteFileMutation();
+
   const { data: incidentTypes = [] } = useGetIncidentTypesQuery(
     selectedClaimType,
     {
@@ -51,17 +57,33 @@ const ClaimForm = () => {
 
   useEffect(() => {
     if (allPoliciesOfUser) {
-      const polNumber = allPoliciesOfUser.map((policy) => policy.policyNumber);
-      setPolicyNumber(["Choose Your Policy", ...polNumber]);
+      // Filter policies based on status
+      const activePolicies = allPoliciesOfUser.filter(
+        (policy: Policy) =>
+          policy.status !== "EXPIRED" &&
+          policy.status !== "CANCELLED" &&
+          policy.status !== "INACTIVE"
+      );
+
+      // Extract policy numbers from filtered policies
+      const filteredPolicyNumbers = activePolicies.map(
+        (policy: Policy) => policy.policyNumber
+      );
+
+      // If no active policies, show a message or handle accordingly
+      if (filteredPolicyNumbers.length === 0) {
+        setPolicyNumbers(["No active policies available"]);
+      } else {
+        setPolicyNumbers(["Choose Your Policy", ...filteredPolicyNumbers]);
+      }
     }
   }, [allPoliciesOfUser]);
 
   const methods = useForm<ClaimFormData>({
     resolver: zodResolver(claimFormSchema),
     defaultValues: {
-      policyNumber: policyNumber[0],
+      policyNumber: policyNumbers.length > 0 ? policyNumbers[0] : "",
       claimType: "",
-
       incidentDetails: {
         incidentDateTime: new Date().toISOString().slice(0, 16),
         claimAmount: null,
@@ -89,7 +111,18 @@ const ClaimForm = () => {
     handleSubmit,
     formState: { isSubmitting },
     setValue,
+    reset,
   } = methods;
+
+  // Reset form when policy numbers change (optional)
+  useEffect(() => {
+    if (policyNumbers.length > 0) {
+      reset({
+        ...methods.getValues(),
+        policyNumber: policyNumbers[0],
+      });
+    }
+  }, [policyNumbers, reset]);
 
   const onSubmit: SubmitHandler<ClaimFormData> = async (data) => {
     try {
@@ -103,7 +136,6 @@ const ClaimForm = () => {
   const handleUploadComplete = (metadata: DocumentAttachment) => {
     setUploadedDocuments((prev) => {
       const newDocuments = [...prev, metadata];
-
       setValue("documents", newDocuments, { shouldValidate: true });
       return newDocuments;
     });
@@ -115,7 +147,6 @@ const ClaimForm = () => {
   ) => {
     try {
       await deleteFile(document.fileUrl).unwrap();
-
       setUploadedDocuments((prev) => {
         const newDocuments = [...prev];
         newDocuments.splice(index, 1);
@@ -124,7 +155,6 @@ const ClaimForm = () => {
       });
     } catch (error: any) {
       console.error("Error deleting file:", error);
-
       if (error.status === 403) {
         alert(
           "You don't have permission to delete this file. Please check your AWS permissions."
@@ -143,13 +173,41 @@ const ClaimForm = () => {
     );
   }
 
+  // If no active policies, show a message
+  if (
+    policyNumbers.length === 1 &&
+    policyNumbers[0] === "No active policies available"
+  ) {
+    return (
+      <div className="container p-6 bg-yellow-50 rounded-lg shadow-xl">
+        <p className="text-2xl text-blue-500 font-bold mb-4">
+          Report New Claim
+        </p>
+        <div className="p-4 bg-white rounded-lg">
+          <p className="text-lg text-gray-700">
+            You don't have any active policies. Claims can only be submitted for
+            policies that are:
+          </p>
+          <ul className="list-disc pl-5 mt-2 text-gray-600">
+            <li>Active</li>
+            <li>Pending</li>
+          </ul>
+          <p className="mt-4 text-gray-700">
+            Policies that are EXPIRED, CANCELLED, or INACTIVE cannot have claims
+            submitted.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-5 mb-5 p-5 bg-white rounded-lg shadow-xl container"
       >
-        <p className="text-2xl text-blue-500 font-bold mb-4 ">
+        <p className="text-2xl text-blue-500 font-bold mb-4">
           Report New Claim
         </p>
 
@@ -162,10 +220,19 @@ const ClaimForm = () => {
             <select
               {...methods.register("policyNumber")}
               className="mt-1 block w-full rounded-md p-2 border-gray-300 border focus:border-blue-500 focus:ring-blue-500"
+              disabled={policyNumbers.length <= 1} // Disable if only placeholder exists
             >
-              {Object.values(policyNumber).map((type) => (
-                <option key={type} value={type}>
-                  {type.replace(/_/g, " ")}
+              {policyNumbers.map((policyNumber, index) => (
+                <option
+                  key={index}
+                  value={
+                    index === 0 && policyNumber === "Choose Your Policy"
+                      ? "Choose Your Policy"
+                      : policyNumber
+                  }
+                  disabled={index === 0}
+                >
+                  {policyNumber}
                 </option>
               ))}
             </select>
@@ -174,6 +241,10 @@ const ClaimForm = () => {
                 {methods.formState.errors.policyNumber.message}
               </p>
             )}
+            <p className="text-xs text-gray-500 mt-1">
+              Only active policies are shown (not EXPIRED, CANCELLED, or
+              INACTIVE)
+            </p>
           </div>
 
           <div>
@@ -194,9 +265,10 @@ const ClaimForm = () => {
           </div>
         </div>
 
+        {/* Rest of your form remains the same */}
         {/* Incident Details */}
         <div className="border-t pt-4">
-          <p className="text-xl  font-semibold text-gray-900">
+          <p className="text-xl font-semibold text-gray-900">
             Incident Details
           </p>
 
@@ -272,8 +344,8 @@ const ClaimForm = () => {
 
         {/* Third Party Section */}
         <ThirdPartySection />
-        {/* Documents Section */}
 
+        {/* Documents Section */}
         <div className="border-t pt-4">
           <FileUploader
             requiredDocuments={requiredDocuments}
@@ -320,12 +392,12 @@ const ClaimForm = () => {
           )}
         </div>
 
-        <div className="flex justify-end ">
+        <div className="flex justify-end">
           <button
             style={{ backgroundColor: "blue" }}
             type="submit"
-            disabled={isSubmitting}
-            className=" text-white mt-4 py-2 px-4  rounded"
+            disabled={isSubmitting || policyNumbers.length <= 1}
+            className="text-white mt-4 py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Submitting..." : "Submit Claim"}
           </button>

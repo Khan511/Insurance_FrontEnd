@@ -43,12 +43,13 @@ import {
   Hourglass,
   ShieldAlert,
   CheckSquare,
-  TrendingUp,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useFileDownload } from "@/components/mypage/myClaims/useFileDownlaod";
 import type { ClaimApiResponse } from "../claim/Types";
 import { getTimeDifferenceInHours } from "@/utils/Utils";
+import AdminClaimDetails from "./AdminClaimDetails";
+import { Link } from "react-router";
 
 // Edit form type
 type EditClaimForm = {
@@ -120,7 +121,7 @@ const AdminAllClaims = () => {
     fulfilledTimeStamp,
   } = useGetAllClaimsQuery({
     sortBy: "submissiondate",
-    sortDirection: "DESC", // Changed to DESC for newest first
+    sortDirection: "DESC",
   });
 
   const [updateClaim] = useUpdateClaimMutation();
@@ -276,7 +277,7 @@ const AdminAllClaims = () => {
       APPROVED: 0,
       REJECTED: 0,
       UNDER_REVIEW: 0,
-      UNDER_INVESTIGATION: 0,
+      PAUSED: 0,
       PAID: 0,
       CLOSED: 0,
     };
@@ -339,9 +340,9 @@ const AdminAllClaims = () => {
         label: "Under Review",
         icon: <Eye className="h-3 w-3 mr-1" />,
       },
-      UNDER_INVESTIGATION: {
+      PAUSED: {
         color: "bg-purple-100 text-purple-800 border-purple-200",
-        label: "Investigation",
+        label: "Paused",
         icon: <AlertCircle className="h-3 w-3 mr-1" />,
       },
       PAID: {
@@ -547,14 +548,8 @@ const AdminAllClaims = () => {
     }
   };
 
-  console.log("Query result:", allClaimsResponse); // Just the data
-  console.log(
-    "Full hook return:",
-    useGetAllClaimsQuery({
-      sortBy: "submissiondate",
-      sortDirection: "DESC",
-    })
-  );
+  console.log("All Claims:", allClaimsResponse);
+
   const handleSaveClaim = async () => {
     if (!selectedClaim || !editForm) return;
 
@@ -651,7 +646,7 @@ const AdminAllClaims = () => {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex justify-between items-center mb-2">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">
             Claims Management
@@ -982,7 +977,7 @@ const AdminAllClaims = () => {
       </Card>
 
       {/* Results Summary */}
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between">
         <div className="text-sm text-gray-600">
           Showing {filteredClaims?.length || 0} of {allClaims.length} claims
           {filteredClaims?.length !== allClaims.length && " (filtered)"}
@@ -1105,17 +1100,17 @@ const AdminAllClaims = () => {
                     <td className="p-4">{getStatusBadge(claim.status)}</td>
                     <td className="p-4">
                       <div className="flex flex-col gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewClaim(claim)}
-                          className="w-full justify-start"
+                        <Link
+                          to={`/admin/claim-details/${claim?.id}`}
+                          className="w-full flex  justify-center items-center border p-1 rounded"
                         >
                           <Eye className="h-3 w-3 mr-2" />
                           View
-                        </Button>
+                        </Link>
                         {claim.status !== "REJECTED" &&
-                          claim.status !== "PAID" && (
+                          claim.status !== "PAID" &&
+                          claim.status !== "PAUSED" &&
+                          claim.status !== "CANCELLED" && (
                             <Button
                               variant="outline"
                               size="sm"
@@ -1187,305 +1182,9 @@ const AdminAllClaims = () => {
       </Card>
 
       {/* Custom View Modal */}
-      {activeModal === "details" && selectedClaim && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Claim: {selectedClaim.claimNumber}
-                </h2>
-                <div className="flex items-center gap-4 mt-2">
-                  <div className="flex gap-2">
-                    {getStatusBadge(selectedClaim.status)}
-                    {getClaimTypeBadge(selectedClaim.claimType)}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    <span>Policy: {selectedClaim.policyNumber}</span>
-                    {selectedClaim.customerName && (
-                      <span className="ml-4">
-                        Customer: {selectedClaim.customerName}
-                      </span>
-                    )}
-                    {selectedClaim.productName && (
-                      <span className="ml-4">
-                        Product: {selectedClaim.productName}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Left Column */}
-                <div className="space-y-6">
-                  {/* Timeline Card */}
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                        <Calendar className="h-5 w-5" />
-                        Timeline
-                      </h3>
-                      <div className="space-y-4">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Submitted:</span>
-                          <span className="font-medium">
-                            {formatDate(selectedClaim.submissionDate)}
-                          </span>
-                        </div>
-                        {selectedClaim.approvedDate && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Approved:</span>
-                            <span className="font-medium text-green-600">
-                              {formatDate(selectedClaim.approvedDate)}
-                            </span>
-                          </div>
-                        )}
-                        {selectedClaim.rejectedDate && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Rejected:</span>
-                            <span className="font-medium text-red-600">
-                              {formatDate(selectedClaim.rejectedDate)}
-                            </span>
-                          </div>
-                        )}
-                        {selectedClaim.paidDate && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Paid:</span>
-                            <span className="font-medium text-emerald-600">
-                              {formatDate(selectedClaim.paidDate)}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">
-                            Processing Time:
-                          </span>
-                          <span
-                            className={`font-medium ${getProcessingTimeColor(
-                              selectedClaim.processingDays
-                            )}`}
-                          >
-                            {selectedClaim.processingDays !== null
-                              ? `${selectedClaim.processingDays} days`
-                              : "N/A"}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Financial Details Card */}
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                        <DollarSign className="h-5 w-5" />
-                        Financial Details
-                      </h3>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-gray-600 block">
-                            Claimed Amount
-                          </label>
-                          <p className="text-2xl font-bold">
-                            {formatCurrency(
-                              Number(selectedClaim.incidentDetails.claimAmount)
-                            )}
-                          </p>
-                        </div>
-                        {selectedClaim.approvedAmount && (
-                          <div>
-                            <label className="text-gray-600 block">
-                              Approved Amount
-                            </label>
-                            <p className="text-2xl font-bold text-green-600">
-                              {formatCurrency(selectedClaim.approvedAmount)}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Processed By Card */}
-                  {selectedClaim.processedBy && (
-                    <Card>
-                      <CardContent className="p-6">
-                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                          <User className="h-5 w-5" />
-                          Processed By
-                        </h3>
-                        <div className="space-y-3">
-                          <p className="text-sm">
-                            <span className="text-gray-600">Admin:</span>{" "}
-                            <span className="font-medium">
-                              {selectedClaim.processedBy}
-                            </span>
-                          </p>
-                          {selectedClaim.rejectionReason && (
-                            <div>
-                              <label className="text-gray-600 block mb-2">
-                                Rejection Reason
-                              </label>
-                              <p className="text-sm p-3 bg-red-50 border border-red-100 rounded">
-                                {selectedClaim.rejectionReason}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-
-                {/* Right Column */}
-                {/* <div className="space-y-6"> */}
-                {/* Incident Details Card */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold text-lg mb-4">
-                      Incident Details
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-gray-600 block">Type</label>
-                        <p className="capitalize font-medium">
-                          {selectedClaim.incidentDetails.type
-                            .toLowerCase()
-                            .replace(/_/g, " ")}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-gray-600 block">
-                          Date & Time
-                        </label>
-                        <p className="font-medium">
-                          {formatDate(
-                            selectedClaim.incidentDetails.incidentDateTime
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-gray-600 block">
-                          Description
-                        </label>
-                        <div className="mt-2 p-4 bg-gray-50 rounded-lg max-h-60 overflow-y-auto">
-                          {selectedClaim.incidentDetails.description}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Location Card */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                      <MapPin className="h-5 w-5" />
-                      Location
-                    </h3>
-                    <div className="space-y-2">
-                      <p className="font-medium">
-                        {selectedClaim.incidentDetails.location.street}
-                      </p>
-                      <p>
-                        {selectedClaim.incidentDetails.location.city},{" "}
-                        {selectedClaim.incidentDetails.location.postalCode}
-                      </p>
-                      <p>{selectedClaim.incidentDetails.location.country}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <div className="space-y-6">
-                  {/* Documents Card */}
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        Documents ({selectedClaim.documents.length})
-                      </h3>
-                      <div className="space-y-3 max-h-64 overflow-y-auto">
-                        {selectedClaim.documents.length > 0 ? (
-                          selectedClaim.documents.map((doc) => (
-                            <div
-                              key={doc.storageId}
-                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
-                            >
-                              <div className="flex items-center gap-3">
-                                <FileText className="h-5 w-5 text-gray-500" />
-                                <div>
-                                  <p className="font-medium">
-                                    {doc.originalFileName}
-                                  </p>
-                                  <p className="text-sm text-gray-500 capitalize">
-                                    {doc.documentType
-                                      .toLowerCase()
-                                      .replace(/_/g, " ")}
-                                  </p>
-                                </div>
-                              </div>
-                              {doc.fileUrl ? (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  disabled={activeKey === doc.fileKey}
-                                  onClick={() =>
-                                    handleDownload(
-                                      doc.fileKey,
-                                      doc.originalFileName
-                                    )
-                                  }
-                                >
-                                  {activeKey === doc.fileKey
-                                    ? "Preparing..."
-                                    : "Download"}
-                                </Button>
-                              ) : (
-                                <span className="text-sm text-gray-400">
-                                  No file
-                                </span>
-                              )}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-center py-4 text-gray-500">
-                            <FileText className="h-10 w-10 mx-auto mb-2 text-gray-300" />
-                            <p>No documents attached</p>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t p-6">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setActiveModal(null)}
-                  className="sm:hidden"
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <Link to={`/admin/claim-details/${selectedClaim?.id}`}>
+        {<AdminClaimDetails />}
+      </Link>
 
       {/* Custom Edit Modal */}
       {activeModal === "edit" && editForm && selectedClaim && (
@@ -2198,7 +1897,6 @@ const AdminAllClaims = () => {
                       </div>
                     </div>
                   </div>
-
                   {selectedClaim.approvedAmount !==
                     selectedClaim.incidentDetails.claimAmount && (
                     <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">

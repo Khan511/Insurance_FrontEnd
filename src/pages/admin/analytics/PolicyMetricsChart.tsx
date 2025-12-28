@@ -1,4 +1,3 @@
-// charts/PolicyMetricsChart.tsx
 import { useGetAllPoliciesQuery } from "@/services/AdminSlice";
 import {
   BarChart,
@@ -14,10 +13,22 @@ type AnalyticsPeriod = "7d" | "30d" | "90d" | "1y" | "all";
 
 interface PolicymetriChartProps {
   period?: AnalyticsPeriod;
+  policiesData: any[];
 }
 
-const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
-  const { data: allPolicies, isLoading, error } = useGetAllPoliciesQuery();
+const PolicyMetricsChart = ({
+  period,
+  policiesData: externalPolicyData,
+}: PolicymetriChartProps) => {
+  const {
+    data: internalPolicyData,
+    isLoading,
+    error,
+  } = useGetAllPoliciesQuery(undefined, { skip: !!externalPolicyData });
+
+  const allPolicies = externalPolicyData
+    ? externalPolicyData
+    : internalPolicyData || [];
 
   console.log("All Policies in metric chart", allPolicies);
 
@@ -26,47 +37,6 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
    * Groups policies by type and counts active/inactive/pending statuses
    */
   const transformPolicyData = () => {
-    // If no data or loading, return sample data or empty array
-    if (!allPolicies || !Array.isArray(allPolicies)) {
-      return [
-        {
-          type: "Life Insurance",
-          active: 420,
-          inactive: 85,
-          pending: 25,
-          total: 530,
-        },
-        {
-          type: "Auto Insurance",
-          active: 320,
-          inactive: 45,
-          pending: 15,
-          total: 380,
-        },
-        {
-          type: "Property Insurance",
-          active: 280,
-          inactive: 35,
-          pending: 10,
-          total: 325,
-        },
-        {
-          type: "Health Insurance",
-          active: 195,
-          inactive: 30,
-          pending: 8,
-          total: 233,
-        },
-        {
-          type: "Travel Insurance",
-          active: 120,
-          inactive: 20,
-          pending: 5,
-          total: 145,
-        },
-      ];
-    }
-
     // Initialize counts by policy type
     const policyCounts: Record<
       string,
@@ -75,11 +45,13 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
         inactive: number;
         pending: number;
         total: number;
+        expired: number;
+        cancelled: number;
       }
     > = {};
 
     // Process each policy to count by type and status
-    allPolicies.forEach((policy: any) => {
+    allPolicies?.forEach((policy: any) => {
       // Get policy type, defaulting to "Other" if not specified
       const policyType =
         policy.productType || policy.type || policy.policyType || "Other";
@@ -88,7 +60,6 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
       const typeDisplayName = getPolicyTypeDisplayName(policyType);
 
       // Get policy status (assuming you have a status field)
-      // If no status field exists, we'll need to determine it from other fields
       const status = getPolicyStatus(policy);
 
       // Initialize type if not exists
@@ -98,28 +69,27 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
           inactive: 0,
           pending: 0,
           total: 0,
+          expired: 0,
+          cancelled: 0,
         };
       }
 
       // Increment counts based on status
-      switch (status.toLowerCase()) {
-        case "active":
-        case "active":
-        case "issued":
-        case "inforce":
+      switch (status.toUpperCase()) {
+        case "ACTIVE":
           policyCounts[typeDisplayName].active++;
           break;
-        case "inactive":
-        case "expired":
-        case "cancelled":
-        case "terminated":
+        case "INACTIVE":
           policyCounts[typeDisplayName].inactive++;
           break;
-        case "pending":
-        case "draft":
-        case "underwriting":
-        case "application":
+        case "PENDING":
           policyCounts[typeDisplayName].pending++;
+          break;
+        case "EXPIRED":
+          policyCounts[typeDisplayName].expired++;
+          break;
+        case "CANCELLED":
+          policyCounts[typeDisplayName].cancelled++;
           break;
         default:
           // Default to active if status not recognized
@@ -137,6 +107,8 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
         inactive: counts.inactive,
         pending: counts.pending,
         total: counts.total,
+        expired: counts.expired,
+        cancelled: counts.cancelled,
       }))
       .sort((a, b) => b.total - a.total); // Sort by total count descending
 
@@ -198,33 +170,21 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
       const expiryDate = new Date(policy.expiryDate);
 
       if (now < effectiveDate) {
-        return "pending";
+        return "PENDING";
       } else if (now > expiryDate) {
-        return "inactive";
+        return "EXPIRED";
       } else {
-        return "active";
+        return "ACTIVE";
       }
     }
 
     // Check if policy is active based on other fields
     if (policy.isActive !== undefined) {
-      return policy.isActive ? "active" : "inactive";
+      return policy.isActive ? "ACTIVE" : "INACTIVE";
     }
 
     // Default to active if no status info
-    return "active";
-  };
-
-  /**
-   * Get color for each bar segment
-   */
-  const getBarColor = (dataKey: string) => {
-    const colorMap: Record<string, string> = {
-      active: "#10b981", // Green
-      inactive: "#64748b", // Gray
-      pending: "#f59e0b", // Yellow/Orange
-    };
-    return colorMap[dataKey] || "#3b82f6"; // Default blue
+    return "ACTIVE";
   };
 
   // Get transformed data
@@ -238,6 +198,11 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
     0
   );
   const totalPending = policyData.reduce((sum, item) => sum + item.pending, 0);
+  const totalCancelled = policyData.reduce(
+    (sum, item) => sum + item.cancelled,
+    0
+  );
+  const totalExpired = policyData.reduce((sum, item) => sum + item.expired, 0);
 
   // If loading, show loading state
   if (isLoading) {
@@ -266,28 +231,65 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
 
   return (
     <div>
-      {/* Summary stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
+      {/* Summary stats - Updated with 6 boxes */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 mb-4">
+        <div className="bg-white p-2 flex flex-col items-start justify-center rounded-lg shadow-sm border">
           <div className="text-sm text-gray-500">Total Policies</div>
           <div className="text-2xl font-semibold">{totalPolicies}</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
+        <div className="bg-white rounded-lg shadow-sm border  p-2 flex flex-col items-start justify-center ">
           <div className="text-sm text-gray-500">Active</div>
-          <div className="text-2xl font-semibold text-green-600">
+          <div className="text-2xl font-semibold" style={{ color: "#10b981" }}>
             {totalActive}
           </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <div className="text-sm text-gray-500">Inactive</div>
-          <div className="text-2xl font-semibold text-gray-600">
-            {totalInactive}
+          <div className="text-xs text-gray-400 mt-1">
+            {totalPolicies > 0
+              ? `${Math.round((totalActive / totalPolicies) * 100)}%`
+              : "0%"}
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
+        <div className="bg-white p-2 flex flex-col items-start justify-center  rounded-lg shadow-sm border">
+          <div className="text-sm text-gray-500">Inactive</div>
+          <div className="text-2xl font-semibold" style={{ color: "#8b5cf6" }}>
+            {totalInactive}
+          </div>
+          <div className="text-xs text-gray-400 mt-1">
+            {totalPolicies > 0
+              ? `${Math.round((totalInactive / totalPolicies) * 100)}%`
+              : "0%"}
+          </div>
+        </div>
+        <div className="bg-white p-2 flex flex-col items-start justify-center  rounded-lg shadow-sm border">
           <div className="text-sm text-gray-500">Pending</div>
-          <div className="text-2xl font-semibold text-amber-600">
+          <div className="text-2xl font-semibold" style={{ color: "#f59e0b" }}>
             {totalPending}
+          </div>
+          <div className="text-xs text-gray-400 mt-1">
+            {totalPolicies > 0
+              ? `${Math.round((totalPending / totalPolicies) * 100)}%`
+              : "0%"}
+          </div>
+        </div>
+        <div className="bg-white p-2 flex flex-col items-start justify-center  rounded-lg shadow-sm border">
+          <div className="text-sm text-gray-500">Cancelled</div>
+          <div className="text-2xl font-semibold" style={{ color: "#ef4444" }}>
+            {totalCancelled}
+          </div>
+          <div className="text-xs text-gray-400 mt-1">
+            {totalPolicies > 0
+              ? `${Math.round((totalCancelled / totalPolicies) * 100)}%`
+              : "0%"}
+          </div>
+        </div>
+        <div className="bg-white p-2 flex flex-col items-start justify-center  rounded-lg shadow-sm border">
+          <div className="text-sm text-gray-500">Expired</div>
+          <div className="text-2xl font-semibold" style={{ color: "#6b7280" }}>
+            {totalExpired}
+          </div>
+          <div className="text-xs text-gray-400 mt-1">
+            {totalPolicies > 0
+              ? `${Math.round((totalExpired / totalPolicies) * 100)}%`
+              : "0%"}
           </div>
         </div>
       </div>
@@ -352,25 +354,38 @@ const PolicyMetricsChart = ({ period }: PolicymetriChartProps) => {
               }}
             />
             <Legend />
-
             <Bar
               dataKey="active"
               name="Active"
-              fill="#10b981"
+              fill="#10b981" // Emerald
               radius={[4, 4, 0, 0]}
               stackId="a"
             />
             <Bar
               dataKey="inactive"
               name="Inactive"
-              fill="#64748b"
+              fill="#8b5cf6" // Violet
               radius={[4, 4, 0, 0]}
               stackId="a"
             />
             <Bar
               dataKey="pending"
               name="Pending"
-              fill="#f59e0b"
+              fill="#f59e0b" // Amber
+              radius={[4, 4, 0, 0]}
+              stackId="a"
+            />
+            <Bar
+              dataKey="cancelled"
+              name="Cancelled"
+              fill="#ef4444" // Red
+              radius={[4, 4, 0, 0]}
+              stackId="a"
+            />
+            <Bar
+              dataKey="expired"
+              name="Expired"
+              fill="#6b7280" // Gray
               radius={[4, 4, 0, 0]}
               stackId="a"
             />

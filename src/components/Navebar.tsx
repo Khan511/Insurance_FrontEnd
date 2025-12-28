@@ -122,7 +122,7 @@ function Navbare() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <div className="flex flex-col gap-4 mt-8">
+              <div className="flex flex-col gap-4 mt-5">
                 <Link to="/private-products">
                   <Button variant="ghost" className="w-full justify-start">
                     Private

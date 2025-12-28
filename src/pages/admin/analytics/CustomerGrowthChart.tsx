@@ -11,11 +11,6 @@ import { useGetAllCustomersQuery } from "@/services/AdminSlice";
 
 type AnalyticsPeriod = "7d" | "30d" | "90d" | "1y" | "all";
 
-interface CustomerGrowthChartProps {
-  // detailed?: boolean;
-  period?: AnalyticsPeriod;
-}
-
 interface CustomerData {
   customerId: string;
   email: string;
@@ -49,20 +44,30 @@ interface CustomerData {
   customerBillingAddressCountry: string;
 }
 
+interface CustomerGrowthChartProps {
+  // detailed?: boolean;
+  period?: AnalyticsPeriod;
+  customersData?: any[];
+}
+
 const CustomerGrowthChart = ({
   // detailed = true,
-  period = "1y", // Default to 1 year
+  period = "30d",
+  customersData: externalCustomerData,
 }: CustomerGrowthChartProps) => {
-  // Use RTK Query hook directly in the component
   const {
-    data: customersData,
+    data: internalCustomerData,
     isLoading,
     isError,
     error,
-  } = useGetAllCustomersQuery();
+  } = useGetAllCustomersQuery(undefined, {
+    skip: !!externalCustomerData,
+  });
 
   // Extract customers array from the response
-  const customers = customersData || [];
+  const customers = externalCustomerData
+    ? externalCustomerData
+    : internalCustomerData || [];
 
   console.log("Customer data in chart:", customers);
 

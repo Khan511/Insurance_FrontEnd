@@ -26,14 +26,7 @@ export type ProductTranslation = {
   description: string;
 };
 
-export type ProductType =
-  | "AUTO"
-  // | "HEALTH"
-  | "LIFE"
-  | "PROPERTY";
-// | "TRAVEL"
-// | "LIABILITY"
-// | "PET";
+export type ProductType = "AUTO" | "LIFE" | "PROPERTY";
 
 export type AgeBracket = {
   minAge?: number;
@@ -57,8 +50,10 @@ export type InsuracePolicy = {
   policyNumber: string;
   displayName: string;
   description: string;
-  policiyHolderName: string;
+
+  policyHolderName: string;
   policyHolderEmail: string;
+
   status: string;
   productType: ProductType;
   coverageDetails: CoverageDetails[];
@@ -71,10 +66,27 @@ export type InsuracePolicy = {
   translation: { [locale: string]: ProductTranslation };
   calculationConfig?: PremiumCalculationConfig;
 
+  // Financial fields
   premium: string;
   currency: string;
   paymentFrequency: string; // 'MONTHLY' | 'QUARTERLY' | 'ANNUAL'
   paymentSchedules: PaymentSchedule[];
+
+  cancellationReason: string;
+  cancellationDate: string | null;
+  cancelledBy: string | null;
+  statusChangeNotes: string | null;
+
+  // Audit fields
+  createdAt: string | null;
+  updatedAt: string | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+
+  // Relationship IDs
+  userId: string | null;
+  policyHolderId: number | null;
+  productId: number | null;
 
   beneficiaries: Beneficiaries[];
 };
@@ -89,6 +101,10 @@ export type PaymentSchedule = {
   paidDate: string | null;
   status: string; // 'PENDING' | 'PAID' | 'OVERDUE'
   transactionId: string;
+
+  cancellationDate: string | null;
+  cancelledBy: string | null;
+  policyId?: number;
 };
 
 export type GovernmentId = {
