@@ -1,11 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 
 import { User, FileText, Activity, CreditCard, Plus } from "lucide-react";
 import MyPolicies from "@/components/mypage/myPolicies/MyPolicies";
 import MyClaimComponent from "@/components/mypage/myClaims/MyClaims";
-import Mypayments from "@/components/mypage/MyPayments";
+import Mypayments from "@/components/mypage/myPayments/MyPayments";
 import { Link, useNavigate, useParams } from "react-router";
 import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";

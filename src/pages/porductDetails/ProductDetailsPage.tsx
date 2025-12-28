@@ -1,9 +1,9 @@
 import { useGetProductDetailsQuery } from "@/services/InsuranceProductSlice";
-import image from "../assets/image.png";
+import image from "../../assets/image.png";
 import {
   ResizablePanel,
   ResizablePanelGroup,
-} from "../components/ui/resizable";
+} from "../../components/ui/resizable";
 import { Link, useParams } from "react-router";
 import { Spinner } from "react-bootstrap";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
@@ -29,7 +29,7 @@ const ProductDetailsPage = () => {
     );
   }
 
-  console.log("Policy Details: ", policyDetails);
+  console.log("Policy Details inProductDetails: ", policyDetails);
 
   return (
     <div className="container bg-gray-200 min-h-screen ">

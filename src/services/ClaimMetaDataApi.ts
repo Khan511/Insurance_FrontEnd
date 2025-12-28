@@ -44,28 +44,6 @@ export const claimMetadataApi = createApi({
         method: "GET",
       }),
     }),
-
-    // // Add this endpoint for getting pre-signed download URLs
-    // getDownloadUrl: builder.query<
-    //   { downloadUrl: string; expiresAt: number },
-    //   string
-    // >({
-    //   query: (fileKey) => ({
-    //     url: `/presigned-download-url?fileKey=${encodeURIComponent(fileKey)}`,
-    //     method: "GET",
-    //   }),
-    // }),
-
-    // // Add this endpoint for direct file download
-    // downloadFile: builder.mutation<Blob, { fileKey: string; fileName: string }>(
-    //   {
-    //     query: ({ fileKey }) => ({
-    //       url: `/download-file?fileKey=${encodeURIComponent(fileKey)}`,
-    //       method: "GET",
-    //       responseHandler: (response) => response.blob(), // Handle response as blob
-    //     }),
-    //   }
-    // ),
   }),
 });
 
@@ -75,6 +53,4 @@ export const {
   useGetIncidentTypesQuery,
   useSubmitClaimMutation,
   useGetAllClaimsOfUserQuery,
-  // useGetDownloadUrlQuery,
-  // useDownloadFileMutation,
 } = claimMetadataApi;
