@@ -16,7 +16,7 @@ import {
   Eye,
   Filter,
 } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 
 type DateTuple = [number, number, number, number?, number?];

@@ -1,16 +1,7 @@
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  BarChart3,
-  Users,
-  FileText,
-  Shield,
-  DollarSign,
-  AlertTriangle,
-  CheckCircle,
-  TrendingUp,
-} from "lucide-react";
+import { Users, FileText, Shield, DollarSign, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import AdminAllPolicies from "./AdminAllPolicies";
@@ -18,7 +9,7 @@ import AdminAllClaims from "./AdminAllClaims";
 import AdminPayments from "./AdminPayments";
 import AminAllCustomers from "./AdminAllCustomers";
 import AdminAnalytics from "./AdminAnalytics";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 // Components
 const StatsCard = ({

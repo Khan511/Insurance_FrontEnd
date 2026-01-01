@@ -49,7 +49,7 @@ import { useFileDownload } from "@/components/mypage/myClaims/useFileDownlaod";
 import type { ClaimApiResponse } from "../claim/Types";
 import { getTimeDifferenceInHours } from "@/utils/Utils";
 import AdminClaimDetails from "./AdminClaimDetails";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 // Edit form type
 type EditClaimForm = {

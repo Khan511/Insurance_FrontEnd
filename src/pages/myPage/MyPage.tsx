@@ -5,7 +5,7 @@ import { User, FileText, Activity, CreditCard, Plus } from "lucide-react";
 import MyPolicies from "@/components/mypage/myPolicies/MyPolicies";
 import MyClaimComponent from "@/components/mypage/myClaims/MyClaims";
 import Mypayments from "@/components/mypage/myPayments/MyPayments";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useGetAllPoliciesOfUserQuery } from "@/services/InsurancePolicySlice";
 import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import { useGetAllClaimsOfUserQuery } from "@/services/ClaimMetaDataApi";
@@ -191,39 +191,6 @@ export default function MyPage() {
           <Mypayments />
         </TabsContent>
       </Tabs>
-
-      {/* Additional Suggestions Section */}
-      {/* <div className="mt-5">
-        <p className="text-xl font-bold mb-4">More Services</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="hover:shadow-md transition-shadow p-2">
-            <CardHeader>
-              <CardTitle className="text-lg">Emergency Contacts</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">
-                Access 24/7 support and emergency service contacts
-              </p>
-              <Link to="/all-products" className="btn outline">
-                View Contacts
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow p-2">
-            <CardHeader>
-              <CardTitle className="text-lg">Insurance Agents</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">
-                Connect with your dedicated insurance agent
-              </p>
-              <Button variant="outline">Find Agent</Button>
-            </CardContent>
-          </Card>
-        </div> 
-      </div>
-        */}
     </div>
   );
 }

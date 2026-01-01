@@ -92,7 +92,7 @@ export const PremiumCaculationForm = ({
                       <SelectValue placeholder="Select health condition" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem className="p-2" value="EXCELLENT">
                       Excellent
                     </SelectItem>
@@ -149,7 +149,7 @@ export const PremiumCaculationForm = ({
                       <SelectValue placeholder="Select location risk" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="w-[var(--radix-select-trigger-width)] max-w-[400px]">
+                  <SelectContent className="w-[var(--radix-select-trigger-width)] max-w-[400px] bg-white">
                     <SelectItem className="p-2" value="LOW_RISK">
                       Low Risk Area
                     </SelectItem>
@@ -196,7 +196,7 @@ export const PremiumCaculationForm = ({
                     <SelectValue placeholder="Select payment frequency" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className="w-[var(--radix-select-trigger-width)] max-w-[400px]">
+                <SelectContent className="w-(--radix-select-trigger-width) max-w-[400px] bg-white">
                   <SelectItem className="p-2" value="MONTHLY">
                     Monthly
                   </SelectItem>

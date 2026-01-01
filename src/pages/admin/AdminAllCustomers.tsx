@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useGetAllCustomersQuery } from "@/services/AdminSlice";
 import { Edit, Eye, Filter, Search } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const AminAllCustomers = () => {
   const navigate = useNavigate();
