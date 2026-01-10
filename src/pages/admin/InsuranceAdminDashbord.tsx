@@ -1,7 +1,14 @@
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, FileText, Shield, DollarSign, TrendingUp } from "lucide-react";
+import {
+  Users,
+  FileText,
+  Shield,
+  DollarSign,
+  TrendingUp,
+  Briefcase,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import AdminAllPolicies from "./AdminAllPolicies";
@@ -10,6 +17,7 @@ import AdminPayments from "./AdminPayments";
 import AminAllCustomers from "./AdminAllCustomers";
 import AdminAnalytics from "./AdminAnalytics";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import AdminEmployees from "@/components/employee/AdminEmployees";
 
 // Components
 const StatsCard = ({
@@ -61,6 +69,7 @@ export default function AdminDashboard() {
     "payments",
     "customers",
     "analytics",
+    "employees",
   ];
 
   // Get active tab from URL or default to "analytics"
@@ -92,7 +101,7 @@ export default function AdminDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="grid w-full grid-cols-5 mb-2">
+        <TabsList className="grid w-full grid-cols-6 mb-2">
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
             Analytics
@@ -112,6 +121,10 @@ export default function AdminDashboard() {
           <TabsTrigger value="customers" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Customers
+          </TabsTrigger>
+          <TabsTrigger value="employees" className="flex items-center gap-2">
+            <Briefcase className="h-4 w-4" />
+            Employees
           </TabsTrigger>
         </TabsList>
 
@@ -136,6 +149,10 @@ export default function AdminDashboard() {
         {/* Analytics Tab */}
         <TabsContent value="analytics">
           <AdminAnalytics />
+        </TabsContent>
+        {/* Employees */}
+        <TabsContent value="employees">
+          <AdminEmployees />
         </TabsContent>
       </Tabs>
     </div>

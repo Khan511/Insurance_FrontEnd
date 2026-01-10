@@ -24,8 +24,6 @@ import {
   Eye,
   Search,
   FileText,
-  MapPin,
-  User,
   Calendar,
   Save,
   X,
@@ -41,11 +39,9 @@ import {
   FileCheck,
   FileX,
   Hourglass,
-  ShieldAlert,
   CheckSquare,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useFileDownload } from "@/components/mypage/myClaims/useFileDownlaod";
 import type { ClaimApiResponse } from "../claim/Types";
 import { getTimeDifferenceInHours } from "@/utils/Utils";
 import AdminClaimDetails from "./AdminClaimDetails";
@@ -91,7 +87,7 @@ type ClaimFilter = {
 const AdminAllClaims = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { downloadFile, activeKey } = useFileDownload();
+
   const [selectedClaim, setSelectedClaim] = useState<ClaimApiResponse | null>(
     null
   );
@@ -380,11 +376,11 @@ const AdminAllClaims = () => {
     );
   };
 
-  const handleDownload = (fileKey: string | null, fileName: string) => {
-    if (fileKey) {
-      downloadFile(fileKey, fileName);
-    }
-  };
+  // const handleDownload = (fileKey: string | null, fileName: string) => {
+  //   if (fileKey) {
+  //     downloadFile(fileKey, fileName);
+  //   }
+  // };
 
   const getClaimTypeBadge = (claimType: string) => {
     const typeConfig = {
@@ -454,10 +450,10 @@ const AdminAllClaims = () => {
     }).format(amount);
   };
 
-  const handleViewClaim = (claim: ClaimApiResponse) => {
-    setSelectedClaim(claim);
-    setActiveModal("details");
-  };
+  // const handleViewClaim = (claim: ClaimApiResponse) => {
+  //   setSelectedClaim(claim);
+  //   setActiveModal("details");
+  // };
 
   const handleEditClaim = (claim: ClaimApiResponse) => {
     setSelectedClaim(claim);
@@ -700,7 +696,7 @@ const AdminAllClaims = () => {
                     <SelectValue placeholder="Filter by status" />
                   </div>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">
                     <div className="flex justify-between w-full gap-1">
                       <span>All Statuses</span>
@@ -727,17 +723,7 @@ const AdminAllClaims = () => {
                       </Badge>
                     </div>
                   </SelectItem>
-                  <SelectItem value="UNDER_INVESTIGATION">
-                    <div className="flex justify-between w-full gap-1">
-                      <div className="flex items-center gap-2">
-                        <ShieldAlert className="h-4 w-4 text-purple-600" />
-                        <span>Investigation</span>
-                      </div>
-                      <Badge variant="outline">
-                        {statusCounts.UNDER_INVESTIGATION}
-                      </Badge>
-                    </div>
-                  </SelectItem>
+
                   <SelectItem value="APPROVED">
                     <div className="flex justify-between w-full gap-1">
                       <div className="flex items-center gap-2">
@@ -783,7 +769,7 @@ const AdminAllClaims = () => {
                     <SelectValue placeholder="Claim Type" />
                   </div>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All Claim Types</SelectItem>
                   {uniqueClaimTypes.map((type) => (
                     <SelectItem key={type} value={type}>
@@ -812,7 +798,7 @@ const AdminAllClaims = () => {
                   <Calendar className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Submission Time" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All Time</SelectItem>
                   <SelectItem value="today">Last 24 Hours</SelectItem>
                   <SelectItem value="week">Last 7 Days</SelectItem>
@@ -837,7 +823,7 @@ const AdminAllClaims = () => {
                   <DollarSign className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Amount Range" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All Amounts</SelectItem>
                   <SelectItem value="under1000">Under 1,000 DKK</SelectItem>
                   <SelectItem value="1000to5000">1,000 - 5,000 DKK</SelectItem>
@@ -861,7 +847,7 @@ const AdminAllClaims = () => {
                   <Hourglass className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Processing Time" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All</SelectItem>
                   <SelectItem value="notStarted">
                     Not Started (0 days)
@@ -1188,7 +1174,7 @@ const AdminAllClaims = () => {
 
       {/* Custom Edit Modal */}
       {activeModal === "edit" && editForm && selectedClaim && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center mt-5 p-4 bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b">
@@ -1282,7 +1268,7 @@ const AdminAllClaims = () => {
                       placeholder="Enter amount"
                       min="0"
                       step="0.01"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-50"
                     />
                   </div>
                 </div>

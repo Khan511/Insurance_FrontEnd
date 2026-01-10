@@ -47,47 +47,6 @@ export type ClaimFormData = {
   documents: DocumentAttachment[];
 };
 
-// // In your Types.ts file
-// export interface ClaimApiResponse {
-//   claimNumber: string;
-//   claimType: string;
-//   status: string;
-//   amount?: string;
-//   incidentDetails: {
-//     description: string;
-//     incidentDateTime: [number, number, number, number?, number?]; // Tuple format
-//     location: {
-//       street: string;
-//       city: string;
-//       postalCode: string;
-//       country: string;
-//     };
-//     policeReportNumber: string;
-//     thirdPartyDetails: {
-//       name: string;
-//       contactInfo: string;
-//       insuranceInfo: string;
-//     };
-//     thirdPartyInvolved: boolean;
-//     type: string;
-//   };
-//   policyNumber: string;
-//   documents: Array<{
-//     contentType: string;
-//     documentType: string;
-//     downloadUrl: string | null;
-//     fileKey: string | null;
-//     fileSize: number | null;
-//     fileUrl: string | null;
-//     originalFileName: string;
-//     sha256Checksum: string;
-//     storageBucket: string;
-//     storageId: string;
-//     storagePath: string | null;
-//     uploadedAt: string | null;
-//   }>;
-// }
-
 // request types for claim actions
 export interface ApproveClaimRequest {
   claimId: number;
@@ -197,4 +156,62 @@ export interface UpdateClaimStatusRequest {
   status: string;
   claimAmount?: number;
   reason?: string;
+}
+
+// EMPLOYEE TYPES
+export type RoleType = "AGENT" | "CLAIM_MANAGER" | "ADMIN";
+
+export type EmploymentType = "FULL_TIME" | "PART_TIME" | "CONTRACT";
+
+export interface PersonName {
+  firstName: string;
+  lastName: string;
+}
+
+export interface WorkContactInfo {
+  workPhone?: string;
+  workEmail?: string;
+  // extension?: string;
+  officeLocation?: string;
+  // deskNumber?: string;
+}
+
+export interface EmergencyContact {
+  name?: string;
+  relationship?: string;
+  phone?: string;
+  email?: string;
+}
+
+export interface EmployeeCreateDto {
+  email: string;
+  password: string;
+  name: PersonName;
+  dateOfBirth?: string;
+  terminationDate?: string;
+  department: string;
+  jobTitle: string;
+  salary: string;
+  employmentType: EmploymentType;
+  roleType: RoleType;
+  workContactInfo?: WorkContactInfo;
+  emergencyContact?: EmergencyContact;
+}
+
+export interface EmployeeResponseDto {
+  id: number;
+  employeeId: string;
+  email: string;
+  name: PersonName;
+  dateOfBirth?: string;
+  terminationDate?: string;
+  department: string;
+  jobTitle: string;
+  salary: number;
+  employmentType: EmploymentType;
+  roleType: RoleType;
+  workContactInfo?: WorkContactInfo;
+  emergencyContact?: EmergencyContact;
+  hireDate: string;
+  active: boolean;
 }

@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
-import { CalendarIcon, User, Check, Sparkles } from "lucide-react";
+import { CalendarIcon, User, Check, Sparkles, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { format } from "date-fns";
@@ -243,7 +243,7 @@ export default function UserCreatingForme() {
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="w-auto p-0 rounded-xl border-gray-200 shadow-xl"
+                    className="w-auto p-0 rounded-xl border-gray-200 shadow-xl bg-white"
                     align="start"
                   >
                     <Calendar
@@ -253,7 +253,6 @@ export default function UserCreatingForme() {
                       disabled={(date) =>
                         date > new Date() || date < new Date("1900-01-01")
                       }
-                      initialFocus
                       className="rounded-xl p-3"
                     />
                   </PopoverContent>
@@ -304,7 +303,8 @@ export default function UserCreatingForme() {
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <Loader2 className="h5 w5 animate-spin" />
+                {/* <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> */}
                 Creating Account...
               </div>
             ) : (

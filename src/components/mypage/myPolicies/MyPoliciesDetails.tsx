@@ -467,6 +467,8 @@ export default function MyPoliciesDetails() {
 
   const paymentStatusDisplay = getPaymentStatusDisplay();
 
+  console.log("Policy Details in myPage: ", policyDetails);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -498,7 +500,7 @@ export default function MyPoliciesDetails() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen py-6 px-4 sm:px-6 lg:px-8 mt-5">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">

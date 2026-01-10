@@ -89,6 +89,8 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
           console.log(`Unhandled insurance Type: ${data}`);
       }
 
+      console.log("riskFactors", riskFactors);
+
       const result = await calculatePremium({
         productId,
         riskFactors,

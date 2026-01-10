@@ -1,8 +1,6 @@
-import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
+// import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { v4 as uuidv4 } from "uuid";
-import { FileKey } from "lucide-react";
 
 interface DocumentType {
   name: string;
@@ -33,7 +31,7 @@ function FileUploader({
   const [progress, setProgress] = useState(0);
   const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
   const { setError, clearErrors } = useFormContext();
-  const { data: currentUser } = useGetCurrenttUserQuery();
+  // const { data: currentUser } = useGetCurrenttUserQuery();
 
   const validateFile = (file: File): string | null => {
     // Check file size (e.g., max 10MB)
@@ -86,23 +84,8 @@ function FileUploader({
       // Calculate SHA256 checksum
       const sha256Checksum = await calculateSHA256(file);
 
-      // Generate a Uniq storage ID
-      // const storageId = uuidv4();
-
-      // Get file extension
-      // const fileExtension = file.name.split(".").pop()?.toLowerCase() || "";
-
-      // Create user folder name
-      // const userName = `${currentUser?.data?.user.name.firstName || "User"}_${
-      //   currentUser?.data?.user.name.lastName || "Unknown"
-      // }`.replace(/[^a-zA-Z0-9_-]/g, "_");
-
       // Create a safe filename
       const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-
-      // Use the original file extension
-
-      // const fileKey = `${userName}_${currentUser?.data.user.userId}/${storageId}.${fileExtension}`;
 
       // Step 1: Get pre-signed URL from backend
       const presignedUrlResponse = await fetch(

@@ -10,9 +10,6 @@ import {
   Users,
   TrendingUp,
   ChevronRight,
-  Star,
-  Award,
-  Headphones,
 } from "lucide-react";
 import { useGetAllProductsQuery } from "@/services/InsuranceProductSlice";
 import { InsuranceCardCarousel } from "../../components/carousel/InsuraceCardCarousel";
@@ -51,13 +48,6 @@ const Home = () => {
   ];
 
   console.log("Home page products: ", products);
-
-  const stats = [
-    { value: "98%", label: "Customer Satisfaction" },
-    { value: "24h", label: "Average Claim Processing" },
-    { value: "50+", label: "Insurance Products" },
-    { value: "15", label: "Years of Experience" },
-  ];
 
   return (
     <div className="home-page">

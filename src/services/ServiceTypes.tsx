@@ -87,10 +87,14 @@ export type InsuracePolicy = {
   userId: string | null;
   policyHolderId: number | null;
   productId: number | null;
-
+  translations: Translations[];
   beneficiaries: Beneficiaries[];
 };
 
+type Translations = {
+  displayName: string;
+  description: string;
+};
 //PaymentSchedule type
 export type PaymentSchedule = {
   [x: string]: unknown;

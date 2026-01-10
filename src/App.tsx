@@ -17,6 +17,8 @@ import EditCustomer from "./pages/admin/EditCustomer";
 import MainLayout from "./pages/mainLayout/MainLayout";
 import ErrorBoundary from "./components/error/ErrorBoundary";
 import ContactPage from "./pages/contact/Contact";
+import EmailVerificationSuccess from "./pages/emailVerification/EmailVerificationSuccess";
+import EmailVerificationFailed from "./pages/emailVerification/EmailVerificationFailed";
 
 // Lazy load pages
 const Home = lazy(() => import("@/pages/home/Home"));
@@ -49,6 +51,14 @@ const router = createBrowserRouter([
       { path: "/products/:policyId", element: <ProductDetailsPage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/create-user", element: <CreateUser /> },
+      {
+        path: "/email-verification/success",
+        element: <EmailVerificationSuccess />,
+      },
+      {
+        path: "/email-verification/failed",
+        element: <EmailVerificationFailed />,
+      },
 
       // Admin routes
       {

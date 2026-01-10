@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Calendar,
   DollarSign,
-  User,
   FileText,
   MapPin,
   Clock,
@@ -21,99 +20,13 @@ import {
   Download,
   Eye,
   Building2,
-  Receipt,
   UserCircle,
-  Phone,
   Mail,
   Home,
 } from "lucide-react";
 import { useFileDownload } from "@/components/mypage/myClaims/useFileDownlaod";
 import { useGetClaimDetailsQuery } from "@/services/AdminSlice";
 import { formatDate } from "@/utils/Utils";
-
-// // Define TypeScript interfaces for claim data
-// interface Document {
-//   id: number;
-//   documentType: string;
-//   originalFileName: string;
-//   fileUrl: string | null;
-//   fileKey: string | null;
-//   uploadedAt: string;
-// }
-
-// interface IncidentDetails {
-//   incidentDateTime: [
-//     number,
-//     number,
-//     number,
-//     number?,
-//     number?,
-//     number?,
-//     number?
-//   ];
-
-//   type: string;
-//   claimAmount: number;
-//   location: {
-//     street: string;
-//     city: string;
-//     postalCode: string;
-//     country: string;
-//   };
-//   description: string;
-//   policeReportNumber?: string;
-//   thirdPartyInvolved?: boolean;
-//   thirdPartyDetails?: {
-//     name: string;
-//     contactInfo: string;
-//     insuranceInfo: string;
-//   };
-// }
-
-// interface ClaimDetails {
-//   id: number;
-//   claimNumber: string;
-//   policyNumber: string;
-//   productCode: string;
-//   productName: string;
-//   claimType: string;
-//   status: string;
-//   customerName: string;
-//   customerEmail: string;
-
-//   incidentDetails: IncidentDetails;
-//   documents: Document[];
-
-//   submissionDate: [number, number, number, number?, number?, number?, number?];
-//   approvedDate?: [number, number, number, number?, number?, number?, number?];
-//   approvedAmount?: number;
-//   approvalNotes?: string;
-
-//   rejectedDate?: [number, number, number, number?, number?, number?, number?];
-//   rejectionReason?: string;
-
-//   paidDate?: [number, number, number, number?, number?, number?, number?];
-//   paidBy?: string;
-//   paymentStatus: string;
-//   paymentNotes?: string;
-//   paymentReference?: string;
-
-//   processedBy?: string;
-//   processingDays: number;
-
-//   isActive: boolean;
-//   isOpen: boolean;
-//   isProcessed: boolean;
-//   isFullyPaid: boolean;
-//   isTerminal: boolean;
-
-//   canBeApproved: boolean;
-//   canBeRejected: boolean;
-//   canBePaid: boolean;
-
-//   closedDate?: [number, number, number, number?, number?, number?, number?];
-//   storageBucket?: string;
-// }
 
 export default function AdminClaimDetails() {
   const navigate = useNavigate();
@@ -285,7 +198,7 @@ export default function AdminClaimDetails() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen py-6 px-4 sm:px-6 lg:px-8 mt-5">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">

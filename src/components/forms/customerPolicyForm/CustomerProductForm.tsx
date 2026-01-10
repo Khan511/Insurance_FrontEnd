@@ -1013,7 +1013,7 @@ export function CustomerProductForm() {
                       <Button
                         type="button"
                         variant="default"
-                        className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg hover:shadow-blue-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg hover:shadow-blue-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl"
                         onClick={() => validateAndMoveToNext("risk")}
                         disabled={!isSectionComplete()}
                       >
@@ -1304,7 +1304,7 @@ export function CustomerProductForm() {
                       <Button
                         type="button"
                         variant="default"
-                        className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg hover:shadow-emerald-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg hover:shadow-emerald-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                         onClick={() => validateAndMoveToNext("contact")}
                         disabled={!isSectionComplete()}
                       >
@@ -1521,7 +1521,7 @@ export function CustomerProductForm() {
                       <Button
                         type="button"
                         variant="default"
-                        className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg hover:shadow-purple-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-linear-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg hover:shadow-purple-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-black"
                         onClick={() => validateAndMoveToNext("policy")}
                         disabled={!isSectionComplete()}
                       >
@@ -1679,7 +1679,7 @@ export function CustomerProductForm() {
                         <Button
                           type="button"
                           variant="default"
-                          className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-lg hover:shadow-amber-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-lg hover:shadow-amber-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                           onClick={() => validateAndMoveToNext("beneficiaries")}
                           disabled={!isSectionComplete()}
                         >
@@ -1688,7 +1688,7 @@ export function CustomerProductForm() {
                       ) : (
                         <Button
                           type="submit"
-                          className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-emerald-200 transition-all duration-300 px-8"
+                          className="bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-emerald-200 transition-all duration-300 px-8"
                           disabled={isLoading}
                         >
                           {isLoading ? (
@@ -1858,7 +1858,7 @@ export function CustomerProductForm() {
                                                   <SelectValue placeholder="Select relationship" />
                                                 </SelectTrigger>
                                               </FormControl>
-                                              <SelectContent className="animate-slide-down">
+                                              <SelectContent className="animate-slide-down bg-white">
                                                 <SelectItem value="SPOUSE">
                                                   Spouse
                                                 </SelectItem>
@@ -2005,12 +2005,12 @@ export function CustomerProductForm() {
                         </Button>
                         <Button
                           type="submit"
-                          className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-red-200 transition-all duration-300 px-8 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="bg-linear-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-red-200 transition-all duration-300 px-8 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                           disabled={isLoading || !isSectionComplete()}
                         >
                           {isLoading ? (
                             <>
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2 "></div>
                               Processing...
                             </>
                           ) : (

@@ -146,7 +146,12 @@ export default function MyPolicies() {
               You don't have any insurance policies yet.
             </p>
             <Button asChild>
-              <Link to="/policies">Browse Available Policies</Link>
+              <Link
+                to="/all-products"
+                className="text-white px-5 no-underline "
+              >
+                Browse Available Policies
+              </Link>
             </Button>
           </div>
         </div>

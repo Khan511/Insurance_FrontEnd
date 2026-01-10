@@ -83,3 +83,35 @@ export const formatDate = (
     }),
   });
 };
+
+// Helper function to format date array [year, month, day] to YYYY-MM-DD
+export const formatDateArrayForInput = (dateArray?: any): string => {
+  if (!dateArray) return "";
+
+  try {
+    // Handle array format [year, month, day]
+    if (Array.isArray(dateArray) && dateArray.length >= 3) {
+      const [year, month, day] = dateArray;
+      // Note: Java LocalDate months are 1-indexed (1=January), so no need to adjust
+      const formattedMonth = String(month).padStart(2, "0");
+      const formattedDay = String(day).padStart(2, "0");
+      return `${year}-${formattedMonth}-${formattedDay}`;
+    }
+
+    // Handle string date format
+    if (typeof dateArray === "string") {
+      const date = new Date(dateArray);
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+    }
+
+    return "";
+  } catch (error) {
+    console.error("Error formatting date:", error, dateArray);
+    return "";
+  }
+};

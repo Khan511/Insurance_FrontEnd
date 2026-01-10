@@ -27,7 +27,7 @@ const AminAllCustomers = () => {
     });
   };
 
-  console.log(customers);
+  console.log("Admin All Customer: ", customers);
 
   return (
     <div className="space-y-4">

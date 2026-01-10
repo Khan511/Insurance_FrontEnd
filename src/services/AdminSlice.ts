@@ -3,9 +3,13 @@ import type { InsuracePolicy } from "./ServiceTypes";
 import type {
   ApproveClaimRequest,
   ClaimApiResponse,
+  EmployeeResponseDto,
   RejectClaimRequest,
-  UpdateClaimStatusRequest,
 } from "@/pages/claim/Types";
+import type {
+  EmployeeFormData,
+  EmployeeUpdateData,
+} from "@/components/employee/employeeSchema";
 
 type GetClaimsResponse = { claim: ClaimApiResponse[] };
 
@@ -87,9 +91,7 @@ export const AdminSlice = createApi({
     },
   }),
 
-  // Add "Claims" to tagTypes array
-  tagTypes: ["Policy", "Claims"], // <-- ADD "Claims" HERE
-
+  tagTypes: ["Policy", "Claims", "Employee"],
   endpoints: (builder) => ({
     getAllPolicies: builder.query<InsuracePolicy[], void>({
       query: () => ({
@@ -217,13 +219,75 @@ export const AdminSlice = createApi({
       invalidatesTags: ["Claims"], // Now this works
     }),
 
-    updateClaimStatus: builder.mutation<void, UpdateClaimStatusRequest>({
-      query: ({ claimId, status, claimAmount, reason }) => ({
-        url: `/api/admin/claims/${claimId}/status`,
-        method: "PUT",
-        body: { status, claimAmount, reason },
+    // updateClaimStatus: builder.mutation<void, UpdateClaimStatusRequest>({
+    //   query: ({ claimId, status, claimAmount, reason }) => ({
+    //     url: `/admin/claims/${claimId}/status`,
+    //     method: "PUT",
+    //     body: { status, claimAmount, reason },
+    //   }),
+    //   invalidatesTags: ["Claims"], // Now this works
+    // }),
+
+    // EMPLOYEE
+    getEmployees: builder.query<EmployeeResponseDto[], void>({
+      query: () => ({
+        url: "/admin/employees/get-employees",
+        method: "GET",
       }),
-      invalidatesTags: ["Claims"], // Now this works
+      providesTags: ["Employee"],
+    }),
+
+    getEmployeeById: builder.query<EmployeeResponseDto, number>({
+      query: (id) => ({
+        url: `/admin/employees/employee-details/${id}`,
+        method: "GET",
+      }),
+      providesTags: (_result, _error, id) => [{ type: "Employee", id }],
+    }),
+
+    // createEmployee: builder.mutation<EmployeeResponseDto, EmployeeCreateDto>({
+    createEmployee: builder.mutation<EmployeeResponseDto, EmployeeFormData>({
+      query: (employeeData) => ({
+        url: "/admin/employees/create-employee",
+        method: "POST",
+        body: employeeData,
+      }),
+      invalidatesTags: ["Employee"],
+    }),
+
+    updateEmployee: builder.mutation<
+      EmployeeResponseDto,
+      { id: number; data: EmployeeUpdateData }
+    >({
+      query: ({ id, data }) => ({
+        url: `/admin/employees/update-employee/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Employee", id },
+        "Employee",
+      ],
+    }),
+
+    deactivateEmployee: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/admin/employees/deactivate-employee/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Employee"],
+    }),
+    reactivateEmployee: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/admin/employees/reactivate-employee/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Employee"],
+    }),
+
+    getEmployeesByDepartment: builder.query<EmployeeResponseDto[], string>({
+      query: (department) => `/department/${department}`,
+      providesTags: ["Employee"],
     }),
   }),
 });
@@ -240,6 +304,15 @@ export const {
   useApproveClaimMutation,
   useRejectClaimMutation,
   useMarkClaimAsPaidMutation,
-  useUpdateClaimStatusMutation,
+  // useUpdateClaimStatusMutation,
   useGetClaimDetailsQuery,
+
+  // Employee
+  useGetEmployeesQuery,
+  useGetEmployeeByIdQuery,
+  useCreateEmployeeMutation,
+  useUpdateEmployeeMutation,
+  useDeactivateEmployeeMutation,
+  useReactivateEmployeeMutation,
+  useGetEmployeesByDepartmentQuery,
 } = AdminSlice;

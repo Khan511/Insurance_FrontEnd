@@ -39,6 +39,16 @@ type CreateUserResponse = {
   message: string;
 };
 
+type ResendVerificationRequest = {
+  email: string;
+};
+
+type EmailVerificationResponse = {
+  message: string;
+  email: string;
+  timestamp: string;
+};
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
@@ -70,6 +80,18 @@ export const userApi = createApi({
       }),
       invalidatesTags: [{ type: "user", id: "CURRENT" }],
     }),
+
+    resendVerification: builder.mutation<
+      EmailVerificationResponse,
+      ResendVerificationRequest
+    >({
+      query: (email) => ({
+        url: "/v1/auth/resend-verification",
+        method: "POST",
+        body: email,
+      }),
+    }),
+
     getCurrenttUser: builder.query<UserResponse, void>({
       query: () => ({
         url: "/user/me",
@@ -93,4 +115,5 @@ export const {
   useCreateUserMutation,
   useGetCurrenttUserQuery,
   useLogoutMutation,
+  useResendVerificationMutation,
 } = userApi;
