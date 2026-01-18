@@ -87,7 +87,7 @@ export function HomeHeroSection() {
   ];
 
   return (
-    <div className="relative overflow-hidden min-h-screen flex items-center">
+    <div className="relative overflow-hidden  flex items-center">
       {/* Animated background elements */}
       <div className="absolute inset-0 z-0">
         <div
@@ -169,14 +169,16 @@ export function HomeHeroSection() {
                 }`}
               >
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-                  <span className="block">Future-Proof</span>
+                  <span className="block text-black">Future-Proof</span>
                   <span className="relative inline-block">
                     <span className="bg-linear-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent animate-gradient-shift">
                       Protection
                     </span>
                     <Sparkles className="absolute -top-4 -right-6 h-8 w-8 text-cyan-300 animate-pulse" />
                   </span>
-                  <span className="block">for Life's Next Chapter</span>
+                  <span className="block text-black">
+                    for Life's Next Chapter
+                  </span>
                 </h1>
 
                 <p className="text-xl text-gray-600 leading-relaxed max-w-2xl">
@@ -196,9 +198,9 @@ export function HomeHeroSection() {
               >
                 <Link
                   to="/all-products"
-                  className="group relative px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden no-underline"
+                  className="group relative px-8 py-4 rounded-2xl bg-linear-to-r from-blue-600 to-indigo-600 text-white font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden no-underline"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-linear-to-r from-cyan-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="relative flex items-center gap-3">
                     <span>Calculate Your Price</span>
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
@@ -253,7 +255,7 @@ export function HomeHeroSection() {
               {floatingCards.map((card, index) => (
                 <div
                   key={index}
-                  className={`absolute ${
+                  className={`absolute text-black ${
                     index === 0
                       ? "top-0 left-0"
                       : index === 1
@@ -403,3 +405,135 @@ export function HomeHeroSection() {
     </div>
   );
 }
+
+// import { Link } from "react-router-dom";
+// import {
+//   ShieldCheck,
+//   ArrowRight,
+//   Sparkles,
+//   Star,
+//   Users,
+//   Clock,
+//   Globe,
+// } from "lucide-react";
+
+// export function HomeHeroSection() {
+//   return (
+//     <section className="relative min-h-screen flex items-center bg-neutral-950 text-white overflow-hidden">
+//       {/* Soft grid background */}
+//       <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:120px_120px]" />
+
+//       {/* Subtle gradient glow */}
+//       <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-blue-600/20 blur-[120px]" />
+
+//       <div className="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+//         {/* LEFT */}
+//         <div className="space-y-8">
+//           {/* Trust badge */}
+//           <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/10 backdrop-blur border border-white/15">
+//             <Sparkles className="h-4 w-4 text-blue-400" />
+//             <span className="text-sm font-medium text-white/90">
+//               Trusted by 2M+ families worldwide
+//             </span>
+//           </div>
+
+//           {/* Headline */}
+//           <h1 className="text-5xl md:text-6xl font-semibold leading-tight tracking-tight">
+//             Insurance designed for a
+//             <span className="block bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+//               smarter future
+//             </span>
+//           </h1>
+
+//           {/* Description */}
+//           <p className="text-lg text-white/70 max-w-xl">
+//             Intelligent insurance powered by AI — adapting in real time to
+//             protect your health, home, and life with clarity, fairness, and
+//             confidence.
+//           </p>
+
+//           {/* CTA */}
+//           <div className="flex flex-wrap gap-4">
+//             <Link
+//               to="/all-products"
+//               className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 transition text-lg font-medium"
+//             >
+//               Calculate your price
+//               <ArrowRight className="h-5 w-5" />
+//             </Link>
+
+//             <Link
+//               to="/expert-consultation"
+//               className="inline-flex items-center gap-3 px-8 py-4 rounded-xl border border-white/20 hover:border-white/40 transition text-lg font-medium"
+//             >
+//               Talk to an expert
+//             </Link>
+//           </div>
+
+//           {/* Stats */}
+//           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-white/10">
+//             <Stat icon={<Users />} label="Families" value="2M+" />
+//             <Stat icon={<Star />} label="Satisfaction" value="99.7%" />
+//             <Stat icon={<Clock />} label="Support" value="24/7" />
+//             <Stat icon={<Globe />} label="Countries" value="150+" />
+//           </div>
+//         </div>
+
+//         {/* RIGHT */}
+//         <div className="relative">
+//           <div className="relative bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl shadow-2xl">
+//             <div className="flex items-center gap-4 mb-6">
+//               <div className="p-4 rounded-2xl bg-blue-500/20">
+//                 <ShieldCheck className="h-8 w-8 text-blue-400" />
+//               </div>
+//               <div>
+//                 <h3 className="text-xl font-semibold">
+//                   AI Coverage Intelligence
+//                 </h3>
+//                 <p className="text-sm text-white/60">
+//                   Live risk analysis & adaptive protection
+//                 </p>
+//               </div>
+//             </div>
+
+//             <ul className="space-y-4">
+//               {[
+//                 "Real-time risk assessment",
+//                 "Automated claim assistance",
+//                 "Personalized pricing engine",
+//                 "Transparent decision logic",
+//               ].map((item) => (
+//                 <li key={item} className="flex items-center gap-3">
+//                   <div className="w-2 h-2 rounded-full bg-blue-400" />
+//                   <span className="text-white/80">{item}</span>
+//                 </li>
+//               ))}
+//             </ul>
+
+//             <div className="mt-8 text-sm text-white/50">
+//               Live system · Continuously learning
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function Stat({
+//   icon,
+//   value,
+//   label,
+// }: {
+//   icon: React.ReactNode;
+//   value: string;
+//   label: string;
+// }) {
+//   return (
+//     <div className="flex flex-col items-start gap-2">
+//       <div className="text-blue-400">{icon}</div>
+//       <div className="text-xl font-semibold">{value}</div>
+//       <div className="text-sm text-white/60">{label}</div>
+//     </div>
+//   );
+// }

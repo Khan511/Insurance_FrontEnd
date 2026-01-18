@@ -226,7 +226,7 @@ export default function LoginForm() {
             ) : (
               <>
                 <Sparkles className="h-5 w-5 mr-2" />
-                Sign In to Dashboard
+                <span className="text-2xl"> Sign In</span>
               </>
             )}
           </Button>

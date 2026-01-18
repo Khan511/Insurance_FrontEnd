@@ -1,4 +1,4 @@
-import "./PrivatePolicies.css";
+// import "./PrivatePolicies.css";
 import { useState } from "react";
 import InsuranceCardComponent from "@/components/card/InsuranceCardComponent";
 import { useGetAllProductsQuery } from "@/services/InsuranceProductSlice";
@@ -200,9 +200,9 @@ export const PrivatePolicies = () => {
         <div className="container">
           <div className="hero-content">
             <div className="badge-container">
-              <span className="badge">
+              <span className="flex border-amber-50 border rounded-full px-2 py-1 justify-center items-center gap-2 bg-blue-800">
                 <Sparkles className="w-4 h-4" />
-                Premium Protection
+                <span>Premium Protection</span>
               </span>
             </div>
             <h1 className="hero-title">

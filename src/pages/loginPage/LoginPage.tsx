@@ -2,7 +2,7 @@ import LoginForm from "@/components/forms/loginForm/LoginForm";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 py-8 px-4 mt-5 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-8">

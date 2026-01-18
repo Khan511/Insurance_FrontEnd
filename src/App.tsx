@@ -19,13 +19,15 @@ import ErrorBoundary from "./components/error/ErrorBoundary";
 import ContactPage from "./pages/contact/Contact";
 import EmailVerificationSuccess from "./pages/emailVerification/EmailVerificationSuccess";
 import EmailVerificationFailed from "./pages/emailVerification/EmailVerificationFailed";
+import ForgotPasswordPage from "./pages/forgotPassword/Forgotpassword";
+import ResetPassword from "./pages/forgotPassword/ResetPassword";
 
 // Lazy load pages
 const Home = lazy(() => import("@/pages/home/Home"));
 const AllInsurances = lazy(() => import("@/pages/insurances/All-Insurances"));
 const LoginPage = lazy(() => import("@/pages/loginPage/LoginPage"));
 const InsuranceAdminDashboard = lazy(
-  () => import("@/pages/admin/InsuranceAdminDashbord")
+  () => import("@/pages/admin/InsuranceAdminDashbord"),
 );
 
 const router = createBrowserRouter([
@@ -58,6 +60,14 @@ const router = createBrowserRouter([
       {
         path: "/email-verification/failed",
         element: <EmailVerificationFailed />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPasswordPage />,
+      },
+      {
+        path: "/reset-password",
+        element: <ResetPassword />,
       },
 
       // Admin routes

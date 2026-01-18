@@ -188,3 +188,149 @@ export type PremiumCalculationResponse = {
   paymentFrequency: string;
   formulaUsed: string;
 };
+
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type UserResponse = {
+  timeStamp: string;
+  status: number;
+  path: string;
+
+  message: string;
+  data: {
+    user: {
+      userId: string;
+      email: string;
+      createdAt: string;
+      name: {
+        firstName: string;
+        lastName: string;
+      };
+      roles: string[];
+      permissions: string[];
+    };
+  };
+};
+export type CreateUserRequest = {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: Date;
+} & LoginRequest;
+
+export type CreateUserResponse = {
+  timeStamp: string;
+  status: number;
+  path: string;
+  message: string;
+};
+
+export type ResendVerificationRequest = {
+  email: string;
+};
+
+export type EmailVerificationResponse = {
+  message: string;
+  email: string;
+  timestamp: string;
+};
+
+// ERROR
+export interface ApiError {
+  timestamp: string;
+  status: number;
+  error: string;
+  message: string;
+  errorCode: string;
+  path: string;
+  traceId?: string;
+  fieldErrors?: Record<string, string>;
+  subErrors?: SubError[];
+}
+
+export interface SubError {
+  field: string;
+  message: string;
+  rejectedValue?: any;
+}
+
+export interface RTKQueryError {
+  status: number;
+  data: ApiError;
+}
+
+// Type guard to check if error is ApiError
+export const isApiError = (error: any): error is RTKQueryError => {
+  return (
+    error && typeof error === "object" && "data" in error && "status" in error
+  );
+};
+
+// Error code mappings for user-friendly messages
+export const ERROR_MESSAGES: Record<string, string> = {
+  // Authentication
+  INVALID_CREDENTIALS: "The email or password you entered is incorrect",
+  ACCOUNT_DISABLED: "Your account has been disabled. Please contact support.",
+  ACCOUNT_LOCKED:
+    "Your account is locked. Please try again later or contact support.",
+  ACCOUNT_EXPIRED: "Your account has expired. Please contact support.",
+  CREDENTIALS_EXPIRED: "Your password has expired. Please reset it.",
+  ACCESS_DENIED: "You do not have permission to access this resource",
+
+  // Validation
+  VALIDATION_ERROR: "Please check your input and try again",
+  INVALID_INPUT: "Some fields contain invalid data",
+
+  // Business
+  RESOURCE_NOT_FOUND: "The requested resource was not found",
+  DUPLICATE_RESOURCE: "This resource already exists",
+
+  // System
+  INTERNAL_ERROR: "An unexpected error occurred. Please try again.",
+  SERVICE_UNAVAILABLE: "Service is temporarily unavailable",
+};
+
+// Chat bot Types
+export interface ChatMessageRequest {
+  message: string;
+  conversationId?: string;
+  context?: string;
+}
+
+export interface ChatMessageResponse {
+  response: string;
+  fromAI: boolean;
+  timestamp?: string;
+  conversationId?: string;
+}
+
+// Reset password
+// Add these interfaces
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
+
+export interface ValidateResetTokenRequest {
+  token: string;
+}
+
+export interface ValidateResetTokenResponse {
+  valid: boolean;
+  message: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}

@@ -1,7 +1,10 @@
+import "./pages/privatePolicies/PrivatePolicies.css";
+import "./pages/insurances/AllInsurances.css";
+import "./components/chatbot/chatbot.css";
+import "./index.css";
 import { StrictMode } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { createRoot } from "react-dom/client";
-import "./index.css";
 import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { store } from "./store/store";

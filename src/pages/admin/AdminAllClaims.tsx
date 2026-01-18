@@ -867,6 +867,7 @@ const AdminAllClaims = () => {
             </label>
             <div className="flex gap-2 ">
               <Button
+                className="text-white"
                 variant={filter.hasDocuments === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilter({ ...filter, hasDocuments: "all" })}

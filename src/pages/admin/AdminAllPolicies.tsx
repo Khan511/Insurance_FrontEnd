@@ -55,7 +55,7 @@ const AdminAllPolicies = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<InsuracePolicy | null>(
-    null
+    null,
   );
   const [editFormData, setEditFormData] = useState({
     status: "",
@@ -94,13 +94,13 @@ const AdminAllPolicies = () => {
 
   // Get unique values for filters
   const uniqueProductTypes = Array.from(
-    new Set(allPolicies?.map((policy) => policy.productType) || [])
+    new Set(allPolicies?.map((policy) => policy.productType) || []),
   );
   // const uniqueRegions = Array.from(
   //   new Set(allPolicies?.flatMap((policy) => policy.regions || []) || [])
   // );
   const uniquePaymentFrequencies = Array.from(
-    new Set(allPolicies?.map((policy) => policy.paymentFrequency) || [])
+    new Set(allPolicies?.map((policy) => policy.paymentFrequency) || []),
   );
 
   // Apply filters
@@ -209,13 +209,13 @@ const AdminAllPolicies = () => {
     // Payment status filter
     if (filter.paymentStatus !== "all" && policy.paymentSchedules) {
       const hasPending = policy.paymentSchedules.some(
-        (schedule) => schedule.status === "PENDING"
+        (schedule) => schedule.status === "PENDING",
       );
       const hasOverdue = policy.paymentSchedules.some(
-        (schedule) => schedule.status === "OVERDUE"
+        (schedule) => schedule.status === "OVERDUE",
       );
       const hasPaid = policy.paymentSchedules.some(
-        (schedule) => schedule.status === "PAID"
+        (schedule) => schedule.status === "PAID",
       );
 
       switch (filter.paymentStatus) {
@@ -239,7 +239,7 @@ const AdminAllPolicies = () => {
 
   console.log(
     "Current User in Admin Policies: ",
-    currentUser?.data.user.name.firstName
+    currentUser?.data.user.name.firstName,
   );
 
   // Get status counts for badge display
@@ -361,7 +361,7 @@ const AdminAllPolicies = () => {
     return policy.paymentSchedules
       ?.filter((schedule) => schedule.status === "PENDING")
       .sort(
-        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
       )[0];
   };
 
@@ -398,7 +398,7 @@ const AdminAllPolicies = () => {
   const handleBeneficiaryChange = (
     index: number,
     field: string,
-    value: string
+    value: string,
   ) => {
     const updatedBeneficiaries = [...beneficiaries];
     updatedBeneficiaries[index] = {
@@ -420,8 +420,6 @@ const AdminAllPolicies = () => {
     ]);
   };
 
-  console.log("All policies in Admin policies", allPolicies);
-
   // Remove beneficiary
   const handleRemoveBeneficiary = (index: number) => {
     const updatedBeneficiaries = beneficiaries.filter((_, i) => i !== index);
@@ -431,13 +429,13 @@ const AdminAllPolicies = () => {
   // Validation before changing Status
   const validateStatusChange = (
     oldStatus: string,
-    newStatus: string
+    newStatus: string,
   ): boolean => {
     const validTransitions: Record<string, string[]> = {
-      ACTIVE: ["INACTIVE", "CANCELLED", "EXPIRED"],
-      INACTIVE: ["ACTIVE", "CANCELLED", "EXPIRED"],
+      ACTIVE: ["ACTIVE", "INACTIVE", "CANCELLED", "EXPIRED"],
+      INACTIVE: ["INACTIVE", "ACTIVE", "CANCELLED", "EXPIRED"],
       PENDING: ["ACTIVE", "CANCELLED", "EXPIRED"],
-      EXPIRED: ["CANCELLED"],
+      EXPIRED: ["CANCELLED", "EXPIRED"],
       // Once cancelled, cannot be changed
       CANCELLED: [],
     };
@@ -447,7 +445,7 @@ const AdminAllPolicies = () => {
   // Validate dates
   const validateDates = (
     effectiveDate: string,
-    expirationDate: string
+    expirationDate: string,
   ): string[] => {
     const errors: string[] = [];
 
@@ -461,12 +459,12 @@ const AdminAllPolicies = () => {
     const effDateOnly = new Date(
       effDate.getFullYear(),
       effDate.getMonth(),
-      effDate.getDate()
+      effDate.getDate(),
     );
     const expDateOnly = new Date(
       expDate.getFullYear(),
       expDate.getMonth(),
-      expDate.getDate()
+      expDate.getDate(),
     );
     // const todayOnly = new Date(
     //   today.getFullYear(),
@@ -488,7 +486,7 @@ const AdminAllPolicies = () => {
     // Validate status transition
     if (!validateStatusChange(selectedPolicy.status, editFormData.status)) {
       alert(
-        `Invalid status change from ${selectedPolicy.status} to ${editFormData.status}`
+        `Invalid status change from ${selectedPolicy.status} to ${editFormData.status}`,
       );
       return;
     }
@@ -513,7 +511,7 @@ const AdminAllPolicies = () => {
 
     const dateErrors = validateDates(
       editFormData.effectiveDate,
-      editFormData.expirationDate
+      editFormData.expirationDate,
     );
     if (dateErrors.length > 0) {
       alert(dateErrors.join("\n"));
@@ -529,12 +527,12 @@ const AdminAllPolicies = () => {
       const effectiveDateOnly = new Date(
         effectiveDate.getFullYear(),
         effectiveDate.getMonth(),
-        effectiveDate.getDate()
+        effectiveDate.getDate(),
       );
       const todayOnly = new Date(
         today.getFullYear(),
         today.getMonth(),
-        today.getDate()
+        today.getDate(),
       );
 
       // If effective date is in the future
@@ -544,7 +542,7 @@ const AdminAllPolicies = () => {
             `To activate the policy now, you need to set the effective date to today (${
               todayOnly.toISOString().split("T")[0]
             }) or earlier.\n\n` +
-            `Do you want to change the effective date to today?`
+            `Do you want to change the effective date to today?`,
         );
 
         if (userConfirmed) {
@@ -560,7 +558,7 @@ const AdminAllPolicies = () => {
           return;
         } else {
           alert(
-            "Policy cannot be activated with a future effective date. Please adjust the effective date."
+            "Policy cannot be activated with a future effective date. Please adjust the effective date.",
           );
           return;
         }
@@ -579,7 +577,7 @@ const AdminAllPolicies = () => {
             "• Cancel all future payment schedules\n" +
             "• Mark any pending claims as CANCELLED\n" +
             "• Policy cannot be reactivated without admin approval\n\n" +
-            "Proceed?"
+            "Proceed?",
         );
 
         if (!confirmCancellation) {
@@ -618,7 +616,7 @@ const AdminAllPolicies = () => {
 
       // Only include beneficiaries if they exist and are valid
       const validatedBeneficiaries = beneficiaries.filter(
-        (ben) => ben.name.trim() !== ""
+        (ben) => ben.name.trim() !== "",
       );
       if (validatedBeneficiaries.length > 0) {
         updateData.beneficiaries = validatedBeneficiaries;
@@ -652,7 +650,7 @@ const AdminAllPolicies = () => {
 
   // Get valid status transitions with descriptions
   const getValidStatusTransitions = (
-    currentStatus: string
+    currentStatus: string,
   ): Array<{ value: string; label: string; description: string }> => {
     const transitions: Record<
       string,
@@ -862,7 +860,7 @@ const AdminAllPolicies = () => {
                   <CreditCard className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Payment Frequency" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All Frequencies</SelectItem>
                   {uniquePaymentFrequencies.map((freq) => (
                     <SelectItem key={freq} value={freq}>
@@ -888,7 +886,7 @@ const AdminAllPolicies = () => {
                   <DollarSign className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Premium Amount" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All Amounts</SelectItem>
                   <SelectItem value="under1000">Under 1,000 DKK</SelectItem>
                   <SelectItem value="1000to5000">1,000 - 5,000 DKK</SelectItem>
@@ -896,32 +894,6 @@ const AdminAllPolicies = () => {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Region Filter */}
-            {/* <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
-                Region
-              </label>
-              <Select
-                value={filter.region}
-                onValueChange={(value) =>
-                  setFilter({ ...filter, region: value })
-                }
-              >
-                <SelectTrigger>
-                  <MapPin className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Select Region" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  {uniqueRegions.map((region) => (
-                    <SelectItem key={region} value={region}>
-                      {region}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div> */}
 
             {/* Validity Filter */}
             <div>
@@ -938,7 +910,7 @@ const AdminAllPolicies = () => {
                   <Calendar className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Validity Status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">All Policies</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="expired">Expired</SelectItem>
@@ -1045,7 +1017,7 @@ const AdminAllPolicies = () => {
 
           {/* Active Filters Display */}
           {Object.values(filter).some(
-            (value) => value !== "all" && value !== ""
+            (value) => value !== "all" && value !== "",
           ) && (
             <div className="mt-4 p-3 bg-blue-50 rounded-md">
               <div className="flex items-center justify-between">
@@ -1352,7 +1324,7 @@ const AdminAllPolicies = () => {
                               >
                                 Change to {transition.label}
                               </option>
-                            )
+                            ),
                           )}
                         </select>
 
@@ -1452,7 +1424,7 @@ const AdminAllPolicies = () => {
                             onChange={(e) =>
                               handleInputChange(
                                 "expirationDate",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                           />
@@ -1477,7 +1449,7 @@ const AdminAllPolicies = () => {
                             onChange={(e) =>
                               handleInputChange(
                                 "cancellationReason",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             className="w-full p-2 border rounded-md text-sm border-red-300"
@@ -1608,7 +1580,7 @@ const AdminAllPolicies = () => {
                                     handleBeneficiaryChange(
                                       index,
                                       "name",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   placeholder="Enter full name"
@@ -1626,7 +1598,7 @@ const AdminAllPolicies = () => {
                                     handleBeneficiaryChange(
                                       index,
                                       "relationship",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   className="w-full p-2 border rounded-md text-sm"
@@ -1649,7 +1621,7 @@ const AdminAllPolicies = () => {
                                   value={
                                     beneficiary.dateOfBirth
                                       ? formatDateForInput(
-                                          beneficiary.dateOfBirth
+                                          beneficiary.dateOfBirth,
                                         )
                                       : ""
                                   }
@@ -1657,7 +1629,7 @@ const AdminAllPolicies = () => {
                                     handleBeneficiaryChange(
                                       index,
                                       "dateOfBirth",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   className="w-full text-sm"

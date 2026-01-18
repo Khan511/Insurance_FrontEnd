@@ -1,5 +1,8 @@
 // Add this helper function near your other utility functions
 
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+
 type DateTuple = [number, number, number, number?, number?];
 
 export const getTimeDifferenceInHours = (
@@ -115,3 +118,17 @@ export const formatDateArrayForInput = (dateArray?: any): string => {
     return "";
   }
 };
+
+/* ---------- badges ---------- */
+export const customerStatusBadge = (s: string) => (
+  <Badge
+    className={cn(
+      "px-2.5 py-1 text-xs font-semibold",
+      s === "ACTIVE"
+        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 p-2"
+        : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400 p-2"
+    )}
+  >
+    {s}
+  </Badge>
+);

@@ -58,6 +58,7 @@ import {
   useUpdateCustomerMutation,
   type UpdateCustomerRequest,
 } from "@/services/AdminSlice";
+import { customerStatusBadge } from "@/utils/Utils";
 
 // Validation Schema
 const editCustomerSchema = z.object({
@@ -380,14 +381,17 @@ const EditCustomer = () => {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="container mx-auto py-5 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-3 bg-accent p-2 rounded-xl border">
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" onClick={() => navigate(-1)}>
+        <div className="flex items-center space-x-4 gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex justify-center items-center border p-2 rounded   gap-2"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
-          </Button>
+          </button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Edit Customer</h1>
             <p className="text-gray-600">
@@ -396,12 +400,8 @@ const EditCustomer = () => {
             </p>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Badge
-            variant={customer.status === "ACTIVE" ? "default" : "secondary"}
-          >
-            {customer.status}
-          </Badge>
+        <div className="flex items-center text-white space-x-2">
+          {customerStatusBadge(customer.status)}
         </div>
       </div>
 

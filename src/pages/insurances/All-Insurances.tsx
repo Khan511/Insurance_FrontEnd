@@ -17,12 +17,11 @@ import {
   Phone,
   MessageCircle,
   Zap,
-  ArrowRight,
   ShieldCheck,
 } from "lucide-react";
 import { useGetAllProductsQuery } from "@/services/InsuranceProductSlice";
 import InsuranceCardComponent from "@/components/card/InsuranceCardComponent";
-import "./AllInsurances.css";
+// import "./AllInsurances.css";
 
 const AllInsurances = () => {
   const { data: policies, isLoading } = useGetAllProductsQuery();

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insuranceFormSchema, type InsuranceFormData } from "./schema";
 import { useState } from "react";
 import { useCalculatePremiumMutation } from "@/services/InsurancePolicySlice";
-import { PremiumCaculationForm } from "./PremiumCalculationForm";
+// import { PremiumCaculationForm } from "./PremiumCalculationForm";
 import type { PremiumCalculationResponse } from "@/services/ServiceTypes";
 import {
   Calculator,
@@ -17,11 +17,12 @@ import {
   Sparkles,
   Loader2,
 } from "lucide-react";
+import { PremiumCalculationForm } from "./PremiumCalculationForm";
 
 interface PremiumCalculatorProps {
   insuranceType: "AUTO" | "LIFE" | "PROPERTY";
   productId: number;
-  onPremiumCalculated?: (premiumAmount: number) => void; // Changed to accept number instead of object
+  onPremiumCalculated?: (premiumAmount: number) => void;
 }
 
 const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
@@ -38,22 +39,27 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
   const [calculatePremium, { isLoading: isCalculating }] =
     useCalculatePremiumMutation();
 
+  // update the useForm initialization:
   const form = useForm<InsuranceFormData>({
     resolver: zodResolver(insuranceFormSchema),
     defaultValues: {
       insuranceType,
       paymentFrequency: "MONTHLY",
+      dateOfBirth: undefined, // Add this line
       // Conditional defaults based on insurance type
       ...(insuranceType === "AUTO" && {
         vehicleValue: 0,
         drivingExperience: 0,
+        // dateOfBirth will be required by schema
       }),
       ...(insuranceType === "LIFE" && {
         healthCondition: "GOOD",
+        // dateOfBirth will be required by schema
       }),
       ...(insuranceType === "PROPERTY" && {
         propertyValue: 0,
         propertyLocation: "MEDIUM_RISK",
+        // dateOfBirth is optional, so we don't set it here
       }),
     },
   });
@@ -98,15 +104,13 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
       }).unwrap();
 
       setCalculatedPremium(result);
-
-      // Pass only the amount (number) to parent component to maintain compatibility
-      onPremiumCalculated?.(result.amount);
-
       console.log("Premium calculation result:", result);
+
+      onPremiumCalculated?.(result.amount);
     } catch (error) {
       console.error("Premium calculation failed:", error);
       setCalculationError(
-        "Failed to calculate premium. Please check your inputs and try again."
+        "Failed to calculate premium. Please check your inputs and try again.",
       );
     }
   };
@@ -245,7 +249,7 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
                   </div>
                 </div>
                 <div className="bg-linear-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-5">
-                  <PremiumCaculationForm
+                  <PremiumCalculationForm
                     form={form}
                     insuranceType={insuranceType}
                   />
@@ -301,7 +305,7 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
                       </span>
                       <span className="text-lg font-medium text-gray-500">
                         {getFrequencyDisplay(
-                          calculatedPremium.paymentFrequency
+                          calculatedPremium.paymentFrequency,
                         )}
                       </span>
                     </div>

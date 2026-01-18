@@ -170,8 +170,8 @@ const AdminPayments = () => {
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           <span>{title}</span>
-          <Badge className="p-1 text-white bg-gray-500">
-            {payments.length} payments
+          <Badge className="p-1 text-white bg-blue-500 flex gap-1 justify-center items-center px-2">
+            {payments.length} <span>payments</span>
           </Badge>
         </CardTitle>
       </CardHeader>

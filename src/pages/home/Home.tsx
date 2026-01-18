@@ -1,4 +1,4 @@
-import "./Home.css";
+// import "./Home.css";
 import { useState, useEffect } from "react";
 import { Card, Container, Row, Col, Badge } from "react-bootstrap";
 import {
@@ -15,6 +15,7 @@ import { useGetAllProductsQuery } from "@/services/InsuranceProductSlice";
 import { InsuranceCardCarousel } from "../../components/carousel/InsuraceCardCarousel";
 import { Link } from "react-router-dom";
 import { HomeHeroSection } from "./HomeHeroSection";
+import ChatbotWidget from "@/components/chatbot/ChatBot";
 
 const Home = () => {
   const { data: products } = useGetAllProductsQuery();
@@ -121,7 +122,9 @@ const Home = () => {
                 <div className="cta-card-content px-5 py-3 flex flex-col justify-end h-full gap-4">
                   <div className="mb-4">
                     <Phone size={40} className="text-primary mb-3" />
-                    <h3 className="fw-bold mb-3">Need Help? We're Here</h3>
+                    <h3 className="fw-bold mb-3 text-white">
+                      Need Help? We're Here
+                    </h3>
                     <p className="text-white mb-4">
                       Our dedicated team is ready to assist you with any
                       questions or concerns about your insurance coverage.
@@ -169,7 +172,7 @@ const Home = () => {
       <section className="benefits-section py-5">
         <Container>
           <Card className="border-0 rounded-5 overflow-hidden benefits-card">
-            <Row className="g-0">
+            <Row className="g-0 border bg-gray-100">
               <Col lg={6} className="benefits-visual">
                 <div className="benefits-overlay p-5 h-100 d-flex flex-column justify-content-center">
                   <Badge
@@ -179,17 +182,17 @@ const Home = () => {
                   >
                     Exclusive Benefits
                   </Badge>
-                  <h2 className="display-5 fw-bold text-white mb-4">
+                  <h2 className="display-5 fw-bold    mb-4">
                     Unlock Premium Perks
                   </h2>
-                  <p className="lead text-light mb-0">
+                  <p className="lead   mb-0">
                     Enjoy exclusive advantages that go beyond standard coverage
                   </p>
                 </div>
               </Col>
 
-              <Col lg={6} className="p-5">
-                <div className="benefits-list text-white">
+              <Col lg={6} className="p-5    ">
+                <div className="benefits-list">
                   <div className="benefit-item d-flex mb-4">
                     <div className="benefit-icon me-3">
                       <ShieldCheck size={24} className="text-primary" />
@@ -268,6 +271,9 @@ const Home = () => {
           </Row>
         </Container>
       </section>
+      <div className="w-full bg-amber-400">
+        <ChatbotWidget />
+      </div>
     </div>
   );
 };

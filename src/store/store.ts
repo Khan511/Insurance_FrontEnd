@@ -1,4 +1,5 @@
 import { AdminSlice } from "@/services/AdminSlice";
+import { ChatbotService } from "@/services/ChatBotService";
 import { claimMetadataApi } from "@/services/ClaimMetaDataApi";
 import { InsurancePolicySlice } from "@/services/InsurancePolicySlice";
 import { InsuranceProductSlice } from "@/services/InsuranceProductSlice";
@@ -14,6 +15,7 @@ export const store = configureStore({
     [s3Api.reducerPath]: s3Api.reducer,
     [InsurancePolicySlice.reducerPath]: InsurancePolicySlice.reducer,
     [AdminSlice.reducerPath]: AdminSlice.reducer,
+    [ChatbotService.reducerPath]: ChatbotService.reducer,
   },
   middleware: (GetDefaultMiddleware) =>
     GetDefaultMiddleware().concat(
@@ -22,7 +24,8 @@ export const store = configureStore({
       claimMetadataApi.middleware,
       s3Api.middleware,
       InsurancePolicySlice.middleware,
-      AdminSlice.middleware
+      AdminSlice.middleware,
+      ChatbotService.middleware
     ),
 });
 

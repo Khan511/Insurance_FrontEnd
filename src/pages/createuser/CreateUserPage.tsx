@@ -1,23 +1,8 @@
-// import UserCreatingForme from "@/components/forms/creaeUserForm/UserCreatingForme";
-
-// export const CreateUser = () => {
-//   return (
-//     <div className="min-h-screen flex  justify-center bg-linear-to-br from-blue-50 to-indigo-100 ">
-//       <div className="max-w-3xl mx-auto p-6 mt-5 ">
-//         <div className="mb-8"></div>
-//         <div className="border rounded-lg shadow-sm p-6 bg-white">
-//           <UserCreatingForme />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-// CreateUser.tsx
 import UserCreatingForme from "@/components/forms/creaeUserForm/UserCreatingForme";
 
 export const CreateUser = () => {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 py-8 px-4 sm:px-6 mt-5 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {/* Main Content */}
 

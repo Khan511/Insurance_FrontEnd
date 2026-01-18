@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useParams, useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   Calendar,
@@ -15,8 +16,9 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useGetCustomerByUserIdsQuery } from "@/services/AdminSlice";
-import { cn } from "@/lib/utils";
+
 import { format } from "date-fns";
+import { customerStatusBadge } from "@/utils/Utils";
 
 /* ---------- helpers ---------- */
 const formatDate = (d?: string | null) =>
@@ -78,20 +80,6 @@ const CustomerView = () => {
       </div>
     );
 
-  /* ---------- badges ---------- */
-  const statusBadge = (s: string) => (
-    <Badge
-      className={cn(
-        "px-2.5 py-1 text-xs font-semibold",
-        s === "ACTIVE"
-          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 p-2"
-          : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400 p-2"
-      )}
-    >
-      {s}
-    </Badge>
-  );
-
   const verifyBadge = (s?: string) => {
     const map: Record<string, { bg: string; text: string }> = {
       VERIFIED: { bg: "bg-green-100 text-green-700", text: "Verified" },
@@ -109,7 +97,7 @@ const CustomerView = () => {
   const totalPolicies = Number(customer.numberOfPolicies || 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-indigo-950 p-4 md:p-5">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-indigo-950 p-4 md:p-5 mt-5">
       {/* Header */}
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-3 bg-accent p-2 rounded-xl border">
@@ -131,7 +119,7 @@ const CustomerView = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {statusBadge(customer.status)}
+            {customerStatusBadge(customer.status)}
             <Button
               variant="outline"
               size="sm"
@@ -145,7 +133,7 @@ const CustomerView = () => {
 
         {/* Summary Ribbon */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-          <Card className="border-border/50 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-gray-900/60">
+          <Card className="border-border/50 backdrop-blur supports-backdrop-filter:bg-white/60 dark:bg-gray-900/60">
             <CardContent className=" gap-4 p-3">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Total Policies
@@ -157,7 +145,7 @@ const CustomerView = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-gray-900/60">
+          <Card className="border-border/50 backdrop-blur supports-backdrop-filter:bg-white/60 dark:bg-gray-900/60">
             <CardContent className="  gap-4 p-3">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Active Policies
@@ -169,7 +157,7 @@ const CustomerView = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-gray-900/60">
+          <Card className="border-border/50 backdrop-blur supports-backdrop-filter:bg-white/60 dark:bg-gray-900/60">
             <CardContent className="  gap-4 p-3">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Total Premium
@@ -186,7 +174,7 @@ const CustomerView = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-gray-900/60">
+          <Card className="border-border/50 backdrop-blur supports-backdrop-filter:bg-white/60 dark:bg-gray-900/60">
             <CardContent className="gap-4 p-3">
               <p className="text-sm text-gray-500 dark:text-gray-400">Joined</p>
               <div className="flex justify-between">
