@@ -71,7 +71,7 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
 
     try {
       // Prepare risk factors based on insurance type
-      let riskFactors: Record<string, any> = {};
+      let riskFactors: Record<string, unknown> = {};
 
       switch (data.insuranceType) {
         case "AUTO":

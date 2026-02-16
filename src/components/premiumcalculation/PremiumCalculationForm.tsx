@@ -154,7 +154,7 @@ export const PremiumCalculationForm: React.FC<PremiumCalculationFormProps> = ({
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 bg-white" align="start">
                   <CalendarComponent
                     mode="single"
                     selected={selectedDate}
@@ -253,11 +253,11 @@ export const PremiumCalculationForm: React.FC<PremiumCalculationFormProps> = ({
                 value={field.value}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white">
                     <SelectValue placeholder="Select health condition" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="EXCELLENT">
                     Excellent (No health issues)
                   </SelectItem>
@@ -429,7 +429,7 @@ export const PremiumCalculationForm: React.FC<PremiumCalculationFormProps> = ({
                   <SelectValue placeholder="Select payment frequency" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="MONTHLY">Monthly</SelectItem>
                 <SelectItem value="QUARTERLY">Quarterly</SelectItem>
                 <SelectItem value="ANNUAL">Annual</SelectItem>

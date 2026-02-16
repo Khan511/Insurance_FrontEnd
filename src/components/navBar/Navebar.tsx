@@ -173,18 +173,20 @@ function Navbare() {
             {/* Right side actions */}
             <div className="hidden lg:flex items-center gap-2">
               {/* File Claim Button */}
-              <Link to="/file-claim">
-                <Button
-                  variant="outline"
-                  className="relative px-5 py-2 rounded-xl border border-amber-200 bg-linear-to-r from-amber-50 to-orange-50 text-amber-700 hover:text-amber-800 hover:border-amber-300 hover:shadow-lg transition-all group"
-                >
-                  <div className="absolute -inset-0.5 bg-linear-to-r from-amber-400 to-orange-400 rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-300"></div>
-                  <span className="relative flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    File Claim
-                  </span>
-                </Button>
-              </Link>
+              {currentUser?.status == 200 && currentUser?.data.user && (
+                <Link to="/file-claim">
+                  <Button
+                    variant="outline"
+                    className="relative px-5 py-2 rounded-xl border border-amber-200 bg-linear-to-r from-amber-50 to-orange-50 text-amber-700 hover:text-amber-800 hover:border-amber-300 hover:shadow-lg transition-all group"
+                  >
+                    <div className="absolute -inset-0.5 bg-linear-to-r from-amber-400 to-orange-400 rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-300"></div>
+                    <span className="relative flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      File Claim
+                    </span>
+                  </Button>
+                </Link>
+              )}
 
               {/* User area */}
               {currentUser?.status !== 200 && !currentUser?.data.user ? (
@@ -317,7 +319,7 @@ function Navbare() {
                         <div className="flex items-center gap-3 p-3 rounded-xl bg-linear-to-r from-blue-50 to-cyan-50/50 border border-blue-100">
                           <div className="w-10 h-10 rounded-full bg-linear-to-r from-blue-500 to-cyan-400 flex items-center justify-center text-white font-semibold">
                             {currentUser.data?.user?.name?.firstName?.charAt(
-                              0
+                              0,
                             ) || "U"}
                           </div>
                           <div>
