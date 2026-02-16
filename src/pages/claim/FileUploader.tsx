@@ -9,7 +9,7 @@ interface DocumentType {
 
 interface FileUploaderProps {
   requiredDocuments: DocumentType[];
-  onUploadComplete: (metadata: any) => void;
+  onUploadComplete: (metadata: unknown) => void;
 }
 
 // Function to calculate SHA256 hash
@@ -61,7 +61,7 @@ function FileUploader({
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    docType: string
+    docType: string,
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -85,7 +85,7 @@ function FileUploader({
       const sha256Checksum = await calculateSHA256(file);
 
       // Create a safe filename
-      const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      // const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
 
       // Step 1: Get pre-signed URL from backend
       const presignedUrlResponse = await fetch(
@@ -100,14 +100,14 @@ function FileUploader({
             fileName: file.name,
             fileType: file.type,
           }),
-        }
+        },
       );
 
       // Check if response is OK and has content
       if (!presignedUrlResponse.ok) {
         const errorText = await presignedUrlResponse.text();
         throw new Error(
-          `Failed to get Presigned Url. Server returned ${presignedUrlResponse.status}: ${errorText}`
+          `Failed to get Presigned Url. Server returned ${presignedUrlResponse.status}: ${errorText}`,
         );
       }
 

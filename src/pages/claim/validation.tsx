@@ -45,6 +45,7 @@ export const claimFormSchema = z.object({
         .string()
         .min(20, "Description must be at least 20 characters"),
       policeReportNumber: z.string().optional(),
+
       thirdPartyInvolved: z.boolean(),
       thirdPartyDetails: z.optional(thirdPartyDetailsSchema),
     })
@@ -58,7 +59,7 @@ export const claimFormSchema = z.object({
       {
         message: "Third party details are required",
         path: ["incidentDetails.thirdPartyDetails"],
-      }
+      },
     ),
   documents: z.array(documentAttachmentSchema),
   // .refine((docs) => docs.length > 0, "At least one document is required"),

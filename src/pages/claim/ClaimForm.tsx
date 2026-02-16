@@ -63,21 +63,21 @@ const ClaimForm = () => {
     selectedClaimType,
     {
       skip: !selectedClaimType,
-    }
+    },
   );
 
   const { data: requiredDocuments = [] } = useGetRequiredDocumentsQuery(
     selectedClaimType,
     {
       skip: !selectedClaimType,
-    }
+    },
   );
 
   const { data: allPoliciesOfUser } = useGetAllPoliciesOfUserQuery(
     currentUser?.data?.user?.userId || "",
     {
       skip: !currentUser?.data?.user?.userId,
-    }
+    },
   );
 
   useEffect(() => {
@@ -87,14 +87,14 @@ const ClaimForm = () => {
         (policy: Policy) =>
           policy.status !== "EXPIRED" &&
           policy.status !== "CANCELLED" &&
-          policy.status !== "INACTIVE"
+          policy.status !== "INACTIVE",
       );
 
       setPolicyDetails(activePolicies);
 
       // Extract policy numbers from filtered policies
       const filteredPolicyNumbers = activePolicies.map(
-        (policy: Policy) => policy.policyNumber
+        (policy: Policy) => policy.policyNumber,
       );
 
       // If no active policies, show a message or handle accordingly
@@ -130,7 +130,7 @@ const ClaimForm = () => {
 
   const claimType = methods.watch("claimType");
   const thirdPartyInvolved = methods.watch(
-    "incidentDetails.thirdPartyInvolved"
+    "incidentDetails.thirdPartyInvolved",
   );
 
   useEffect(() => {
@@ -158,7 +158,8 @@ const ClaimForm = () => {
   const onSubmit: SubmitHandler<ClaimFormData> = async (data) => {
     setIsSubmitting(true);
     try {
-      const response = await submitClaim(data).unwrap();
+      // const response = await submitClaim(data).unwrap();
+      await submitClaim(data).unwrap();
       setSubmitSuccess(true);
       setCurrentStep(5);
     } catch (error) {
@@ -178,7 +179,7 @@ const ClaimForm = () => {
 
   const removeDocument = async (
     index: number,
-    document: DocumentAttachment
+    document: DocumentAttachment,
   ) => {
     try {
       await deleteFile(document.fileUrl).unwrap();
@@ -192,7 +193,7 @@ const ClaimForm = () => {
       console.error("Error deleting file:", error);
       if (error.status === 403) {
         alert(
-          "You don't have permission to delete this file. Please check your AWS permissions."
+          "You don't have permission to delete this file. Please check your AWS permissions.",
         );
       } else {
         alert("Failed to delete file. Please try again.");
@@ -420,7 +421,7 @@ const ClaimForm = () => {
                         {policyDetails
                           .filter(
                             (p) =>
-                              p.policyNumber === methods.watch("policyNumber")
+                              p.policyNumber === methods.watch("policyNumber"),
                           )
                           .map((policy) => (
                             <div
@@ -811,7 +812,7 @@ const ClaimForm = () => {
                       <span className="detail-label">Date & Time:</span>
                       <span className="detail-value">
                         {new Date(
-                          watch("incidentDetails.incidentDateTime")
+                          watch("incidentDetails.incidentDateTime"),
                         ).toLocaleString()}
                       </span>
                     </div>
@@ -833,7 +834,7 @@ const ClaimForm = () => {
                         <span className="detail-value">
                           $
                           {Number(
-                            watch("incidentDetails.claimAmount")
+                            watch("incidentDetails.claimAmount"),
                           ).toLocaleString()}
                         </span>
                       </div>

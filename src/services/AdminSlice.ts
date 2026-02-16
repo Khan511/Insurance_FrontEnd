@@ -11,7 +11,7 @@ import type {
   EmployeeUpdateData,
 } from "@/components/employee/employeeSchema";
 
-type GetClaimsResponse = { claim: ClaimApiResponse[] };
+// type GetClaimsResponse = { claim: ClaimApiResponse[] };
 
 const baseUrl = "http://localhost:8080/api";
 
@@ -84,7 +84,8 @@ export const AdminSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl,
     credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
+    // prepareHeaders: (headers, { getState }) => {
+    prepareHeaders: (headers) => {
       headers.set("Content-Type", "application/json");
       headers.set("Accept", "application/json");
       return headers;
@@ -143,10 +144,7 @@ export const AdminSlice = createApi({
         method: "PUT",
         body: policyData,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Policy", id },
-        "Policy",
-      ],
+      invalidatesTags: ({ id }) => [{ type: "Policy", id }, "Policy"],
     }),
 
     updateClaim: builder.mutation({
