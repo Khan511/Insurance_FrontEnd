@@ -13,7 +13,8 @@ import type {
 
 // type GetClaimsResponse = { claim: ClaimApiResponse[] };
 
-const baseUrl = "http://localhost:8080/api";
+// const baseUrl = "http://localhost:8080/api";
+const baseUrl = `${import.meta.env.VITE_API_URL}/api`;
 
 export type Payment = {
   id: number;

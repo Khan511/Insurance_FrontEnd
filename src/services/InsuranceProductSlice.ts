@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const baseUrl = "http://localhost:8080/api";
+// const baseUrl = "http://localhost:8080/api";
+const baseUrl = `${import.meta.env.VITE_API_URL}/api`;
 
 export type MonetaryAmount = {
   amount: number;

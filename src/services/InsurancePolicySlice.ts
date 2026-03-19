@@ -6,7 +6,8 @@ import type {
   PremiumCalculationResponse,
 } from "./ServiceTypes";
 
-const baseUrl = "http://localhost:8080/api";
+// const baseUrl = "http://localhost:8080/api";
+const baseUrl = `${import.meta.env.VITE_API_URL}/api`;
 
 export const InsurancePolicySlice = createApi({
   reducerPath: "InsuracePolicyApi",
