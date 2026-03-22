@@ -16,6 +16,7 @@ import { Lock, Mail, Eye, EyeOff, Shield, Sparkles } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLoginMutation } from "@/services/UserApiSlice";
 import { useState } from "react";
+import { ERROR_MESSAGES, isApiError } from "@/services/ServiceTypes";
 
 // Zod schema for login form validation
 const loginFormSchema = z.object({
@@ -28,6 +29,23 @@ const loginFormSchema = z.object({
 });
 
 export type LoginFormValues = z.infer<typeof loginFormSchema>;
+
+const getLoginErrorMessage = (error: unknown) => {
+  if (isApiError(error)) {
+    return ERROR_MESSAGES[error.data.errorCode] || error.data.message;
+  }
+
+  if (
+    error &&
+    typeof error === "object" &&
+    "status" in error &&
+    error.status === "FETCH_ERROR"
+  ) {
+    return "Unable to connect to the server. Please try again.";
+  }
+
+  return "Login failed. Please try again.";
+};
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -45,6 +63,8 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
+    form.clearErrors("root");
+
     try {
       const result = await login({
         email: data.email,
@@ -59,6 +79,10 @@ export default function LoginForm() {
       }, 1500);
     } catch (error) {
       console.log("Login error: ", error);
+      form.setError("root", {
+        type: "server",
+        message: getLoginErrorMessage(error),
+      });
     }
   };
 
@@ -211,6 +235,12 @@ export default function LoginForm() {
               </FormItem>
             )}
           />
+
+          {form.formState.errors.root?.message && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {form.formState.errors.root.message}
+            </div>
+          )}
 
           {/* Submit Button */}
           <Button
