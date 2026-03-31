@@ -89,7 +89,7 @@ const AdminAllClaims = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [selectedClaim, setSelectedClaim] = useState<ClaimApiResponse | null>(
-    null
+    null,
   );
   const [activeModal, setActiveModal] = useState<ActionModalType | null>(null);
   const [editForm, setEditForm] = useState<EditClaimForm | null>(null);
@@ -131,7 +131,7 @@ const AdminAllClaims = () => {
 
   // Get unique claim types for filter
   const uniqueClaimTypes = Array.from(
-    new Set(allClaims.map((claim) => claim.claimType))
+    new Set(allClaims.map((claim) => claim.claimType)),
   );
 
   // Apply filters
@@ -476,7 +476,7 @@ const AdminAllClaims = () => {
 
   const handleActionModal = (
     claim: ClaimApiResponse,
-    action: ActionModalType
+    action: ActionModalType,
   ) => {
     setSelectedClaim(claim);
     setActiveModal(action);
@@ -901,7 +901,7 @@ const AdminAllClaims = () => {
 
           {/* Active Filters Display */}
           {Object.values(filter).some(
-            (value) => value !== "all" && value !== ""
+            (value) => value !== "all" && value !== "",
           ) && (
             <div className="mt-4 p-3 bg-blue-50 rounded-md">
               <div className="flex items-center justify-between">
@@ -1056,7 +1056,7 @@ const AdminAllClaims = () => {
                               Claimed:{" "}
                               <p>
                                 {formatCurrency(
-                                  Number(claim.incidentDetails.claimAmount)
+                                  Number(claim.incidentDetails.claimAmount),
                                 )}
                               </p>
                             </div>
@@ -1070,7 +1070,7 @@ const AdminAllClaims = () => {
                       <div className="space-y-1">
                         <div
                           className={`font-medium ${getProcessingTimeColor(
-                            claim.processingDays
+                            claim.processingDays,
                           )}`}
                         >
                           {claim.processingDays !== null
@@ -1089,7 +1089,7 @@ const AdminAllClaims = () => {
                       <div className="flex flex-col gap-2">
                         <Link
                           to={`/admin/claim-details/${claim?.id}`}
-                          className="w-full flex  justify-center items-center border p-1 rounded"
+                          className="w-full flex px-3 items-center border p-1 rounded"
                         >
                           <Eye className="h-3 w-3 mr-2" />
                           View
@@ -1213,7 +1213,7 @@ const AdminAllClaims = () => {
                       <select
                         value={editForm.status}
                         disabled={["APPROVED", "REJECTED"].includes(
-                          editForm.status
+                          editForm.status,
                         )}
                         className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                           ["APPROVED", "REJECTED"].includes(editForm.status)
@@ -1231,7 +1231,7 @@ const AdminAllClaims = () => {
                           setEditForm({ ...editForm, status: e.target.value })
                         }
                         disabled={["APPROVED", "REJECTED"].includes(
-                          editForm.status
+                          editForm.status,
                         )}
                         className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                           ["APPROVED", "REJECTED"].includes(editForm.status)
@@ -1595,7 +1595,7 @@ const AdminAllClaims = () => {
                       </label>
                       <div className="text-lg font-semibold">
                         {formatCurrency(
-                          Number(selectedClaim.incidentDetails.claimAmount)
+                          Number(selectedClaim.incidentDetails.claimAmount),
                         )}
                       </div>
                     </div>
@@ -1606,7 +1606,7 @@ const AdminAllClaims = () => {
                       <div>
                         <span
                           className={`font-semibold ${getProcessingTimeColor(
-                            selectedClaim.processingDays
+                            selectedClaim.processingDays,
                           )}`}
                         >
                           {selectedClaim.processingDays !== null
@@ -1879,7 +1879,7 @@ const AdminAllClaims = () => {
                       </label>
                       <div className="text-sm">
                         {formatCurrency(
-                          Number(selectedClaim.incidentDetails.claimAmount)
+                          Number(selectedClaim.incidentDetails.claimAmount),
                         )}
                       </div>
                     </div>
@@ -1898,8 +1898,8 @@ const AdminAllClaims = () => {
                         {formatCurrency(
                           (selectedClaim.approvedAmount || 0) -
                             (Number(
-                              selectedClaim.incidentDetails.claimAmount
-                            ) || 0)
+                              selectedClaim.incidentDetails.claimAmount,
+                            ) || 0),
                         )}
                       </p>
                     </div>
