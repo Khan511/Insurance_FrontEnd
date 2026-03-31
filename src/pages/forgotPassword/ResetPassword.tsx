@@ -59,11 +59,11 @@ export default function ResetPassword() {
 
   const validatePassword = (password: string) => {
     const errors = [];
-    if (password.length < 8) errors.push("at least 8 characters");
+    if (password.length < 4) errors.push("at least 8 characters");
     if (!/\d/.test(password)) errors.push("at least one number");
     if (!/[a-z]/.test(password)) errors.push("at least one lowercase letter");
     if (!/[A-Z]/.test(password)) errors.push("at least one uppercase letter");
-    if (!/[@#$%^&+=]/.test(password))
+    if (!/[@#$%^&+=!]/.test(password))
       errors.push("at least one special character (@#$%^&+=)");
     if (/\s/.test(password)) errors.push("no spaces");
 
@@ -296,11 +296,11 @@ export default function ResetPassword() {
                   </li>
                   <li className="flex items-center">
                     <span
-                      className={`mr-2 ${/[@#$%^&+=]/.test(newPassword) ? "text-green-500" : "text-gray-400"}`}
+                      className={`mr-2 ${/[@#$%^&+=!]/.test(newPassword) ? "text-green-500" : "text-gray-400"}`}
                     >
                       ✓
                     </span>
-                    At least one special character (@#$%^&+=)
+                    At least one special character (@#$%^&+=!)
                   </li>
                   <li className="flex items-center">
                     <span

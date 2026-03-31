@@ -227,7 +227,7 @@ export default function UserCreatingForme() {
                         variant="outline"
                         className={cn(
                           "h-12 pl-4 rounded-xl text-left font-normal justify-start border-gray-300 hover:bg-gray-50 transition-all duration-200",
-                          !field.value && "text-gray-500"
+                          !field.value && "text-gray-500",
                         )}
                       >
                         <div className="flex items-center gap-2">
