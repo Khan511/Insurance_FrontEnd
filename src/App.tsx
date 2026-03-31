@@ -21,6 +21,7 @@ import EmailVerificationSuccess from "./pages/emailVerification/EmailVerificatio
 import EmailVerificationFailed from "./pages/emailVerification/EmailVerificationFailed";
 import ForgotPasswordPage from "./pages/forgotPassword/Forgotpassword";
 import ResetPassword from "./pages/forgotPassword/ResetPassword";
+import Unauthorized from "./pages/unauthorized/Unauthorized";
 
 // Lazy load pages
 const Home = lazy(() => import("@/pages/home/Home"));
@@ -45,6 +46,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "/all-products", element: <AllInsurances /> },
       { path: "/contact", element: <ContactPage /> },
+      { path: "/unauthorized", element: <Unauthorized /> },
       {
         path: "/private-products",
         element: <PrivatePolicies />,
@@ -70,10 +72,9 @@ const router = createBrowserRouter([
         element: <ResetPassword />,
       },
 
-      // Admin routes
+      // Admin routes - requires ADMIN role
       {
-        element: <ProtectedRoute />,
-        // element: <ProtectedRoute allowedRoles={["admin"]} />,
+        element: <ProtectedRoute allowedRoles={["ADMIN"]} />,
         children: [
           { path: "admin/:tab?", element: <InsuranceAdminDashboard /> },
           { path: "admin/customers/:customerId", element: <CustomerView /> },
@@ -88,9 +89,8 @@ const router = createBrowserRouter([
         ],
       },
 
-      // Customer routes
+      // Customer routes - requires authenticated user (any role)
       {
-        // element: <ProtectedRoute allowedRoles={["customer"]} />,
         element: <ProtectedRoute />,
         children: [
           {
