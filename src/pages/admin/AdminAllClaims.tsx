@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import {
   useGetAllClaimsQuery,
@@ -490,26 +490,44 @@ const AdminAllClaims = () => {
   };
 
   const handleApproveClaim = async () => {
-    if (!selectedClaim || !approveAmount) return;
+    if (!selectedClaim || !approveAmount) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    const approvedAmountValue = parseFloat(approveAmount);
+    if (isNaN(approvedAmountValue) || approvedAmountValue <= 0) {
+      toast.error("Approved amount must be greater than 0");
+      return;
+    }
 
     try {
       await approveClaim({
         claimId: selectedClaim.id,
-        approvedAmount: parseFloat(approveAmount),
+        approvedAmount: approvedAmountValue,
         notes: actionNotes,
       }).unwrap();
 
+      toast.success("Claim approved successfully!");
       refetch();
       setActiveModal(null);
       setApproveAmount("");
       setActionNotes("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to approve claim:", error);
+      const errorMessage =
+        error?.data?.message ||
+        error?.message ||
+        "Failed to approve claim. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
   const handleRejectClaim = async () => {
-    if (!selectedClaim || !rejectionReason.trim()) return;
+    if (!selectedClaim || !rejectionReason.trim()) {
+      toast.error("Please provide a rejection reason");
+      return;
+    }
 
     try {
       await rejectClaim({
@@ -518,17 +536,26 @@ const AdminAllClaims = () => {
         notes: actionNotes,
       }).unwrap();
 
+      toast.success("Claim rejected successfully!");
       refetch();
       setActiveModal(null);
       setRejectionReason("");
       setActionNotes("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to reject claim:", error);
+      const errorMessage =
+        error?.data?.message ||
+        error?.message ||
+        "Failed to reject claim. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
   const handleMarkAsPaid = async () => {
-    if (!selectedClaim) return;
+    if (!selectedClaim) {
+      toast.error("No claim selected");
+      return;
+    }
 
     try {
       await markClaimAsPaid({
@@ -536,22 +563,31 @@ const AdminAllClaims = () => {
         notes: actionNotes,
       }).unwrap();
 
+      toast.success("Claim marked as paid successfully!");
       refetch();
       setActiveModal(null);
       setActionNotes("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to mark claim as paid:", error);
+      const errorMessage =
+        error?.data?.message ||
+        error?.message ||
+        "Failed to mark claim as paid. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
   console.log("All Claims:", allClaimsResponse);
 
   const handleSaveClaim = async () => {
-    if (!selectedClaim || !editForm) return;
+    if (!selectedClaim || !editForm) {
+      toast.error("Invalid claim data");
+      return;
+    }
 
     // Basic validation
     if (!editForm.incidentDetails.description.trim()) {
-      alert("Incident description is required");
+      toast.error("Incident description is required");
       return;
     }
 
@@ -561,7 +597,7 @@ const AdminAllClaims = () => {
       !editForm.incidentDetails.location.postalCode.trim() ||
       !editForm.incidentDetails.location.country.trim()
     ) {
-      alert("Complete location details are required");
+      toast.error("Complete location details are required");
       return;
     }
 
@@ -571,7 +607,7 @@ const AdminAllClaims = () => {
       (!editForm.incidentDetails.thirdPartyDetails.name.trim() ||
         !editForm.incidentDetails.thirdPartyDetails.contactInfo.trim())
     ) {
-      alert("Third party name and contact information are required");
+      toast.error("Third party name and contact information are required");
       return;
     }
 
@@ -615,8 +651,13 @@ const AdminAllClaims = () => {
       refetch();
       setActiveModal(null);
       setEditForm(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update claim:", error);
+      const errorMessage =
+        error?.data?.message ||
+        error?.message ||
+        "Failed to update claim. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsUpdating(false);
     }

@@ -22,6 +22,7 @@
 import Footer from "@/components/footer/Footer";
 import Navbare from "@/components/navBar/Navebar";
 import ErrorBoundary from "@/components/error/ErrorBoundary";
+import { Toaster } from "@/components/ui/sonner";
 import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
@@ -43,6 +44,30 @@ const MainLayout = () => {
       <ErrorBoundary>
         <Footer />
       </ErrorBoundary>
+
+      {/* Toast notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+          success: {
+            duration: 3000,
+            style: {
+              background: "#22c55e",
+            },
+          },
+          error: {
+            duration: 5000,
+            style: {
+              background: "#ef4444",
+            },
+          },
+        }}
+      />
     </div>
   );
 };
