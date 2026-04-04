@@ -25,7 +25,7 @@ export default function MyPage() {
     userId || "",
     {
       skip: !userId,
-    }
+    },
   );
 
   const { data: myClaims } = useGetAllClaimsOfUserQuery(userId || "", {
@@ -33,27 +33,24 @@ export default function MyPage() {
   });
 
   const createdAt = new Date(
-    currentUser?.data.user.createdAt || ""
+    currentUser?.data.user.createdAt || "",
   ).getFullYear();
 
   const activePolicies = myAllPolicies?.filter(
-    (policy) => policy.status === "ACTIVE"
+    (policy) => policy.status === "ACTIVE",
   );
   const inActivePolicies = myAllPolicies?.filter(
-    (policy) => policy.status === "EXPIRED"
+    (policy) => policy.status === "EXPIRED",
   );
 
   const pendingClaims = myClaims?.claim.filter(
-    (cla) => cla.status === "PENDING"
+    (cla) => cla.status === "PENDING",
   );
   const approvedClaims = myClaims?.claim.filter(
-    (cla) => cla.status === "APPROVED"
+    (cla) => cla.status === "APPROVED",
   );
-  console.log("Plicies: ", myAllPolicies);
 
   const upcomingPayments = getUpcomingPayments(myAllPolicies || [], 20);
-
-  console.log("UpcomingPayments", upcomingPayments);
 
   if (isLoading)
     return (

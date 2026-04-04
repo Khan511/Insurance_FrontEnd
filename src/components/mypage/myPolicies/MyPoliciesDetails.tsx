@@ -156,10 +156,8 @@ export default function MyPoliciesDetails() {
     policyId || "",
     {
       skip: !policyId,
-    }
+    },
   );
-
-  console.log("PolicyDetails: ", policyDetails);
 
   // Helper function to convert array date to Date object
   const parseArrayDate = (dateArray: any): Date | null => {
@@ -177,14 +175,14 @@ export default function MyPoliciesDetails() {
         dateArray[3],
         dateArray[4],
         dateArray[5],
-        dateArray[6]
+        dateArray[6],
       );
     }
     return null;
   };
 
   const formatDate = (
-    dateInput?: string | Date | [number, ...number[]] | null
+    dateInput?: string | Date | [number, ...number[]] | null,
   ): string => {
     if (!dateInput) return "Date not available";
 
@@ -350,12 +348,12 @@ export default function MyPoliciesDetails() {
 
     // Sort by due date
     const sortedSchedules = [...schedules].sort(
-      (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+      (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
     );
 
     // Find next payment (first PENDING, PAUSED, or OVERDUE)
     const nextPayment = sortedSchedules.find((schedule) =>
-      ["PENDING", "OVERDUE", "PAUSED"].includes(schedule.status)
+      ["PENDING", "OVERDUE", "PAUSED"].includes(schedule.status),
     );
 
     // Find last paid payment
@@ -466,8 +464,6 @@ export default function MyPoliciesDetails() {
   };
 
   const paymentStatusDisplay = getPaymentStatusDisplay();
-
-  console.log("Policy Details in myPage: ", policyDetails);
 
   if (isLoading) {
     return (
@@ -686,7 +682,7 @@ export default function MyPoliciesDetails() {
                           <span className="text-gray-600">Frequency:</span>
                           <Badge variant="outline">
                             {getPaymentFrequencyDisplay(
-                              policyDetails.paymentFrequency
+                              policyDetails.paymentFrequency,
                             )}
                           </Badge>
                         </div>
@@ -733,7 +729,7 @@ export default function MyPoliciesDetails() {
                           <div className="flex justify-between items-center">
                             <span className="text-gray-600">Status:</span>
                             {getPaymentStatusBadge(
-                              paymentAnalysis.nextPayment.status
+                              paymentAnalysis.nextPayment.status,
                             )}
                           </div>
                         </div>
@@ -793,7 +789,7 @@ export default function MyPoliciesDetails() {
                                 {Math.round(
                                   (paymentAnalysis.paymentSummary.paid /
                                     paymentAnalysis.paymentSummary.total) *
-                                    100
+                                    100,
                                 )}
                                 %
                               </Badge>
@@ -852,7 +848,7 @@ export default function MyPoliciesDetails() {
 
                       {/* Policy Status Impact */}
                       {["CANCELLED", "EXPIRED", "INACTIVE"].includes(
-                        policyDetails.status
+                        policyDetails.status,
                       ) && (
                         <div className="mt-4 p-3 bg-gray-100 rounded-lg">
                           <div className="flex items-center gap-2 mb-2">
@@ -902,7 +898,7 @@ export default function MyPoliciesDetails() {
                       <div className="text-right">
                         <span className="font-medium">
                           {formatDate(
-                            policyDetails.validityPeriod.effectiveDate
+                            policyDetails.validityPeriod.effectiveDate,
                           )}
                         </span>
                       </div>
@@ -912,7 +908,7 @@ export default function MyPoliciesDetails() {
                       <div className="text-right">
                         <span className="font-medium">
                           {formatDate(
-                            policyDetails.validityPeriod.expirationDate
+                            policyDetails.validityPeriod.expirationDate,
                           )}
                         </span>
                       </div>
@@ -965,7 +961,7 @@ export default function MyPoliciesDetails() {
                       <Badge variant="outline">
                         {policyDetails.eligibilityRules.licenseType.replace(
                           /_/g,
-                          " "
+                          " ",
                         )}
                       </Badge>
                     </div>
@@ -1022,7 +1018,7 @@ export default function MyPoliciesDetails() {
                                 >
                                   {audience}
                                 </Badge>
-                              )
+                              ),
                             )}
                           </div>
                         </div>
@@ -1053,7 +1049,7 @@ export default function MyPoliciesDetails() {
                               {claimType.replace(/_/g, " ")}
                             </span>
                           </div>
-                        )
+                        ),
                       )}
                     </div>
                   </CardContent>
@@ -1211,7 +1207,7 @@ export default function MyPoliciesDetails() {
                         {translation.description}
                       </p>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </CardContent>

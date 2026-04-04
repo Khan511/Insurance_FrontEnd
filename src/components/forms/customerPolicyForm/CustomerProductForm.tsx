@@ -126,7 +126,7 @@ const formSchema = z.object({
         name: z.string().min(1, "Name required"),
         relationship: z.string().min(1, "Relationship required"),
         dateOfBirth: z.date({ required_error: "Date of birth is required" }),
-      })
+      }),
     )
     .optional(),
 });
@@ -142,7 +142,7 @@ export function CustomerProductForm() {
   const [activeSection, setActiveSection] = useState("personal");
   const [progress, setProgress] = useState(25);
   const [editingBeneficiary, setEditingBeneficiary] = useState<number | null>(
-    null
+    null,
   );
   const [newBeneficiary, setNewBeneficiary] = useState<boolean>(false);
   const [sectionErrors, setSectionErrors] = useState<string[]>([]);
@@ -199,7 +199,7 @@ export function CustomerProductForm() {
   useEffect(() => {
     if (sameAsPrimary) {
       const primaryAddress = form.getValues(
-        "customer.contactInfo.primaryAddress"
+        "customer.contactInfo.primaryAddress",
       );
       form.setValue("customer.contactInfo.billingAddress", primaryAddress);
       form.clearErrors("customer.contactInfo.billingAddress");
@@ -228,8 +228,6 @@ export function CustomerProductForm() {
   // }, [form.watch()]);
 
   const onSubmit = async (data: FormValues) => {
-    console.log("Form submitted:", data);
-
     try {
       const effectiveDate = data.coveragePeriod.effectiveDate;
       const expirationDate = new Date(effectiveDate);
@@ -274,7 +272,6 @@ export function CustomerProductForm() {
         productId,
       }).unwrap();
 
-      console.log("Policy created successfully:", result);
       form.reset();
       setActiveSection("personal");
       setProgress(25);
@@ -287,7 +284,7 @@ export function CustomerProductForm() {
     setSameAsPrimary(checked);
     if (checked) {
       const primaryAddress = form.getValues(
-        "customer.contactInfo.primaryAddress"
+        "customer.contactInfo.primaryAddress",
       );
       form.setValue("customer.contactInfo.billingAddress", primaryAddress);
       form.clearErrors("customer.contactInfo.billingAddress");
@@ -301,7 +298,7 @@ export function CustomerProductForm() {
     const beneficiaries = form.getValues("beneficiaries") || [];
     form.setValue(
       "beneficiaries",
-      beneficiaries?.filter((_, i) => i !== index)
+      beneficiaries?.filter((_, i) => i !== index),
     );
     if (editingBeneficiary === index) {
       setEditingBeneficiary(null);
@@ -392,7 +389,7 @@ export function CustomerProductForm() {
             "customer.contactInfo.billingAddress.street",
             "customer.contactInfo.billingAddress.city",
             "customer.contactInfo.billingAddress.postalCode",
-            "customer.contactInfo.billingAddress.country"
+            "customer.contactInfo.billingAddress.country",
           );
         }
         break;
@@ -406,14 +403,14 @@ export function CustomerProductForm() {
           const beneficiaries = form.getValues("beneficiaries") || [];
           if (beneficiaries.length === 0) {
             errors.push(
-              "At least one beneficiary is required for life insurance"
+              "At least one beneficiary is required for life insurance",
             );
           } else {
             beneficiaries.forEach((_, index) => {
               fieldsToValidate.push(
                 `beneficiaries.${index}.name`,
                 `beneficiaries.${index}.relationship`,
-                `beneficiaries.${index}.dateOfBirth`
+                `beneficiaries.${index}.dateOfBirth`,
               );
             });
           }
@@ -443,7 +440,7 @@ export function CustomerProductForm() {
 
         if (sectionErrorFields.length > 0) {
           errors.push(
-            `Please complete all required fields in the ${activeSection} section`
+            `Please complete all required fields in the ${activeSection} section`,
           );
         }
       }
@@ -570,7 +567,7 @@ export function CustomerProductForm() {
 
     if (beneficiaries.length === 0) return false;
     return beneficiaries.every(
-      (b) => b.name && b.relationship && b.dateOfBirth
+      (b) => b.name && b.relationship && b.dateOfBirth,
     );
   };
 
@@ -632,7 +629,7 @@ export function CustomerProductForm() {
         const beneficiaries = values.beneficiaries || [];
         if (beneficiaries.length === 0) return false;
         return beneficiaries.every(
-          (b) => b.name && b.relationship && b.dateOfBirth
+          (b) => b.name && b.relationship && b.dateOfBirth,
         );
 
       default:
@@ -763,7 +760,7 @@ export function CustomerProductForm() {
             {Math.round(progress) === 100
               ? "All sections completed!"
               : `${Math.round(
-                  (progress / 100) * navigationSections.length
+                  (progress / 100) * navigationSections.length,
                 )} of ${navigationSections.length} sections completed`}
           </div>
         </div>
@@ -792,8 +789,8 @@ export function CustomerProductForm() {
                         activeSection === section.id
                           ? "bg-gradient-to-br from-blue-500 to-indigo-500 text-white shadow-sm"
                           : getSectionStatus(section.id).includes("Complete")
-                          ? "bg-gradient-to-br from-green-500 to-emerald-500 text-white"
-                          : "bg-gray-100 text-gray-500"
+                            ? "bg-gradient-to-br from-green-500 to-emerald-500 text-white"
+                            : "bg-gray-100 text-gray-500"
                       }`}
                     >
                       {section.icon}
@@ -802,7 +799,7 @@ export function CustomerProductForm() {
                       <span className="font-medium">{section.label}</span>
                       <span
                         className={`text-xs mt-1 ${getSectionStatusColor(
-                          section.id
+                          section.id,
                         )}`}
                       >
                         {getSectionStatus(section.id)}
@@ -954,7 +951,7 @@ export function CustomerProductForm() {
                                     {...field}
                                     onChange={(e) =>
                                       field.onChange(
-                                        e.target.value.toUpperCase()
+                                        e.target.value.toUpperCase(),
                                       )
                                     }
                                   />
@@ -1422,10 +1419,10 @@ export function CustomerProductForm() {
                                           key === "street"
                                             ? "Enter your street"
                                             : key === "city"
-                                            ? "Enter your city"
-                                            : key === "postalCode"
-                                            ? "12345"
-                                            : "e.g., Denmark"
+                                              ? "Enter your city"
+                                              : key === "postalCode"
+                                                ? "12345"
+                                                : "e.g., Denmark"
                                         }
                                         {...field}
                                       />
@@ -1490,10 +1487,10 @@ export function CustomerProductForm() {
                                             key === "street"
                                               ? "Enter billing street"
                                               : key === "city"
-                                              ? "Enter billing city"
-                                              : key === "postalCode"
-                                              ? "12345"
-                                              : "e.g., Denmark"
+                                                ? "Enter billing city"
+                                                : key === "postalCode"
+                                                  ? "12345"
+                                                  : "e.g., Denmark"
                                           }
                                           {...field}
                                         />
@@ -1657,7 +1654,7 @@ export function CustomerProductForm() {
                               {form.watch("coveragePeriod.effectiveDate")
                                 ? format(
                                     form.watch("coveragePeriod.effectiveDate")!,
-                                    "PPP"
+                                    "PPP",
                                   )
                                 : "To be selected"}
                             </span>
@@ -1757,7 +1754,7 @@ export function CustomerProductForm() {
                                             ?.length || 0) -
                                             1)
                                       ? "border-red-400 bg-gradient-to-br from-red-50 to-pink-50 shadow-sm"
-                                      : "border-gray-200 hover:border-red-300 hover:shadow-sm"
+                                      : "border-gray-200 hover:border-red-300 hover:shadow-sm",
                                   )}
                                 >
                                   <div className="flex justify-between items-center mb-6">
@@ -1970,7 +1967,7 @@ export function CustomerProductForm() {
                                           {beneficiary.dateOfBirth
                                             ? format(
                                                 beneficiary.dateOfBirth,
-                                                "PPP"
+                                                "PPP",
                                               )
                                             : "Not set"}
                                         </p>
@@ -1978,7 +1975,7 @@ export function CustomerProductForm() {
                                     </div>
                                   )}
                                 </div>
-                              )
+                              ),
                             )}
                           </div>
                         )}

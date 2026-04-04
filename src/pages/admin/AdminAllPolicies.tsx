@@ -237,11 +237,6 @@ const AdminAllPolicies = () => {
     return true;
   });
 
-  console.log(
-    "Current User in Admin Policies: ",
-    currentUser?.data.user.name.firstName,
-  );
-
   // Get status counts for badge display
   const getStatusCounts = () => {
     const counts: Record<string, number> = {

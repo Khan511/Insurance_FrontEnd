@@ -27,8 +27,6 @@ const AminAllCustomers = () => {
     });
   };
 
-  console.log("Admin All Customer: ", customers);
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -87,7 +85,7 @@ const AminAllCustomers = () => {
                             size="sm"
                             onClick={() =>
                               navigate(
-                                `/admin/customers/${customer.customerId}`
+                                `/admin/customers/${customer.customerId}`,
                               )
                             }
                           >
@@ -98,7 +96,7 @@ const AminAllCustomers = () => {
                             size="sm"
                             onClick={() =>
                               navigate(
-                                `/admin/customers/${customer.customerId}/edit`
+                                `/admin/customers/${customer.customerId}/edit`,
                               )
                             }
                           >

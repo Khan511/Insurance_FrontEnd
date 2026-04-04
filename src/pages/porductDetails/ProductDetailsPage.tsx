@@ -36,12 +36,12 @@ const ProductDetailsPage = () => {
   const { policyId } = useParams();
   const [showCalculator, setShowCalculator] = useState(false);
   const [calculatedPremium, setCalculatedPremium] = useState<number | null>(
-    null
+    null,
   );
   const [activeTab, setActiveTab] = useState("overview");
   const [isSticky, setIsSticky] = useState(false);
   const { data: policyDetails, isLoading } = useGetProductDetailsQuery(
-    Number(policyId)
+    Number(policyId),
   );
   const { data: currentUser } = useGetCurrenttUserQuery();
 
@@ -81,8 +81,6 @@ const ProductDetailsPage = () => {
         return "from-indigo-600 to-purple-500";
     }
   };
-
-  console.log("Policy Details : ", policyDetails);
 
   if (isLoading) {
     return (
@@ -132,7 +130,7 @@ const ProductDetailsPage = () => {
               <div className="product-icon-wrapper">
                 <div
                   className={`product-icon ${getProductColor(
-                    policyDetails?.productType
+                    policyDetails?.productType,
                   )}`}
                 >
                   {getProductIcon(policyDetails?.productType)}
@@ -277,7 +275,7 @@ const ProductDetailsPage = () => {
                               <span key={index} className="audience-tag">
                                 {audience}
                               </span>
-                            )
+                            ),
                           )}
                         </div>
                       </div>

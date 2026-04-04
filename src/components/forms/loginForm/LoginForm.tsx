@@ -71,7 +71,6 @@ export default function LoginForm() {
         password: data.password,
       }).unwrap();
 
-      console.log("Result from login:", result);
       setShowSuccess(true);
 
       setTimeout(() => {

@@ -59,7 +59,6 @@ function Navbare() {
       navigate("/login", { replace: true });
       // window.location.href = "/login";
     } catch (error) {
-      console.log("Logout Error: ", error);
       navigate("/login", { replace: true });
     }
   };

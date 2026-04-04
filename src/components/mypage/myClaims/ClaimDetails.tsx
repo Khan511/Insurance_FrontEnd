@@ -131,7 +131,7 @@ export default function ClaimDetailsPage() {
     userId || "",
     {
       skip: !userId || !!fastClaim,
-    }
+    },
   );
 
   const claim =
@@ -174,7 +174,6 @@ export default function ClaimDetailsPage() {
   }
 
   const { incidentDetails, documents } = claim;
-  console.log("Claim in claimDetails: ", claim);
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6 mt-5">
@@ -213,7 +212,7 @@ export default function ClaimDetailsPage() {
                   <div className="flex items-center gap-2 mt-1">
                     <Badge
                       className={`${statusToBadge(
-                        claim.status
+                        claim.status,
                       )} flex items-center gap-1`}
                     >
                       {getStatusIcon(claim.status)}
@@ -233,8 +232,8 @@ export default function ClaimDetailsPage() {
                       claim.processingDays > 14
                         ? "text-red-600"
                         : claim.processingDays > 7
-                        ? "text-yellow-600"
-                        : "text-green-600"
+                          ? "text-yellow-600"
+                          : "text-green-600"
                     }`}
                   >
                     {claim.processingDays} days
@@ -594,8 +593,8 @@ export default function ClaimDetailsPage() {
                     {claim.approvedAmount
                       ? formatCurrency(claim.approvedAmount)
                       : claim.status === "REJECTED"
-                      ? "Claim Rejected"
-                      : "Pending approval"}
+                        ? "Claim Rejected"
+                        : "Pending approval"}
                   </div>
                   {claim.approvedAmount &&
                     claim.approvedAmount !== claim.amount && (
@@ -780,8 +779,8 @@ export default function ClaimDetailsPage() {
                 claim.status === "APPROVED"
                   ? "bg-green-500"
                   : claim.status === "REJECTED"
-                  ? "bg-red-500"
-                  : "bg-yellow-500"
+                    ? "bg-red-500"
+                    : "bg-yellow-500"
               }`}
             ></div>
             <div>

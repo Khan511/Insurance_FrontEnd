@@ -23,7 +23,6 @@ export default function EmailVerificationFailed() {
     setMessage("");
 
     try {
-      console.log("email", email);
       // Call the mutation with email object
       await resendVerification({ email }).unwrap();
       setMessage("Verification email sent. Please check your inbox.");

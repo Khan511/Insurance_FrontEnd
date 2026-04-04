@@ -24,7 +24,7 @@ export default function Mypayments() {
 
   // Track individual loading states
   const [processingPayments, setProcessingPayments] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
 
   const formatDate = (dateString?: string | null): string => {
@@ -53,7 +53,7 @@ export default function Mypayments() {
         dateInput[3] || 0, // hours
         dateInput[4] || 0, // minutes
         dateInput[5] || 0, // seconds
-        dateInput[6] ? Math.floor(dateInput[6] / 1000000) : 0 // convert nanoseconds to milliseconds
+        dateInput[6] ? Math.floor(dateInput[6] / 1000000) : 0, // convert nanoseconds to milliseconds
       );
     } else {
       // Handle string format
@@ -129,7 +129,7 @@ export default function Mypayments() {
           ?.filter((schedule) => schedule.status === "PENDING")
           .sort(
             (a, b) =>
-              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
           )[0];
 
         return { policy, nextPayment };
@@ -149,11 +149,11 @@ export default function Mypayments() {
             .map((schedule) => ({
               ...schedule,
               policy,
-            })) || []
+            })) || [],
       )
       .sort(
         (a, b) =>
-          new Date(b.paidDate!).getTime() - new Date(a.paidDate!).getTime()
+          new Date(b.paidDate!).getTime() - new Date(a.paidDate!).getTime(),
       );
   };
 
@@ -247,8 +247,6 @@ export default function Mypayments() {
             ) : (
               <div className="space-y-3">
                 {paymentHistory.map(({ policy, ...schedule }) => {
-                  console.log("paidDate", schedule.paidDate);
-
                   return (
                     <div
                       key={schedule.id}

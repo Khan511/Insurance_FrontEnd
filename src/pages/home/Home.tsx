@@ -48,8 +48,6 @@ const Home = () => {
     },
   ];
 
-  console.log("Home page products: ", products);
-
   return (
     <div className="home-page">
       {/* Modern Hero Section with Gradient */}

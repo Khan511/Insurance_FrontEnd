@@ -37,10 +37,8 @@ export default function AdminClaimDetails() {
     Number(claimId),
     {
       skip: !claimId,
-    }
+    },
   );
-
-  console.log("ClaimDetails: ", claimDetails);
 
   const formatCurrency = (amount: number | null | undefined) => {
     if (amount === null || amount === undefined) return "Not specified";
@@ -305,7 +303,7 @@ export default function AdminClaimDetails() {
                       </div>
                       <div
                         className={`font-medium ${getProcessingTimeColor(
-                          claimDetails.processingDays
+                          claimDetails.processingDays,
                         )}`}
                       >
                         {claimDetails.processingDays !== null
@@ -354,7 +352,7 @@ export default function AdminClaimDetails() {
                       </div>
                       <div className="font-medium">
                         {formatDate(
-                          claimDetails?.incidentDetails?.incidentDateTime
+                          claimDetails?.incidentDetails?.incidentDateTime,
                         )}
                       </div>
                     </div>
@@ -587,7 +585,7 @@ export default function AdminClaimDetails() {
                               onClick={() =>
                                 handleDownload(
                                   doc.fileKey,
-                                  doc.originalFileName
+                                  doc.originalFileName,
                                 )
                               }
                               className="flex items-center gap-2"

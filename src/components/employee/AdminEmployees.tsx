@@ -17,10 +17,10 @@ import { useGetCurrenttUserQuery } from "@/services/UserApiSlice";
 export default function AdminEmployees() {
   const { data: currentUser } = useGetCurrenttUserQuery();
   const [activeTab, setActiveTab] = useState<"list" | "create" | "view">(
-    "list"
+    "list",
   );
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
-    null
+    null,
   );
   const [editMode, setEditMode] = useState(false);
 
@@ -38,19 +38,11 @@ export default function AdminEmployees() {
     skip: !selectedEmployeeId,
   });
 
-  // Log employee data to debug
-  console.log("Selected Employee ID:", selectedEmployeeId);
-  console.log("Employee Data:", employee);
-  console.log("Active Tab:", activeTab);
-  console.log("Edit Mode:", editMode);
-
   const handleCreateEmployee = async (data: EmployeeFormData) => {
-    console.log("handleCreateEmployee called with data:", data);
     const toastId = toast.loading("Creating employee...");
 
     try {
       const result = await createEmployee(data).unwrap();
-      console.log("Create successful:", result);
       toast.success("Employee created successfully", {
         id: toastId,
         description: `${data.name.firstName} ${data.name.lastName} has been added to the team.`,
@@ -71,9 +63,6 @@ export default function AdminEmployees() {
   };
 
   const handleUpdateEmployee = async (data: EmployeeUpdateData) => {
-    console.log("handleUpdateEmployee called with data:", data);
-    console.log("selectedEmployeeId:", selectedEmployeeId);
-
     if (!selectedEmployeeId) {
       console.error("No employee selected for update!");
       toast.error("No employee selected");
@@ -83,13 +72,10 @@ export default function AdminEmployees() {
     const toastId = toast.loading("Updating employee...");
 
     try {
-      console.log("Calling updateEmployee mutation...");
       const result = await updateEmployee({
         id: selectedEmployeeId,
         data,
       }).unwrap();
-
-      console.log("Update successful:", result);
 
       toast.success("Employee updated successfully", {
         id: toastId,
@@ -109,14 +95,12 @@ export default function AdminEmployees() {
   };
 
   const handleEdit = (employeeId: number) => {
-    console.log("Editing employee:", employeeId);
     setSelectedEmployeeId(employeeId);
     setEditMode(true);
     setActiveTab("create");
   };
 
   const handleView = (employeeId: number) => {
-    console.log("Viewing employee:", employeeId);
     setSelectedEmployeeId(employeeId);
     setEditMode(false);
     setActiveTab("view");
@@ -125,35 +109,23 @@ export default function AdminEmployees() {
   };
 
   const handleAddNew = () => {
-    console.log("Adding new employee");
     setSelectedEmployeeId(null);
     setEditMode(false);
     setActiveTab("create");
   };
 
   const handleBackToList = () => {
-    console.log("Going back to list");
     setActiveTab("list");
     setSelectedEmployeeId(null);
     setEditMode(false);
   };
 
   const handleEditFromView = () => {
-    console.log("Editing from view");
     if (selectedEmployeeId) {
       setEditMode(true);
       setActiveTab("create");
     }
   };
-
-  // Add more debugging
-  useEffect(() => {
-    console.log("Active tab changed to:", activeTab);
-  }, [activeTab]);
-
-  useEffect(() => {
-    console.log("Edit mode changed to:", editMode);
-  }, [editMode]);
 
   return (
     <div className="space-y-6">
@@ -187,7 +159,6 @@ export default function AdminEmployees() {
         <Tabs
           value={activeTab}
           onValueChange={(v) => {
-            console.log("Tab changed to:", v);
             setActiveTab(v as any);
             // If switching away from view or create, reset selected employee
             if (v === "list") {

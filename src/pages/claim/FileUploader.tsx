@@ -57,8 +57,6 @@ function FileUploader({
     return null;
   };
 
-  console.log("Uplaoding DOc", uploadingDoc);
-
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     docType: string,
@@ -149,8 +147,6 @@ function FileUploader({
         fileSize: file.size,
         uploadedAt: new Date().toISOString(),
       };
-
-      console.log("Calling onUploadComplete with metadata:", metadata);
 
       onUploadComplete(metadata);
       clearErrors("documents");

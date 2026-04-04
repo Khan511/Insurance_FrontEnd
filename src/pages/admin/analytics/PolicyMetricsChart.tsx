@@ -30,8 +30,6 @@ const PolicyMetricsChart = ({
     ? externalPolicyData
     : internalPolicyData || [];
 
-  console.log("All Policies in metric chart", allPolicies);
-
   /**
    * Transform policy data from API into chart format
    * Groups policies by type and counts active/inactive/pending statuses
@@ -146,7 +144,7 @@ const PolicyMetricsChart = ({
       typeCode
         .split("_")
         .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
         )
         .join(" ") + " Insurance"
     );
@@ -195,12 +193,12 @@ const PolicyMetricsChart = ({
   const totalActive = policyData.reduce((sum, item) => sum + item.active, 0);
   const totalInactive = policyData.reduce(
     (sum, item) => sum + item.inactive,
-    0
+    0,
   );
   const totalPending = policyData.reduce((sum, item) => sum + item.pending, 0);
   const totalCancelled = policyData.reduce(
     (sum, item) => sum + item.cancelled,
-    0
+    0,
   );
   const totalExpired = policyData.reduce((sum, item) => sum + item.expired, 0);
 

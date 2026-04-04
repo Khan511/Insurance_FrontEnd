@@ -312,8 +312,6 @@ const AdminAllClaims = () => {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
-  console.log("Selected Claim: ", selectedClaim);
-
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       PENDING: {
@@ -576,8 +574,6 @@ const AdminAllClaims = () => {
       toast.error(errorMessage);
     }
   };
-
-  console.log("All Claims:", allClaimsResponse);
 
   const handleSaveClaim = async () => {
     if (!selectedClaim || !editForm) {

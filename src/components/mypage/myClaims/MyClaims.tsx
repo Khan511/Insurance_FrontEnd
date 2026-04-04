@@ -136,7 +136,7 @@ export default function MyClaims() {
     userId || "",
     {
       skip: !userId,
-    }
+    },
   );
 
   const claims = claimsResponse?.claim || [];
@@ -156,9 +156,6 @@ export default function MyClaims() {
     paid: claims.filter((c) => c.status === "PAID").length,
     rejected: claims.filter((c) => c.status === "REJECTED").length,
   };
-
-  console.log("Claims in myClaims", claims);
-  console.log("Status in myClaims", stats);
 
   if (isLoading) {
     return (
@@ -302,7 +299,7 @@ export default function MyClaims() {
                               </div>
                               <div className="font-medium text-sm">
                                 {formatDateTime(
-                                  claim.incidentDetails?.incidentDateTime
+                                  claim.incidentDetails?.incidentDateTime,
                                 )}
                               </div>
                             </div>
@@ -315,8 +312,8 @@ export default function MyClaims() {
                                   claim.processingDays > 14
                                     ? "text-red-600"
                                     : claim.processingDays > 7
-                                    ? "text-yellow-600"
-                                    : "text-green-600"
+                                      ? "text-yellow-600"
+                                      : "text-green-600"
                                 }`}
                               >
                                 {claim.processingDays} days
@@ -349,7 +346,7 @@ export default function MyClaims() {
                           </div>
                           <div className="font-bold text-lg">
                             {formatCurrency(
-                              Number(claim.incidentDetails.claimAmount)
+                              Number(claim.incidentDetails.claimAmount),
                             )}
                           </div>
                         </div>

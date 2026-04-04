@@ -28,10 +28,7 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     try {
-      console.log("Submitting Forgot password......");
-
       await forgotPassword({ email }).unwrap();
-      console.log("Submited Forgot password......");
 
       setIsSubmitted(true);
     } catch (err: any) {

@@ -92,10 +92,7 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
           };
           break;
         default:
-          console.log(`Unhandled insurance Type: ${data}`);
       }
-
-      console.log("riskFactors", riskFactors);
 
       const result = await calculatePremium({
         productId,
@@ -104,7 +101,6 @@ const PremiumCalculator: React.FC<PremiumCalculatorProps> = ({
       }).unwrap();
 
       setCalculatedPremium(result);
-      console.log("Premium calculation result:", result);
 
       onPremiumCalculated?.(result.amount);
     } catch (error) {

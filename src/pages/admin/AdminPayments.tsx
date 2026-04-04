@@ -53,7 +53,7 @@ const AdminPayments = () => {
           ?.filter((schedule) => schedule.status === "PENDING")
           .sort(
             (a, b) =>
-              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
           )[0];
 
         if (!nextPayment) return null;
@@ -79,22 +79,20 @@ const AdminPayments = () => {
   const nextpendingPayment = getNextPendingPayments();
 
   const paymentData = data as unknown as PaymentData;
-  console.log("All payments", paymentData);
-  console.log("All policies", allPolicies);
 
   // Calculate statistics
   const totalComingAmount = nextpendingPayment.reduce(
     (sum, payment) => sum + payment.dueAmount.amount,
-    0
+    0,
   );
 
   const totalOverdueAmount = paymentData.overdue.reduce(
     (sum, payment) => sum + payment.dueAmount.amount,
-    0
+    0,
   );
   const totalPaidAmount = paymentData.paid.reduce(
     (sum, payment) => sum + payment.dueAmount.amount,
-    0
+    0,
   );
 
   const totalPayments =
@@ -155,8 +153,6 @@ const AdminPayments = () => {
     return `${date}`;
   }
 
-  console.log("Next Pending payment", nextpendingPayment);
-
   const PaymentTable = ({
     payments,
     title,
@@ -198,12 +194,12 @@ const AdminPayments = () => {
                   <td className="p-4 font-medium">
                     {formatCurrency(
                       payment.dueAmount?.amount,
-                      payment.dueAmount?.currency
+                      payment.dueAmount?.currency,
                     )}
                   </td>
                   <td className="p-4">
                     {getStatusBadge(
-                      defaultStatus || payment.status || "PENDING"
+                      defaultStatus || payment.status || "PENDING",
                     )}
                   </td>
                   <td className="p-4">{formatDateTime(payment.dueDate)}</td>
@@ -238,7 +234,7 @@ const AdminPayments = () => {
             <p className="text-2xl font-bold">
               {formatCurrency(
                 totalPaidAmount,
-                paymentData.paid[0]?.dueAmount.currency || "DKK"
+                paymentData.paid[0]?.dueAmount.currency || "DKK",
               )}
             </p>
             <p className="text-xs text-green-600 mt-1">
@@ -254,7 +250,7 @@ const AdminPayments = () => {
             <p className="text-2xl font-bold">
               {formatCurrency(
                 totalComingAmount,
-                paymentData.coming[0]?.dueAmount.currency || "DKK"
+                paymentData.coming[0]?.dueAmount.currency || "DKK",
               )}
             </p>
             <p className="text-xs text-yellow-600 mt-1">
@@ -268,7 +264,7 @@ const AdminPayments = () => {
             <p className="text-2xl font-bold text-red-600">
               {formatCurrency(
                 totalOverdueAmount,
-                paymentData.overdue[0]?.dueAmount.currency || "DKK"
+                paymentData.overdue[0]?.dueAmount.currency || "DKK",
               )}
             </p>
             <p className="text-xs text-red-600 mt-1">

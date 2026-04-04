@@ -69,8 +69,6 @@ const CustomerGrowthChart = ({
     ? externalCustomerData
     : internalCustomerData || [];
 
-  console.log("Customer data in chart:", customers);
-
   const transformCustomerData = () => {
     // Get the date range based on period
     const { startDate, endDate } = getDateRangeForPeriod(period);
@@ -166,7 +164,7 @@ const CustomerGrowthChart = ({
               const joinDate = new Date(customer.joinDate);
               return joinDate < earliest ? joinDate : earliest;
             },
-            new Date()
+            new Date(),
           ); // Start with current date
           startDate = earliestDate;
         } else {
@@ -229,14 +227,6 @@ const CustomerGrowthChart = ({
     const currentMonthStart = new Date(currentYear, currentMonth, 1);
     const nextMonthStart = new Date(currentYear, currentMonth + 1, 1);
 
-    console.log("=== DEBUG: Date Ranges ===");
-    console.log("Current month start:", currentMonthStart);
-    console.log("Current month end:", nextMonthStart);
-    console.log(
-      "Current month name:",
-      currentMonthStart.toLocaleString("en-US", { month: "long" })
-    );
-
     // Calculate new customers this month
     const newThisMonth = customers.filter((customer: CustomerData) => {
       if (!customer.joinDate) return false;
@@ -246,8 +236,6 @@ const CustomerGrowthChart = ({
       // Check if joinDate is within the current month
       return joinDate >= currentMonthStart && joinDate < nextMonthStart;
     }).length;
-
-    console.log("New customers this month:", newThisMonth);
 
     // Calculate growth rate (percentage increase from previous month)
     const previousMonthStart = new Date(currentYear, currentMonth - 1, 1);
@@ -259,14 +247,12 @@ const CustomerGrowthChart = ({
       return joinDate >= previousMonthStart && joinDate < previousMonthEnd;
     }).length;
 
-    console.log("New customers previous month:", newPreviousMonth);
-
     const growthRate =
       newPreviousMonth > 0
         ? ((newThisMonth - newPreviousMonth) / newPreviousMonth) * 100
         : newThisMonth > 0
-        ? 100
-        : 0;
+          ? 100
+          : 0;
 
     // Estimate active customers
     const activeCustomers = customers.filter((customer) => {
@@ -339,8 +325,8 @@ const CustomerGrowthChart = ({
               metrics.growthRate > 0
                 ? "text-green-600"
                 : metrics.growthRate < 0
-                ? "text-red-600"
-                : "text-gray-600"
+                  ? "text-red-600"
+                  : "text-gray-600"
             }`}
           >
             {metrics.growthRate > 0 ? "+" : ""}

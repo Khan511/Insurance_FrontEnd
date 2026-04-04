@@ -158,7 +158,7 @@ const EditCustomer = () => {
   const primaryAddressStreet = form.watch("customerPrimaryAddressStreet");
   const primaryAddressCity = form.watch("customerPrimaryAddressCity");
   const primaryAddressPostalCode = form.watch(
-    "customerPrimaryAddressPostalCode"
+    "customerPrimaryAddressPostalCode",
   );
   const primaryAddressCountry = form.watch("customerPrimaryAddressCountry");
 
@@ -176,7 +176,7 @@ const EditCustomer = () => {
         primaryAddressPostalCode,
         {
           shouldDirty: true,
-        }
+        },
       );
       form.setValue("customerBillingAddressCountry", primaryAddressCountry, {
         shouldDirty: true,
@@ -243,8 +243,6 @@ const EditCustomer = () => {
   const onSubmit = async (data: EditCustomerFormData) => {
     try {
       if (!customerId) {
-        console.log("cusomer id is null");
-
         toast.error("Customer ID is required");
         return;
       }
@@ -307,12 +305,8 @@ const EditCustomer = () => {
         }
       }
 
-      console.log("Sending update payload:", updatePayload);
-
       const updatedCustomer = await updateCustomer(updatePayload).unwrap();
       toast.success("Customer updated successfully");
-
-      console.log("Updated Customer: ", updatedCustomer);
 
       // Navigate back to view page
       navigate(`/admin/customers/${customerId}`);

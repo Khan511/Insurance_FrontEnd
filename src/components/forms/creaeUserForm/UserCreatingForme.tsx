@@ -40,8 +40,6 @@ export default function UserCreatingForme() {
   });
 
   const onSubmit = async (data: UserFormValues) => {
-    console.log("Form Data: ", data);
-
     try {
       const result = await createUser({
         firstName: data.firstName,
@@ -51,7 +49,6 @@ export default function UserCreatingForme() {
         dateOfBirth: data.dateOfBirth,
       }).unwrap();
 
-      console.log("CreateUser Result", result);
       setShowSuccess(true);
 
       setTimeout(() => {

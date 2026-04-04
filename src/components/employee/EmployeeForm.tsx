@@ -108,46 +108,26 @@ export function EmployeeForm({
 
   // Reset form when initialData changes (for editing)
   useEffect(() => {
-    console.log("Initial data received in EmployeeForm:", initialData);
-    console.log(
-      "Formatted dateOfBirth:",
-      formatDateArrayForInput(initialData?.dateOfBirth)
-    );
-    console.log(
-      "Formatted terminationDate:",
-      formatDateArrayForInput(initialData?.terminationDate)
-    );
-
     if (initialData) {
       const formattedData = prepareInitialData(initialData);
-      console.log("Formatted data for form reset:", formattedData);
       form.reset(formattedData);
     }
   }, [initialData, form]);
 
   const handleSubmit = async (data: any) => {
-    console.log("=== FORM SUBMIT STARTED ===");
-    console.log("Form data being submitted:", data);
-    console.log("isEdit mode:", isEdit);
-
     // Check if form is valid
     const isValid = await form.trigger();
-    console.log("Form validation result:", isValid);
 
     if (!isValid) {
       const errors = form.formState.errors;
-      console.log("Form validation errors:", errors);
 
       // Show error for each field
-      Object.entries(errors).forEach(([key, error]) => {
-        console.log(`${key}:`, error);
-      });
+      Object.entries(errors).forEach(([key, error]) => {});
 
       toast.error("Please fix form errors before submitting");
       return;
     }
 
-    console.log("Calling onSubmit prop...");
     setSubmitting(true);
     try {
       // In edit mode, we should not send password at all
@@ -157,14 +137,10 @@ export function EmployeeForm({
       }
 
       await onSubmit(data);
-      console.log("=== FORM SUBMIT SUCCESS ===");
     } catch (error: any) {
-      console.error("=== FORM SUBMIT ERROR ===");
-      console.error("Error details:", error);
       toast.error(error?.message || "Failed to submit form");
     } finally {
       setSubmitting(false);
-      console.log("=== FORM SUBMIT COMPLETED ===");
     }
   };
 
@@ -705,7 +681,6 @@ export function EmployeeForm({
             type="button"
             variant="outline"
             onClick={() => {
-              console.log("Reset button clicked");
               form.reset();
             }}
             disabled={isFormSubmitting}
